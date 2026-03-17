@@ -16640,8 +16640,9 @@ await accessLogCRUD.add(next);}catch(e){}
   React.useEffect(() => {
     const load = async () => {
       try{ // Firebase: notifications
-await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
-      };
+        await notificationsCRUD.add(notifications.slice(0,60));
+      }catch(e){}
+    };
     load();
   },[notifications]);
   const addNotification = React.useCallback(function(toId,fromId,fromName,type,text){setNotifications(function(p){return [{id:uid(),toId:toId,fromId:fromId,fromName:fromName,type:type,text:text,ts:Date.now(),read:false},...p].slice(0,60);});},[]);
@@ -20741,9 +20742,6 @@ function EspeciaisView({ clientes, addLog }) {
   );
 }
 
-function App() {
+export default function App() {
   return <ErrorBoundary><AppInner/></ErrorBoundary>;
 }
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
