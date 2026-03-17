@@ -109,6 +109,93 @@ class ErrorBoundary extends React.Component {
 
 // persistência via useState (migrar para API futuramente)
 
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🔥 FIREBASE CONFIG - PREENCHA COM SEUS DADOS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const FIREBASE_CONFIG = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const firebaseApp = initializeApp(FIREBASE_CONFIG);
+const firestoreDb = getFirestore(firebaseApp);
+const firebaseAuth = getAuth(firebaseApp);
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🎯 FIREBASE HOOK - useFirebaseCollection
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function useFirebaseCollection(collectionName, initialState = []) {
+  const [data, setData] = React.useState(initialState);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    try {
+      const unsubscribe = onSnapshot(collection(firestoreDb, collectionName), (snapshot) => {
+        const docs = [];
+        snapshot.forEach((docSnap) => {
+          docs.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        setData(docs);
+        setLoading(false);
+      }, (error) => {
+        console.warn(`⚠️ Firebase ${collectionName}:`, error.code);
+        setLoading(false);
+      });
+
+      return () => unsubscribe();
+    } catch (error) {
+      console.error(`❌ Firebase ${collectionName}:`, error);
+      setLoading(false);
+    }
+  }, [collectionName]);
+
+  const crud = {
+    add: async (item) => {
+      try {
+        const id = item.id || `${collectionName}_${Date.now()}`;
+        await setDoc(doc(firestoreDb, collectionName, id), {
+          ...item,
+          updatedAt: new Date().toISOString(),
+          createdAt: item.createdAt || new Date().toISOString()
+        });
+      } catch (error) {
+        console.error(`Erro ao criar ${collectionName}:`, error);
+      }
+    },
+
+    update: async (id, changes) => {
+      try {
+        await updateDoc(doc(firestoreDb, collectionName, id), {
+          ...changes,
+          updatedAt: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error(`Erro ao atualizar ${collectionName}:`, error);
+      }
+    },
+
+    delete: async (id) => {
+      try {
+        await deleteDoc(doc(firestoreDb, collectionName, id));
+      } catch (error) {
+        console.error(`Erro ao deletar ${collectionName}:`, error);
+      }
+    }
+  };
+
+  return [data, crud, loading];
+}
+
 // ─── Brand ────────────────────────────────────────────────────────
 const OR = "#FF6A00";
 const OR2 = "#FF8C00";
@@ -11276,7 +11363,8 @@ function getFeedbacks(){
 }
 function saveFeedbackGlobal(fb){ 
   var arr = getFeedbacks().concat([fb]);
-  try{ localStorage.setItem("fs_feedbacks", JSON.stringify(arr.slice(-200))); }catch(e){}
+  try{ // Firebase: feedbacks
+await feedbacksCRUD.add(arr.slice(-200)); }catch(e){}
   window._feedbacks = arr;
   if(window._fbOnSave) window._fbOnSave(fb);
 }
@@ -16433,29 +16521,29 @@ function AppInner() {
   const [privatoSubView, setPrivatoSubView] = useState("dados"); // "dados" | "quadros"
   const todayDayId = () => { const d=["dom","seg","ter","qua","qui","sex","sab"][new Date().getDay()]; return DAYS.find(x=>x.id===d)?d:"seg"; };
   const [activeDay,setActiveDay]   = useState(todayDayId);
-  const [calendar,setCalendar]     = useState(INIT_CALENDAR);
+  const [calendar, calendarCRUD, calendarLoading] = useFirebaseCollection("calendar", INIT_CALENDAR);
   const [calendarHistory, setCalendarHistory] = useState([]); // [{weekStart, data (no files)}]
   const [futurePosts, setFuturePosts] = useState({}); // {weekKey: {seg:[],ter:[],...}}
   const [showHistorico, setShowHistorico] = useState(false);
   const [showProxSemanas, setShowProxSemanas] = useState(false);
-  const [news,setNews]             = useState(INIT_NEWS);
-  const [demands,setDemands]       = useState(INIT_DEMANDS);
-  const [ads,setAds]               = useState(INIT_ADS);
-  const [meetings,setMeetings]     = useState(INIT_MEETINGS);
-  const [captacoesAV,setCaptacoesAV] = useState(INIT_CAPTACOES_AV);
-  const [inboundClientes,setInboundClientes] = useState(INIT_INBOUND_CLIENTES);
-  const [sdrLeads, setSdrLeads]             = useState(INIT_SDR_LEADS);
+  const [news, newsCRUD, newsLoading] = useFirebaseCollection("news", INIT_NEWS);
+  const [demands, demandsCRUD, demandsLoading] = useFirebaseCollection("demands", INIT_DEMANDS);
+  const [ads, adsCRUD, adsLoading] = useFirebaseCollection("ads", INIT_ADS);
+  const [meetings, meetingsCRUD, meetingsLoading] = useFirebaseCollection("meetings", INIT_MEETINGS);
+  const [captacoesAV, captacoesAVCRUD, captacoesAVLoading] = useFirebaseCollection("captacoes_av", INIT_CAPTACOES_AV);
+  const [inboundClientes, inboundClientesCRUD, inboundClientesLoading] = useFirebaseCollection("inbound_clientes", INIT_INBOUND_CLIENTES);
+  const [sdrLeads, sdrLeadsCRUD, sdrLeadsLoading] = useFirebaseCollection("sdr_leads", INIT_SDR_LEADS);
   const [adminVendas, setAdminVendas]       = useState([]);
   const [avisos, setAvisos]                 = useState([]); // announcements created by admin
-  const [documentacoes, setDocumentacoes]   = useState(INIT_DOCUMENTACOES);
-  const [categoriasDocs, setCategoriasDocs] = useState(INIT_CATEGORIAS_DOCS);
+  const [documentacoes, documentacoesCRUD, documentacoesLoading] = useFirebaseCollection("documentacoes", INIT_DOCUMENTACOES);
+  const [categoriasDocs, categoriasDocsCRUD, categoriasDocsLoading] = useFirebaseCollection("categoriasdocs", INIT_CATEGORIAS_DOCS);
   // ── Shared state (persists across area switches) ───────────────
-  const [crmLeads, setCrmLeads]             = useState(INIT_CRM_LEADS);
-  const [crmMetas, setCrmMetas]             = useState(INIT_METAS);
-  const [contratos, setContratos]           = useState(INIT_CONTRATOS);
-  const [colaboradores, setColaboradores]   = useState(INIT_COLABORADORES);
-  const [financeiroDados, setFinanceiroDados] = useState(INIT_FINANCEIRO);
-  const [okrs, setOkrs]                     = useState(INIT_OKRS);
+  const [crmLeads, crmLeadsCRUD, crmLeadsLoading] = useFirebaseCollection("crm_leads", INIT_CRM_LEADS);
+  const [crmMetas, crmMetasCRUD, crmMetasLoading] = useFirebaseCollection("metas", INIT_METAS);
+  const [contratos, contratosCRUD, contratosLoading] = useFirebaseCollection("contratos", INIT_CONTRATOS);
+  const [colaboradores, colaboradoresCRUD, colaboradoresLoading] = useFirebaseCollection("colaboradores", INIT_COLABORADORES);
+  const [financeiroDados, financeiroDadosCRUD, financeiroDadosLoading] = useFirebaseCollection("financeiro", INIT_FINANCEIRO);
+  const [okrs, okrsCRUD, okrsLoading] = useFirebaseCollection("okrs", INIT_OKRS);
   const [feedbacks, setFeedbacks]           = useState(function(){return getFeedbacks();}); // persisted in localStorage
   // ITEM 19: Notificações persistidas no localStorage
   const [notifications, setNotifications] = React.useState(function(){
@@ -16470,15 +16558,15 @@ function AppInner() {
     return function(){ window._fbOnSave = null; window._addNotification = null; };
   }, []);
   const [agendaReunioes, setAgendaReunioes] = useState([]);
-  const [customBoards,setCustomBoards] = useState(INIT_CUSTOM_BOARDS);
-  const [members,setMembers]         = useState(INIT_MEMBERS);
-  const [filiais, setFiliais]        = useState(INIT_FILIAIS);
+  const [customBoards, customBoardsCRUD, customBoardsLoading] = useFirebaseCollection("customboards", INIT_CUSTOM_BOARDS);
+  const [members, membersCRUD, membersLoading] = useFirebaseCollection("members", INIT_MEMBERS);
+  const [filiais, filiaisCRUD, filiaisLoading] = useFirebaseCollection("filiais", INIT_FILIAIS);
   const [customDatas,setCustomDatas] = useState({});
-  const [statuses,setStatuses]       = useState(INIT_STATUSES);
-  const [tipos,setTipos]             = useState(INIT_TIPOS);
-  const [tiposEntrega,setTiposEntrega] = useState(INIT_TIPOS_ENTREGA);
-  const [monthEmojis,setMonthEmojis] = useState(INIT_MONTH_EMOJIS);
-  const [navConfig,setNavConfig]     = useState(INIT_NAV_CONFIG);
+  const [statuses, statusesCRUD, statusesLoading] = useFirebaseCollection("statuses", INIT_STATUSES);
+  const [tipos, tiposCRUD, tiposLoading] = useFirebaseCollection("tipos", INIT_TIPOS);
+  const [tiposEntrega, tiposEntregaCRUD, tiposEntregaLoading] = useFirebaseCollection("tiposentrega", INIT_TIPOS_ENTREGA);
+  const [monthEmojis, monthEmojisCRUD, monthEmojisLoading] = useFirebaseCollection("monthemojis", INIT_MONTH_EMOJIS);
+  const [navConfig, navConfigCRUD, navConfigLoading] = useFirebaseCollection("navconfig", INIT_NAV_CONFIG);
   const [csData, setCsData]             = useState({});  // {clienteId: {saude, interacoes:[], followUps:[], churnRisk, obs}}
   const [crmStages,setCrmStages]     = useState(null); // null = use defaults
   const [crmOrigens,setCrmOrigens]   = useState(null); // null = use defaults
@@ -16486,20 +16574,20 @@ function AppInner() {
   const [demandaFormatos,setDemandaFormatos] = useState(null); // null = use defaults
   const DEFAULT_CLIENTE_TAGS = [{id:"ativo",label:"Ativo",cor:"#22C55E"},{id:"premium",label:"Premium",cor:"#F59E0B"},{id:"b2b",label:"B2B",cor:"#3B82F6"},{id:"antigo",label:"Antigo",cor:"#8B5CF6"},{id:"pausado",label:"Pausado",cor:"#6B7280"},{id:"novo",label:"Novo",cor:"#EC4899"}];
   const [clienteTags,setClienteTags] = useState(DEFAULT_CLIENTE_TAGS);
-  const [chatChannels,setChatChannels] = useState(INIT_CHAT_CHANNELS);
+  const [chatChannels, chatChannelsCRUD, chatChannelsLoading] = useFirebaseCollection("chat_channels", INIT_CHAT_CHANNELS);
   const [lastSeenMsgCount, setLastSeenMsgCount] = useState(0);
   const totalChatMsgs = chatChannels.reduce((s,ch)=>s+ch.messages.length,0);
   const chatUnread = Math.max(0, totalChatMsgs - lastSeenMsgCount);
   // ── PORTAL DO CLIENTE ───────
-  const [clienteUsers, setClienteUsers] = useState(INIT_CLIENTE_USERS);
-  const [clienteInfos, setClienteInfos] = useState(INIT_CLIENTE_INFOS);
-  const [clienteInsights, setClienteInsights] = useState(INIT_CLIENTE_INSIGHTS);
-  const [clienteConfig, setClienteConfig] = useState(INIT_CLIENTE_CONFIG);
+  const [clienteUsers, clienteUsersCRUD, clienteUsersLoading] = useFirebaseCollection("clienteusers", INIT_CLIENTE_USERS);
+  const [clienteInfos, clienteInfosCRUD, clienteInfosLoading] = useFirebaseCollection("clienteinfos", INIT_CLIENTE_INFOS);
+  const [clienteInsights, clienteInsightsCRUD, clienteInsightsLoading] = useFirebaseCollection("clienteinsights", INIT_CLIENTE_INSIGHTS);
+  const [clienteConfig, clienteConfigCRUD, clienteConfigLoading] = useFirebaseCollection("clienteconfig", INIT_CLIENTE_CONFIG);
   const [clienteLoginType, setClienteLoginType] = useState(null); // null | "cliente" | "colaborador"
   const [clienteAuthUser, setClienteAuthUser] = useState(null); // {id, email, nome, contasAtreladas}
   const [clienteSelectedAccount, setClienteSelectedAccount] = useState(null); // "cli1" | "cli2" | etc
-  const [planejamento, setPlanejamento] = useState(INIT_PLANEJAMENTO);
-  const [clientes,setClientes2]         = useState(INIT_CLIENTES);
+  const [planejamento, planejamentoCRUD, planejamentoLoading] = useFirebaseCollection("planejamento", INIT_PLANEJAMENTO);
+  const [clientes, clientesCRUD, clientesLoading] = useFirebaseCollection("clientes", INIT_CLIENTES);
 
   // ── Reset planejamento on January 1st each year ──
   React.useEffect(function() {
@@ -16517,13 +16605,13 @@ function AppInner() {
   const [sideCollapsed,setSideCollapsed] = useState(false);
   const [dragNavIdx, setDragNavIdx]     = useState(null);
   const [dragOverIdx, setDragOverIdx]   = useState(null);
-  const [activityLog, setActivityLog]   = useState(INIT_ACTIVITY);
+  const [activityLog, activityLogCRUD, activityLogLoading] = useFirebaseCollection("activity", INIT_ACTIVITY);
   const [qualityRatings, setQualityRatings] = useState({}); // {clienteId: [{nota,obs,year,month,ts,autor}]}
   const [cpsInitClient, setCpsInitClient] = useState(null);
   const [clientScoresHistory, setClientScoresHistory] = useState({}); // {clienteId: [{score,label,period}]}
-  const [privateBoards, setPrivateBoards] = useState(INIT_PRIVATE_BOARDS);
-  const [clienteDados, setClienteDados]   = useState(INIT_CLIENTE_DADOS);
-  const [pins, setPins]                   = useState(INIT_PINS);
+  const [privateBoards, privateBoardsCRUD, privateBoardsLoading] = useFirebaseCollection("privateboards", INIT_PRIVATE_BOARDS);
+  const [clienteDados, clienteDadosCRUD, clienteDadosLoading] = useFirebaseCollection("clientedados", INIT_CLIENTE_DADOS);
+  const [pins, pinsCRUD, pinsLoading] = useFirebaseCollection("pins", INIT_PINS);
   const [incidentes, setIncidentes]       = useState([]);
   const [cronData, setCronData]           = useState({});
   const [theme, setTheme]               = useState("dark"); // dark | night | light
@@ -16535,7 +16623,8 @@ function AppInner() {
     var entry = {id:uid(), tipo:tipo, user:userName, ts:Date.now(), ip:"local"};
     setAccessLog(function(p){ 
       var next=[entry,...p].slice(0,100); 
-      try{localStorage.setItem("fs_accessLog",JSON.stringify(next));}catch(e){} 
+      try{// Firebase: accessLog
+await accessLogCRUD.add(next);}catch(e){} 
       return next; 
     }); 
   }
@@ -16549,7 +16638,8 @@ function AppInner() {
   const [showQuickAccess, setShowQuickAccess] = useState(false);
 
   React.useEffect(function(){
-    try{ localStorage.setItem("fs_notifications", JSON.stringify(notifications.slice(0,60))); }catch(e){}
+    try{ // Firebase: notifications
+await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
   },[notifications]);
   const addNotification = React.useCallback(function(toId,fromId,fromName,type,text){setNotifications(function(p){return [{id:uid(),toId:toId,fromId:fromId,fromName:fromName,type:type,text:text,ts:Date.now(),read:false},...p].slice(0,60);});},[]);
   const markAllNotifsRead=React.useCallback(function(){setNotifications(function(p){return p.map(function(n){return Object.assign({},n,{read:true});});});},[]);
