@@ -16528,7 +16528,6 @@ function AppInner() {
   const todayDayId = () => { const d=["dom","seg","ter","qua","qui","sex","sab"][new Date().getDay()]; return DAYS.find(x=>x.id===d)?d:"seg"; };
   const [activeDay,setActiveDay]   = useState(todayDayId);
   const [calendar, calendarCRUD, calendarLoading] = useFirebaseCollection("calendar", INIT_CALENDAR);
-  const setCalendar = calendarCRUD; // Alias para usar setCalendar nas funções
   const [calendarHistory, setCalendarHistory] = useState([]); // [{weekStart, data (no files)}]
   const [futurePosts, setFuturePosts] = useState({}); // {weekKey: {seg:[],ter:[],...}}
   const [showHistorico, setShowHistorico] = useState(false);
@@ -16671,28 +16670,30 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
     function check() {
       var now = new Date();
       if(now.getHours() >= 17) {
-        setCalendar(function(prev){
-          var updated = {};
-          var changed = false;
-          var days = Object.keys(prev);
-          for(var di = 0; di < days.length; di++) {
-            var day = days[di];
-            var rows = prev[day];
-            updated[day] = rows.map(function(r){
-              if(SAFE.indexOf(r.status) === -1) {
-                changed = true;
-                return Object.assign({}, r, {status:"atrasado"});
+        // Marcar demandas atrasadas
+        if(calendar && Object.keys(calendar).length > 0) {
+          var SAFE = ["apv_cliente","apv_interna","aprovado","postado"];
+          var hasChanged = false;
+          
+          Object.keys(calendar).forEach(function(day) {
+            var dayDemands = calendar[day] || [];
+            dayDemands.forEach(function(demand) {
+              if(SAFE.indexOf(demand.status) === -1 && demand.status !== "atrasado") {
+                hasChanged = true;
+                // Atualizar via calendarCRUD
+                if(calendarCRUD && calendarCRUD.update) {
+                  var updated = Object.assign({}, demand, {status:"atrasado"});
+                  calendarCRUD.update(demand.id, updated);
+                }
               }
-              return r;
             });
-          }
-          if(changed) setAtrasadoAlert(true);
-          return changed ? updated : prev;
-        });
+          });
+          
+          if(hasChanged) setAtrasadoAlert(true);
+        }
       }
     }
-    check();
-    var t = setInterval(check, 60000);
+
     return function(){ clearInterval(t); };
   }, []);
 
@@ -16701,41 +16702,44 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
   useEffect(function(){
     function runMondayCleanup() {
       var now = new Date();
-      if(now.getDay()!==1 || now.getHours()!==7) return;
+      if(now.getDay()!==1 || now.getHours()!==7) return; // Só executa segunda-feira às 7am
       var todayKey = now.toISOString().slice(0,10);
-      if(_lastMonCleanup.current === todayKey) return; // already ran today
+      if(_lastMonCleanup.current === todayKey) return; // Já rodou hoje
       _lastMonCleanup.current = todayKey;
-      // Archive snapshot (no files)
-      setCalendar(function(prev){
+      
+      // Arquivar snapshot do calendário atual
+      if(calendar && Object.keys(calendar).length > 0) {
         var snapshot = {};
-        DAYS.forEach(function(d){ snapshot[d.id]=(prev[d.id]||[]).map(function(r){return Object.assign({},r,{files:[]});}); });
-        var mon = getThisWeekMonday();
-        mon.setDate(mon.getDate()-7); // last week
-        var wKey = weekKeyFromMonday(mon);
+        DAYS.forEach(function(d){ 
+          snapshot[d.id] = (calendar[d.id]||[]).map(function(r){
+            var copy = Object.assign({}, r);
+            copy.files = []; // Não arquivar arquivos
+            return copy;
+          });
+        });
+        
+        // Adicionar ao histórico
         setCalendarHistory(function(hist){
+          var mon = getThisWeekMonday();
+          mon.setDate(mon.getDate()-7); // Semana passada
+          var wKey = weekKeyFromMonday(mon);
           var already = hist.find(function(h){return h.weekStart===wKey;});
           if(already) return hist;
           return [{weekStart:wKey, data:snapshot}].concat(hist).slice(0,13);
         });
-        // New week: clear calendar and pull in any scheduled future posts
-        var newWeekKey = weekKeyFromMonday(getThisWeekMonday());
-        setFuturePosts(function(fp){
-          var weekFuture = fp[newWeekKey]||{};
-          var newFp = Object.assign({}, fp);
-          delete newFp[newWeekKey];
-          // Start fresh: only future posts for this week (no leftover rows)
-          var newCalendar = {};
-          DAYS.forEach(function(d){
-            newCalendar[d.id] = (weekFuture[d.id]||[]).slice();
+      }
+      
+      // Limpar calendário para nova semana
+      if(calendarCRUD && calendarCRUD.delete) {
+        DAYS.forEach(function(d) {
+          var dayDemands = calendar[d.id] || [];
+          dayDemands.forEach(function(demand) {
+            calendarCRUD.delete(demand.id); // Remover demandas antigas
           });
-          setTimeout(function(){ setCalendar(newCalendar); }, 0);
-          return newFp;
         });
-        return prev; // calendar will be set via setTimeout above
-      });
+      }
     }
-    runMondayCleanup();
-    var t = setInterval(runMondayCleanup, 60000);
+
     return function(){ clearInterval(t); };
   }, []);
 
