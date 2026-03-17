@@ -16522,7 +16522,7 @@ function NotifBell({ notifications, userId, onMarkAllRead, onClearAll }) {
 
 function AppInner() {
   const [user,setUser]             = useState(null);
-  const [calendar, setCalendar] = useState({});
+  
   const [area,setArea]             = useState(null); // "criacao" | "comercial"
   const [view,setView]             = useState("dashboard");
   const [privatoSubView, setPrivatoSubView] = useState("dados"); // "dados" | "quadros"
