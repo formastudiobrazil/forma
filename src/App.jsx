@@ -16522,7 +16522,6 @@ function NotifBell({ notifications, userId, onMarkAllRead, onClearAll }) {
 
 function AppInner() {
   const [user,setUser]             = useState(null);
-  
   const [area,setArea]             = useState(null); // "criacao" | "comercial"
   const [view,setView]             = useState("dashboard");
   const [privatoSubView, setPrivatoSubView] = useState("dados"); // "dados" | "quadros"
@@ -16671,7 +16670,7 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
     function check() {
       var now = new Date();
       if(now.getHours() >= 17) {
-        setCalendar(function(prev){
+//         // setCalendar(function(prev){
           var updated = {};
           var changed = false;
           var days = Object.keys(prev);
@@ -16706,7 +16705,7 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
       if(_lastMonCleanup.current === todayKey) return; // already ran today
       _lastMonCleanup.current = todayKey;
       // Archive snapshot (no files)
-      setCalendar(function(prev){
+//       // setCalendar(function(prev){
         var snapshot = {};
         DAYS.forEach(function(d){ snapshot[d.id]=(prev[d.id]||[]).map(function(r){return Object.assign({},r,{files:[]});}); });
         var mon = getThisWeekMonday();
