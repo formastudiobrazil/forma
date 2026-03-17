@@ -152,7 +152,7 @@ function useFirebaseCollection(collectionName, initialState = []) {
         setLoading(false);
       });
 
-      return async () => unsubscribe();
+      return () => unsubscribe();
     } catch (error) {
       console.error(`❌ Firebase ${collectionName}:`, error);
       setLoading(false);
@@ -994,6 +994,7 @@ const DonutChart = ({ value, total, color, size }) => {
   );
 };
 
+
 // ─── Dropdown Context ─────────────────────────────────────────────
 const DropCtx = React.createContext(null);
 const ConfigCtx = React.createContext(null);
@@ -1035,6 +1036,7 @@ function CaptacaoStatusDropdown({ current, onChange }) {
     </div>
   );
 }
+
 
 function StatusDropdown({ statusId, onChange }) {
   const ctx = React.useContext(DropCtx);
@@ -1137,6 +1139,7 @@ function TipoDropdown({ tipoId, onChange }) {
   );
 }
 
+
 function CollabPicker({ selected, onChange, onNotify }) {
   const ctx = React.useContext(DropCtx);
   const ref = useRef();
@@ -1193,6 +1196,7 @@ function CollabPicker({ selected, onChange, onNotify }) {
     </div>
   );
 }
+
 
 // ─── TeamPicker — pill-style multi-member selector ───────────────
 function TeamPicker({ label, selected, onChange, size }) {
@@ -1265,6 +1269,7 @@ function EditCell({ value, onChange, center, placeholder }) {
     >{value||placeholder}</div>
   );
 }
+
 
 // ─── File Upload Panel ────────────────────────────────────────────
 function FileUploadPanel({ row, onClose, onSave }) {
@@ -1617,6 +1622,7 @@ function ClienteSelectorPanel({ clientes, current, onSelect }) {
     </div>
   );
 }
+
 
 function ClientGroup({ group, groupIdx, onUpdateRow, onDeleteRow, onAddSubRow, onOpenPanel, onOpenFiles, day, onNotify, clientes }) {
   const [expanded, setExpanded] = useState(false);
@@ -2064,6 +2070,7 @@ function ProximasSemanasPanel({ futurePosts, setFuturePosts, onClose, clientes }
     </div>
   );
 }
+
 
 function CalendarView({ calendar, setCalendar, activeDay, onNotify, clientes, addLog, dayOverride, demands }) {
   const rows = calendar[activeDay]||[];
@@ -2732,6 +2739,8 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
           </div>
         </div>
       )}
+
+
 
       {/* ── KPIs ── */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
@@ -3406,6 +3415,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
   );
 }
 
+
 // ─── CaptacaoAV View ──────────────────────────────────────────────
 function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotification, addLog }) {
   var [feedbackItem, setFeedbackItem] = useState(null);
@@ -3631,6 +3641,7 @@ function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotificatio
     </div>
   );
 }
+
 
 // ─── Inbound Marketing View ───────────────────────────────────────
 function InboundView({ clientes, setClientes, addLog, clientesBase }) {
@@ -3858,6 +3869,8 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
     </div>
   );
 }
+
+
 
 // ─── Custom Board View ────────────────────────────────────────────
 function CustomBoardView({ board, onUpdateBoard, addLog }) {
@@ -5510,6 +5523,7 @@ function DatasView({ customDatas, setCustomDatas, addLog }) {
   );
 }
 
+
 function ReunioesView({ meetings, setMeetings, user, members, addNotification, clientes, addLog }) {
   const [adding, setAdding] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -5552,6 +5566,7 @@ function ReunioesView({ meetings, setMeetings, user, members, addNotification, c
   const upcoming = sorted.filter(m=>m.date>=today);
   const past     = sorted.filter(m=>m.date<today);
   // auto-trigger feedback for most recent past meeting that user attended (if not yet rated)
+
 
   const inp = (label,key,type="text",placeholder="") => (
     <div>
@@ -5943,6 +5958,7 @@ function FieldTypeForm({ newFieldType, setNewFieldType, newFieldLabel, setNewFie
     </div>
   );
 }
+
 
 // ─── Customer Success ─────────────────────────────────────────────
 function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLog }) {
@@ -6528,6 +6544,7 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
     </div>
   );
 }
+
 
 // ─── Área Privada — Banco de Dados Flexível ───────────────────────
 const FIELD_TYPES = [
@@ -7188,6 +7205,7 @@ function PrivateBoardsView({ boards, setBoards, user, addLog }) {
     </div>
   );
 }
+
 
 // ─── Private Entry Row (fix: no hook in map) ─────────────────────
 function PrivateEntryRow({ entry: e, boardId, onRemove }) {
@@ -8365,6 +8383,7 @@ function ChecklistView({ clientes, setClientes, demands, calendar, calendarHisto
   );
 }
 
+
 // ─── CRM View ─────────────────────────────────────────────────────
 function CRMLead({ lead, leads, setLeads, user, addLog, onBack }) {
   var sc = CRM_STAGES.find(function(s){return s.id===lead.stage;})||CRM_STAGES[0];
@@ -8924,6 +8943,7 @@ function PipelineListView({ pipeLeads, kanbanStages, onOpen, setLeads, addLog, f
     </div>
   );
 }
+
 
 // ── KanbanLeadCard — defined OUTSIDE CRMPipeline to keep stable identity ──
 function KanbanLeadCard({ l, stage, dragId, dragIdRef, onDragStart, onDragEnd, onOpen }) {
@@ -9951,6 +9971,8 @@ function SDRView({ user, addLog, leads: _leads, setLeads: _setLeads, crmLeads, a
         </div>
         <div onClick={function(){setShowForm(function(v){return !v;});}} style={{padding:"9px 18px",borderTopLeftRadius:11,borderTopRightRadius:0,borderBottomRightRadius:11,borderBottomLeftRadius:0,cursor:"pointer",background:"linear-gradient(135deg,"+PU+",#7C3AED)",color:"var(--ct)",fontSize:14,fontWeight:700,fontFamily:POP}}>+ Novo Lead</div>
       </div>
+
+
 
       {/* Form */}
       {showForm && (
@@ -11208,6 +11230,7 @@ function CRMShell({ user, onBack, addLog, chatUnread, activityLog, onUpdateUser,
   );
 }
 
+
 // ─── Login Screen ─────────────────────────────────────────────────
 // ─── Admin Shell (stub — Bloco 4) ────────────────────────────────
 // ─── PLANNER (private weekly board) ──────────────────────────────
@@ -11324,7 +11347,7 @@ function PlannerView({ user }) {
                   );
                 })}
               </div>
-              <input value={newTask[di]||""} onChange={async function(e){var v=e.target.value;setNewTask(async function(p){return Object.assign({},p,{[di]:v});});}} onKeyDown={async function(e){if(e.key==="Enter")addTask(di);}} placeholder="+ tarefa" style={{width:"100%",background:"transparent",border:"none",borderBottom:"1px solid var(--cbord2)",color:"var(--ct2)",fontSize:12,padding:"3px 0",outline:"none",fontFamily:POP,colorScheme:"dark",boxSizing:"border-box"}}/>
+              <input value={newTask[di]||""} onChange={function(e){var v=e.target.value;setNewTask(function(p){return Object.assign({},p,{[di]:v});});}} onKeyDown={function(e){if(e.key==="Enter")addTask(di);}} placeholder="+ tarefa" style={{width:"100%",background:"transparent",border:"none",borderBottom:"1px solid var(--cbord2)",color:"var(--ct2)",fontSize:12,padding:"3px 0",outline:"none",fontFamily:POP,colorScheme:"dark",boxSizing:"border-box"}}/>
             </div>
           );
         })}
@@ -14288,6 +14311,7 @@ function GestaoRiscoView({ leads, clientes, csData, addLog }) {
   );
 }
 
+
 // ─── Avisos Admin ─────────────────────────────────────────────────
 // Rich text toolbar actions
 function RichBar({ onCmd, onImg }) {
@@ -14611,6 +14635,7 @@ function VendasPendentesPanel({ vendas, setVendas, onGoContratos }) {
   );
 }
 
+
 function SettingsViewAdmin() {
   var ctx = React.useContext(ConfigCtx);
   if(!ctx) return <div style={{padding:24,color:"var(--ct)",fontFamily:POP}}>Configurações indisponíveis</div>;
@@ -14627,6 +14652,7 @@ function SettingsViewAdmin() {
     categoriasDocs={ctx.categoriasDocs} setCategoriasDocs={ctx.setCategoriasDocs}
   />;
 }
+
 
 // ─────── PORTAL DO CLIENTE - DASHBOARD ───────
 
@@ -15732,6 +15758,7 @@ function AdminShell({ user, onBack, addLog, chatUnread, activityLog, onUpdateUse
   );
 }
 
+
 // ─────── PORTAL DO CLIENTE - TELAS ───────
 
 function ClienteLoginScreen({ onSelectType, clienteConfig }) {
@@ -15862,7 +15889,7 @@ function ClienteEntryScreen({ onLogin, onBack, clienteUsers }) {
     }
 
     // Find user by email (case-insensitive)
-    var user = clienteUsers.find(u async => u.email.toLowerCase() === email.toLowerCase());
+    var user = clienteUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
     
     if(!user) {
       setErr("Email ou senha incorretos.");
@@ -16365,6 +16392,7 @@ function QuickAccessPanel({ items, setItems, onClose, user }) {
   );
 }
 
+
 // ─── Main App ─────────────────────────────────────────────────────
 function FormaFooter() {
   return (
@@ -16588,7 +16616,7 @@ function AppInner() {
   const [cronData, setCronData]           = useState({});
   const [theme, setTheme]               = useState("dark"); // dark | night | light
   // ITEM 22: Log de acesso (login/logout com timestamp e usuário)
-  const [accessLog, setAccessLog] = React.useState(async function(){
+  const [accessLog, setAccessLog] = React.useState(function(){
     try{ var s=localStorage.getItem("fs_accessLog"); return s?JSON.parse(s):[]; }catch(e){ return []; }
   });
  async function recordAccess(tipo, userName){ 
@@ -16609,7 +16637,7 @@ await accessLogCRUD.add(next);}catch(e){}
   ]);
   const [showQuickAccess, setShowQuickAccess] = useState(false);
 
-  React.useEffect(async function(){
+  React.useEffect(async () => {
     try{ // Firebase: notifications
 await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
   },[notifications]);
@@ -16755,6 +16783,7 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
     if(activeBoardId===id){setActiveBoardId(null);setView("dashboard");}
   };
 
+
   // CSS custom properties — must be before any early returns
   React.useEffect(function(){
     var r = document.documentElement;
@@ -16810,6 +16839,8 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
 
   const currentBoard=customBoards.find(b=>b.id===activeBoardId);
   const configValue = { statuses, setStatuses, tipos, setTipos, tiposEntrega, setTiposEntrega, monthEmojis, setMonthEmojis, navConfig, setNavConfig, crmStages, setCrmStages, crmOrigens, setCrmOrigens, finCats, setFinCats, demandaFormatos, setDemandaFormatos, clienteTags, setClienteTags, theme, categoriasDocs, setCategoriasDocs };
+
+
 
   return (
     <ConfigCtx.Provider value={configValue}>
@@ -20488,6 +20519,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
     </div>
   );
 }
+
 
 // ─── Quadro Especiais ──────────────────────────────────────────────────────
 function EspeciaisView({ clientes, addLog }) {
