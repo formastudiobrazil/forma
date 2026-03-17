@@ -16554,7 +16554,7 @@ function AppInner() {
   // ITEM 19: Notificações persistidas no localStorage
   const [notifications, setNotifications] = React.useState(function(){
     try{ var s=localStorage.getItem("fs_notifications"); return s?JSON.parse(s):[]; }catch(e){ return []; }
-        // });
+  });
   // Bridge: sync window._feedbacks → state
   React.useEffect(function(){
     window._fbOnSave = function(fb){ setFeedbacks(function(p){ return p.concat([fb]); }); };
@@ -16670,7 +16670,6 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
     function check() {
       var now = new Date();
       if(now.getHours() >= 17) {
-//         // setCalendar(function(prev){
           var updated = {};
           var changed = false;
           var days = Object.keys(prev);
@@ -16683,11 +16682,10 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
                 return Object.assign({}, r, {status:"atrasado"});
               }
               return r;
-        // });
+            });
           }
           if(changed) setAtrasadoAlert(true);
           return changed ? updated : prev;
-        // });
       }
     }
     check();
@@ -16705,7 +16703,6 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
       if(_lastMonCleanup.current === todayKey) return; // already ran today
       _lastMonCleanup.current = todayKey;
       // Archive snapshot (no files)
-//       // setCalendar(function(prev){
         var snapshot = {};
         DAYS.forEach(function(d){ snapshot[d.id]=(prev[d.id]||[]).map(function(r){return Object.assign({},r,{files:[]});}); });
         var mon = getThisWeekMonday();
@@ -16715,7 +16712,7 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
           var already = hist.find(function(h){return h.weekStart===wKey;});
           if(already) return hist;
           return [{weekStart:wKey, data:snapshot}].concat(hist).slice(0,13);
-        // });
+        });
         // New week: clear calendar and pull in any scheduled future posts
         var newWeekKey = weekKeyFromMonday(getThisWeekMonday());
         setFuturePosts(function(fp){
@@ -16726,12 +16723,11 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
           var newCalendar = {};
           DAYS.forEach(function(d){
             newCalendar[d.id] = (weekFuture[d.id]||[]).slice();
-        // });
+          });
           setTimeout(function(){ setCalendar(newCalendar); }, 0);
           return newFp;
-        // });
+        });
         return prev; // calendar will be set via setTimeout above
-        // });
     }
     runMondayCleanup();
     var t = setInterval(runMondayCleanup, 60000);
