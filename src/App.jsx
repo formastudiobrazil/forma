@@ -16621,7 +16621,7 @@ function AppInner() {
   });
  async function recordAccess(tipo, userName){ 
     var entry = {id:uid(), tipo:tipo, user:userName, ts:Date.now(), ip:"local"};
-    setAccessLog(function(p){ 
+    setAccessLog(async function(p){ 
       var next=[entry,...p].slice(0,100); 
       try{// Firebase: accessLog
 await accessLogCRUD.add(next);}catch(e){} 
@@ -16640,7 +16640,7 @@ await accessLogCRUD.add(next);}catch(e){}
   React.useEffect(() => {
     const load = async () => {
       try{ // Firebase: notifications
-        await notificationsCRUD.add(notifications.slice(0,60)); 
+        await notificationsCRUD.add(notifications.slice(0,60));
       }catch(e){}
     };
     load();
