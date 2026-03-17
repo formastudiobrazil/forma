@@ -16532,18 +16532,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(calendar || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && calendarCRUD) {
           updated.forEach(function(item) {
-            if(calendarCRUD && calendarCRUD.update) {
-              calendarCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(calendarCRUD && calendarCRUD.update) {
-              calendarCRUD.update(key, updated[key]);
-            }
+            if(calendarCRUD.update) calendarCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16560,18 +16551,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(news || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && newsCRUD) {
           updated.forEach(function(item) {
-            if(newsCRUD && newsCRUD.update) {
-              newsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(newsCRUD && newsCRUD.update) {
-              newsCRUD.update(key, updated[key]);
-            }
+            if(newsCRUD.update) newsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16584,18 +16566,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(demands || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && demandsCRUD) {
           updated.forEach(function(item) {
-            if(demandsCRUD && demandsCRUD.update) {
-              demandsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(demandsCRUD && demandsCRUD.update) {
-              demandsCRUD.update(key, updated[key]);
-            }
+            if(demandsCRUD.update) demandsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16608,18 +16581,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(ads || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && adsCRUD) {
           updated.forEach(function(item) {
-            if(adsCRUD && adsCRUD.update) {
-              adsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(adsCRUD && adsCRUD.update) {
-              adsCRUD.update(key, updated[key]);
-            }
+            if(adsCRUD.update) adsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16632,18 +16596,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(meetings || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && meetingsCRUD) {
           updated.forEach(function(item) {
-            if(meetingsCRUD && meetingsCRUD.update) {
-              meetingsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(meetingsCRUD && meetingsCRUD.update) {
-              meetingsCRUD.update(key, updated[key]);
-            }
+            if(meetingsCRUD.update) meetingsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16656,18 +16611,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(captacoesAV || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && captacoesAVCRUD) {
           updated.forEach(function(item) {
-            if(captacoesAVCRUD && captacoesAVCRUD.update) {
-              captacoesAVCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(captacoesAVCRUD && captacoesAVCRUD.update) {
-              captacoesAVCRUD.update(key, updated[key]);
-            }
+            if(captacoesAVCRUD.update) captacoesAVCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16680,18 +16626,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(inboundClientes || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && inboundClientesCRUD) {
           updated.forEach(function(item) {
-            if(inboundClientesCRUD && inboundClientesCRUD.update) {
-              inboundClientesCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(inboundClientesCRUD && inboundClientesCRUD.update) {
-              inboundClientesCRUD.update(key, updated[key]);
-            }
+            if(inboundClientesCRUD.update) inboundClientesCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16704,18 +16641,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(sdrLeads || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && sdrLeadsCRUD) {
           updated.forEach(function(item) {
-            if(sdrLeadsCRUD && sdrLeadsCRUD.update) {
-              sdrLeadsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(sdrLeadsCRUD && sdrLeadsCRUD.update) {
-              sdrLeadsCRUD.update(key, updated[key]);
-            }
+            if(sdrLeadsCRUD.update) sdrLeadsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16730,18 +16658,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(documentacoes || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && documentacoesCRUD) {
           updated.forEach(function(item) {
-            if(documentacoesCRUD && documentacoesCRUD.update) {
-              documentacoesCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(documentacoesCRUD && documentacoesCRUD.update) {
-              documentacoesCRUD.update(key, updated[key]);
-            }
+            if(documentacoesCRUD.update) documentacoesCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16754,18 +16673,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(categoriasDocs || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && categoriasDocsCRUD) {
           updated.forEach(function(item) {
-            if(categoriasDocsCRUD && categoriasDocsCRUD.update) {
-              categoriasDocsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(categoriasDocsCRUD && categoriasDocsCRUD.update) {
-              categoriasDocsCRUD.update(key, updated[key]);
-            }
+            if(categoriasDocsCRUD.update) categoriasDocsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16779,18 +16689,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(crmLeads || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && crmLeadsCRUD) {
           updated.forEach(function(item) {
-            if(crmLeadsCRUD && crmLeadsCRUD.update) {
-              crmLeadsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(crmLeadsCRUD && crmLeadsCRUD.update) {
-              crmLeadsCRUD.update(key, updated[key]);
-            }
+            if(crmLeadsCRUD.update) crmLeadsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16803,18 +16704,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(crmMetas || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && crmMetasCRUD) {
           updated.forEach(function(item) {
-            if(crmMetasCRUD && crmMetasCRUD.update) {
-              crmMetasCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(crmMetasCRUD && crmMetasCRUD.update) {
-              crmMetasCRUD.update(key, updated[key]);
-            }
+            if(crmMetasCRUD.update) crmMetasCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16827,18 +16719,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(contratos || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && contratosCRUD) {
           updated.forEach(function(item) {
-            if(contratosCRUD && contratosCRUD.update) {
-              contratosCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(contratosCRUD && contratosCRUD.update) {
-              contratosCRUD.update(key, updated[key]);
-            }
+            if(contratosCRUD.update) contratosCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16851,18 +16734,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(colaboradores || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && colaboradoresCRUD) {
           updated.forEach(function(item) {
-            if(colaboradoresCRUD && colaboradoresCRUD.update) {
-              colaboradoresCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(colaboradoresCRUD && colaboradoresCRUD.update) {
-              colaboradoresCRUD.update(key, updated[key]);
-            }
+            if(colaboradoresCRUD.update) colaboradoresCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16875,18 +16749,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(financeiroDados || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && financeiroDadosCRUD) {
           updated.forEach(function(item) {
-            if(financeiroDadosCRUD && financeiroDadosCRUD.update) {
-              financeiroDadosCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(financeiroDadosCRUD && financeiroDadosCRUD.update) {
-              financeiroDadosCRUD.update(key, updated[key]);
-            }
+            if(financeiroDadosCRUD.update) financeiroDadosCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16899,18 +16764,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(okrs || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && okrsCRUD) {
           updated.forEach(function(item) {
-            if(okrsCRUD && okrsCRUD.update) {
-              okrsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(okrsCRUD && okrsCRUD.update) {
-              okrsCRUD.update(key, updated[key]);
-            }
+            if(okrsCRUD.update) okrsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16937,18 +16793,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(customBoards || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && customBoardsCRUD) {
           updated.forEach(function(item) {
-            if(customBoardsCRUD && customBoardsCRUD.update) {
-              customBoardsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(customBoardsCRUD && customBoardsCRUD.update) {
-              customBoardsCRUD.update(key, updated[key]);
-            }
+            if(customBoardsCRUD.update) customBoardsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16961,18 +16808,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(members || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && membersCRUD) {
           updated.forEach(function(item) {
-            if(membersCRUD && membersCRUD.update) {
-              membersCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(membersCRUD && membersCRUD.update) {
-              membersCRUD.update(key, updated[key]);
-            }
+            if(membersCRUD.update) membersCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -16985,18 +16823,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(filiais || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && filiaisCRUD) {
           updated.forEach(function(item) {
-            if(filiaisCRUD && filiaisCRUD.update) {
-              filiaisCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(filiaisCRUD && filiaisCRUD.update) {
-              filiaisCRUD.update(key, updated[key]);
-            }
+            if(filiaisCRUD.update) filiaisCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17010,18 +16839,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(statuses || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && statusesCRUD) {
           updated.forEach(function(item) {
-            if(statusesCRUD && statusesCRUD.update) {
-              statusesCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(statusesCRUD && statusesCRUD.update) {
-              statusesCRUD.update(key, updated[key]);
-            }
+            if(statusesCRUD.update) statusesCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17034,18 +16854,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(tipos || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && tiposCRUD) {
           updated.forEach(function(item) {
-            if(tiposCRUD && tiposCRUD.update) {
-              tiposCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(tiposCRUD && tiposCRUD.update) {
-              tiposCRUD.update(key, updated[key]);
-            }
+            if(tiposCRUD.update) tiposCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17058,18 +16869,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(tiposEntrega || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && tiposEntregaCRUD) {
           updated.forEach(function(item) {
-            if(tiposEntregaCRUD && tiposEntregaCRUD.update) {
-              tiposEntregaCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(tiposEntregaCRUD && tiposEntregaCRUD.update) {
-              tiposEntregaCRUD.update(key, updated[key]);
-            }
+            if(tiposEntregaCRUD.update) tiposEntregaCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17082,18 +16884,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(monthEmojis || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && monthEmojisCRUD) {
           updated.forEach(function(item) {
-            if(monthEmojisCRUD && monthEmojisCRUD.update) {
-              monthEmojisCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(monthEmojisCRUD && monthEmojisCRUD.update) {
-              monthEmojisCRUD.update(key, updated[key]);
-            }
+            if(monthEmojisCRUD.update) monthEmojisCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17106,18 +16899,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(navConfig || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && navConfigCRUD) {
           updated.forEach(function(item) {
-            if(navConfigCRUD && navConfigCRUD.update) {
-              navConfigCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(navConfigCRUD && navConfigCRUD.update) {
-              navConfigCRUD.update(key, updated[key]);
-            }
+            if(navConfigCRUD.update) navConfigCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17137,18 +16921,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(chatChannels || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && chatChannelsCRUD) {
           updated.forEach(function(item) {
-            if(chatChannelsCRUD && chatChannelsCRUD.update) {
-              chatChannelsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(chatChannelsCRUD && chatChannelsCRUD.update) {
-              chatChannelsCRUD.update(key, updated[key]);
-            }
+            if(chatChannelsCRUD.update) chatChannelsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17165,18 +16940,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(clienteUsers || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && clienteUsersCRUD) {
           updated.forEach(function(item) {
-            if(clienteUsersCRUD && clienteUsersCRUD.update) {
-              clienteUsersCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(clienteUsersCRUD && clienteUsersCRUD.update) {
-              clienteUsersCRUD.update(key, updated[key]);
-            }
+            if(clienteUsersCRUD.update) clienteUsersCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17189,18 +16955,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(clienteInfos || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && clienteInfosCRUD) {
           updated.forEach(function(item) {
-            if(clienteInfosCRUD && clienteInfosCRUD.update) {
-              clienteInfosCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(clienteInfosCRUD && clienteInfosCRUD.update) {
-              clienteInfosCRUD.update(key, updated[key]);
-            }
+            if(clienteInfosCRUD.update) clienteInfosCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17213,18 +16970,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(clienteInsights || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && clienteInsightsCRUD) {
           updated.forEach(function(item) {
-            if(clienteInsightsCRUD && clienteInsightsCRUD.update) {
-              clienteInsightsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(clienteInsightsCRUD && clienteInsightsCRUD.update) {
-              clienteInsightsCRUD.update(key, updated[key]);
-            }
+            if(clienteInsightsCRUD.update) clienteInsightsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17237,18 +16985,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(clienteConfig || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && clienteConfigCRUD) {
           updated.forEach(function(item) {
-            if(clienteConfigCRUD && clienteConfigCRUD.update) {
-              clienteConfigCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(clienteConfigCRUD && clienteConfigCRUD.update) {
-              clienteConfigCRUD.update(key, updated[key]);
-            }
+            if(clienteConfigCRUD.update) clienteConfigCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17264,18 +17003,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(planejamento || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && planejamentoCRUD) {
           updated.forEach(function(item) {
-            if(planejamentoCRUD && planejamentoCRUD.update) {
-              planejamentoCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(planejamentoCRUD && planejamentoCRUD.update) {
-              planejamentoCRUD.update(key, updated[key]);
-            }
+            if(planejamentoCRUD.update) planejamentoCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17288,18 +17018,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(clientes || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && clientesCRUD) {
           updated.forEach(function(item) {
-            if(clientesCRUD && clientesCRUD.update) {
-              clientesCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(clientesCRUD && clientesCRUD.update) {
-              clientesCRUD.update(key, updated[key]);
-            }
+            if(clientesCRUD.update) clientesCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17329,18 +17050,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(activityLog || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && activityLogCRUD) {
           updated.forEach(function(item) {
-            if(activityLogCRUD && activityLogCRUD.update) {
-              activityLogCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(activityLogCRUD && activityLogCRUD.update) {
-              activityLogCRUD.update(key, updated[key]);
-            }
+            if(activityLogCRUD.update) activityLogCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17356,18 +17068,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(privateBoards || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && privateBoardsCRUD) {
           updated.forEach(function(item) {
-            if(privateBoardsCRUD && privateBoardsCRUD.update) {
-              privateBoardsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(privateBoardsCRUD && privateBoardsCRUD.update) {
-              privateBoardsCRUD.update(key, updated[key]);
-            }
+            if(privateBoardsCRUD.update) privateBoardsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17380,18 +17083,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(clienteDados || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && clienteDadosCRUD) {
           updated.forEach(function(item) {
-            if(clienteDadosCRUD && clienteDadosCRUD.update) {
-              clienteDadosCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(clienteDadosCRUD && clienteDadosCRUD.update) {
-              clienteDadosCRUD.update(key, updated[key]);
-            }
+            if(clienteDadosCRUD.update) clienteDadosCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -17404,18 +17098,9 @@ function AppInner() {
     if(typeof updater === 'function') {
       try {
         var updated = updater(pins || []);
-        // Sincronizar com Firebase
-        if(Array.isArray(updated)) {
+        if(Array.isArray(updated) && pinsCRUD) {
           updated.forEach(function(item) {
-            if(pinsCRUD && pinsCRUD.update) {
-              pinsCRUD.update(item.id || item.key, item);
-            }
-          });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(function(key) {
-            if(pinsCRUD && pinsCRUD.update) {
-              pinsCRUD.update(key, updated[key]);
-            }
+            if(pinsCRUD.update) pinsCRUD.update(item.id || item.key, item);
           });
         }
       } catch(err) {
@@ -18087,16 +17772,21 @@ function MyProfilePanel({ member, onSave, onClose }) {
     setTimeout(() => { setSaved(false); onClose(); }, 900);
   };
 
-  const Field = ({label, k, type, placeholder}) => (
-    <div>
-      <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>{label}</div>
-      <input type={type} value={form[k]||""} onChange={e=>setForm(p=>({...p,[k]:e.target.value}))} placeholder={placeholder}
-        style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"9px 13px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
-        onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
-        onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
-      />
-    </div>
-  );
+  const Field = React.memo(({label, k, type, placeholder}) => {
+    const handleChange = React.useCallback((e) => {
+      setForm(p=>({...p,[k]:e.target.value}));
+    }, [k]);
+    return (
+      <div>
+        <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>{label}</div>
+        <input type={type} value={form[k]||""} onChange={handleChange} placeholder={placeholder}
+          style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"9px 13px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
+          onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
+          onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
+        />
+      </div>
+    );
+  });
 
   return (
     <div style={{position:"fixed",inset:0,zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.75)",backdropFilter:"blur(10px)"}}>
@@ -20542,16 +20232,21 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
     setTimeout(()=>{ setPinSaved(false); setResetPinId(null); setNewPin(""); },1200);
   };
 
-  const Field = ({label,k,type,placeholder}) => (
-    <div>
-      <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{label}</div>
-      <input type={type} value={form[k]||""} onChange={e=>setForm(p=>({...p,[k]:e.target.value}))} placeholder={placeholder}
-        style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
-        onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
-        onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
-      />
-    </div>
-  );
+  const Field = React.memo(({label,k,type,placeholder}) => {
+    const handleChange = React.useCallback((e) => {
+      setForm(p=>({...p,[k]:e.target.value}));
+    }, [k]);
+    return (
+      <div>
+        <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{label}</div>
+        <input type={type} value={form[k]||""} onChange={handleChange} placeholder={placeholder}
+          style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
+          onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
+          onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
+        />
+      </div>
+    );
+  });
 
   const [adminTab, setAdminTab] = React.useState("usuarios");
   const [creatingPin, setCreatingPin] = React.useState(false);
