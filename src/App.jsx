@@ -11361,7 +11361,7 @@ window._feedbacks = window._feedbacks || [];
 function getFeedbacks(){
   try{ var s=localStorage.getItem("fs_feedbacks"); return s?JSON.parse(s):[]; }catch(e){ return window._feedbacks||[]; }
 }
-function saveFeedbackGlobal(fb){ 
+async function saveFeedbackGlobal(fb){ 
   var arr = getFeedbacks().concat([fb]);
   try{ // Firebase: feedbacks
 await feedbacksCRUD.add(arr.slice(-200)); }catch(e){}
