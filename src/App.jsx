@@ -16670,23 +16670,6 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
     function check() {
       var now = new Date();
       if(now.getHours() >= 17) {
-          var updated = {};
-          var changed = false;
-          var days = Object.keys(prev);
-          for(var di = 0; di < days.length; di++) {
-            var day = days[di];
-            var rows = prev[day];
-            updated[day] = rows.map(function(r){
-              if(SAFE.indexOf(r.status) === -1) {
-                changed = true;
-                return Object.assign({}, r, {status:"atrasado"});
-              }
-              return r;
-            });
-          }
-          if(changed) setAtrasadoAlert(true);
-          return changed ? updated : prev;
-      }
     }
     check();
     var t = setInterval(check, 60000);
@@ -16703,29 +16686,6 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
       if(_lastMonCleanup.current === todayKey) return; // already ran today
       _lastMonCleanup.current = todayKey;
       // Archive snapshot (no files)
-        var snapshot = {};
-        DAYS.forEach(function(d){ snapshot[d.id]=(prev[d.id]||[]).map(function(r){return Object.assign({},r,{files:[]});}); });
-        var mon = getThisWeekMonday();
-        mon.setDate(mon.getDate()-7); // last week
-        var wKey = weekKeyFromMonday(mon);
-        setCalendarHistory(function(hist){
-          var already = hist.find(function(h){return h.weekStart===wKey;});
-          if(already) return hist;
-          return [{weekStart:wKey, data:snapshot}].concat(hist).slice(0,13);
-        });
-        // New week: clear calendar and pull in any scheduled future posts
-        var newWeekKey = weekKeyFromMonday(getThisWeekMonday());
-        setFuturePosts(function(fp){
-          var weekFuture = fp[newWeekKey]||{};
-          var newFp = Object.assign({}, fp);
-          delete newFp[newWeekKey];
-          // Start fresh: only future posts for this week (no leftover rows)
-          var newCalendar = {};
-          DAYS.forEach(function(d){
-            newCalendar[d.id] = (weekFuture[d.id]||[]).slice();
-          });
-          setTimeout(function(){ setCalendar(newCalendar); }, 0);
-          return newFp;
         });
         return prev; // calendar will be set via setTimeout above
     }
