@@ -16621,7 +16621,7 @@ function AppInner() {
   });
  async function recordAccess(tipo, userName){ 
     var entry = {id:uid(), tipo:tipo, user:userName, ts:Date.now(), ip:"local"};
-    setAccessLog(function(p){ 
+    setAccessLog(async function(p){ 
       var next=[entry,...p].slice(0,100); 
       try{// Firebase: accessLog
 await accessLogCRUD.add(next);}catch(e){} 
@@ -20742,6 +20742,5 @@ function App() {
   return <ErrorBoundary><AppInner/></ErrorBoundary>;
 }
 
-// Renderizar o app
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
