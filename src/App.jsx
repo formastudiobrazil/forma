@@ -16621,7 +16621,7 @@ function AppInner() {
   });
  async function recordAccess(tipo, userName){ 
     var entry = {id:uid(), tipo:tipo, user:userName, ts:Date.now(), ip:"local"};
-    setAccessLog(function(p){ 
+    setAccessLog(async function(p){ 
       var next=[entry,...p].slice(0,100); 
       try{// Firebase: accessLog
 await accessLogCRUD.add(next);}catch(e){} 
@@ -16637,13 +16637,9 @@ await accessLogCRUD.add(next);}catch(e){}
   ]);
   const [showQuickAccess, setShowQuickAccess] = useState(false);
 
-  React.useEffect(() => {
-  const load = async () => {
+  React.useEffect(function(){
     try{ // Firebase: notifications
-await notificationsCRUD.add(notifications.slice(0,60)); 
-  };
-  load();
-}, [])catch(e){}
+await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
   },[notifications]);
   const addNotification = React.useCallback(function(toId,fromId,fromName,type,text){setNotifications(function(p){return [{id:uid(),toId:toId,fromId:fromId,fromName:fromName,type:type,text:text,ts:Date.now(),read:false},...p].slice(0,60);});},[]);
   const markAllNotifsRead=React.useCallback(function(){setNotifications(function(p){return p.map(function(n){return Object.assign({},n,{read:true});});});},[]);
