@@ -147,12 +147,12 @@ function useFirebaseCollection(collectionName, initialState = []) {
         });
         setData(docs);
         setLoading(false);
-      }, (error) async => {
+      }, (error) => {
         console.warn(`⚠️ Firebase ${collectionName}:`, error.code);
         setLoading(false);
       });
 
-      return () => unsubscribe();
+      return async () => unsubscribe();
     } catch (error) {
       console.error(`❌ Firebase ${collectionName}:`, error);
       setLoading(false);
@@ -994,7 +994,6 @@ const DonutChart = ({ value, total, color, size }) => {
   );
 };
 
-
 // ─── Dropdown Context ─────────────────────────────────────────────
 const DropCtx = React.createContext(null);
 const ConfigCtx = React.createContext(null);
@@ -1036,7 +1035,6 @@ function CaptacaoStatusDropdown({ current, onChange }) {
     </div>
   );
 }
-
 
 function StatusDropdown({ statusId, onChange }) {
   const ctx = React.useContext(DropCtx);
@@ -1139,7 +1137,6 @@ function TipoDropdown({ tipoId, onChange }) {
   );
 }
 
-
 function CollabPicker({ selected, onChange, onNotify }) {
   const ctx = React.useContext(DropCtx);
   const ref = useRef();
@@ -1196,7 +1193,6 @@ function CollabPicker({ selected, onChange, onNotify }) {
     </div>
   );
 }
-
 
 // ─── TeamPicker — pill-style multi-member selector ───────────────
 function TeamPicker({ label, selected, onChange, size }) {
@@ -1270,7 +1266,6 @@ function EditCell({ value, onChange, center, placeholder }) {
   );
 }
 
-
 // ─── File Upload Panel ────────────────────────────────────────────
 function FileUploadPanel({ row, onClose, onSave }) {
   const [files, setFiles] = useState(row.files||[]);
@@ -1299,12 +1294,12 @@ function FileUploadPanel({ row, onClose, onSave }) {
   const handleDrop = (e) => {
     e.preventDefault(); setDragging(false);
     const dropped = [...e.dataTransfer.files];
-    const newFiles = dropped.map(fasync =>({id:uid(),name:f.name,size:f.size,type:f.type,url:URL.createObjectURL(f),date:new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}));
+    const newFiles = dropped.map(f=>({id:uid(),name:f.name,size:f.size,type:f.type,url:URL.createObjectURL(f),date:new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}));
     setFiles(prev=>[...prev,...newFiles]);
   };
   const handleInput = (e) => {
     const picked = [...e.target.files];
-    const newFiles = picked.map(fasync =>({id:uid(),name:f.name,size:f.size,type:f.type,url:URL.createObjectURL(f),date:new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}));
+    const newFiles = picked.map(f=>({id:uid(),name:f.name,size:f.size,type:f.type,url:URL.createObjectURL(f),date:new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}));
     setFiles(prev=>[...prev,...newFiles]);
   };
   const removeFile = (id) => setFiles(prev=>prev.filter(f=>f.id!==id));
@@ -1346,7 +1341,7 @@ function FileUploadPanel({ row, onClose, onSave }) {
         {files.length>0 && (
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
             <div style={{fontSize:13,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.09em"}}>{files.length} arquivo{files.length>1?"s":""}</div>
-            {files.map(fasync =>(
+            {files.map(f=>(
               <div key={f.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:12,background:"var(--ccard)",border:"1px solid var(--cbord)"}}>
                 <div style={{width:44,height:44,borderRadius:8,background:"var(--ccard)",border:"1px solid var(--cbord)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden"}}>
                   {isImage(f.type)
@@ -1421,7 +1416,7 @@ function FileUploadPanel({ row, onClose, onSave }) {
           {mediaFiles.length>1&&(
             <div style={{position:"absolute",bottom:60,left:"50%",transform:"translateX(-50%)",display:"flex",gap:6,background:"rgba(0,0,0,0.60)",padding:"8px",borderRadius:14,maxWidth:"80vw",overflowX:"auto"}}
               onClick={e=>e.stopPropagation()}>
-              {mediaFiles.map((mf,mi)async =>(
+              {mediaFiles.map((mf,mi)=>(
                 <div key={mf.id} onClick={()=>setCarouselIdx(mi)}
                   style={{width:44,height:44,borderRadius:8,cursor:"pointer",overflow:"hidden",flexShrink:0,
                     border:mi===carouselIdx?`2px solid ${OR}`:"2px solid transparent",transition:"all 0.15s",opacity:mi===carouselIdx?1:0.5}}>
@@ -1622,7 +1617,6 @@ function ClienteSelectorPanel({ clientes, current, onSelect }) {
     </div>
   );
 }
-
 
 function ClientGroup({ group, groupIdx, onUpdateRow, onDeleteRow, onAddSubRow, onOpenPanel, onOpenFiles, day, onNotify, clientes }) {
   const [expanded, setExpanded] = useState(false);
@@ -2071,7 +2065,6 @@ function ProximasSemanasPanel({ futurePosts, setFuturePosts, onClose, clientes }
   );
 }
 
-
 function CalendarView({ calendar, setCalendar, activeDay, onNotify, clientes, addLog, dayOverride, demands }) {
   const rows = calendar[activeDay]||[];
   const day  = dayOverride || DAYS.find(d=>d.id===activeDay) || {id:activeDay,label:activeDay,short:activeDay};
@@ -2101,15 +2094,15 @@ function CalendarView({ calendar, setCalendar, activeDay, onNotify, clientes, ad
     const left = Math.min(rect.left, window.innerWidth - minW - 8);
     setDropState({id,pos:{top,left},content,minW});
   },[]);
-  const dropClose = React.useCallback(()async =>setDropState(sasync =>({...s,id:null})),[]);
-  const dropCtxValue = React.useMemo(()async =>({
+  const dropClose = React.useCallback(()=>setDropState(s=>({...s,id:null})),[]);
+  const dropCtxValue = React.useMemo(()=>({
     id:dropState.id,
     open:dropOpen,
     close:dropClose,
   }),[dropState.id,dropOpen,dropClose]);
   useEffect(()=>{
     if(!dropState.id)return;
-    const fn=easync =>{if(dropRef.current&&!dropRef.current.contains(e.target))setDropState(sasync =>({...s,id:null}));};
+    const fn=e=>{if(dropRef.current&&!dropRef.current.contains(e.target))setDropState(s=>({...s,id:null}));};
     document.addEventListener("mousedown",fn);
     return()=>document.removeEventListener("mousedown",fn);
   },[dropState.id]);
@@ -2118,9 +2111,9 @@ function CalendarView({ calendar, setCalendar, activeDay, onNotify, clientes, ad
   const clienteNames = (clientes||[]).map(c=>c.nome.toUpperCase()).sort();
   const filtered = clienteNames.filter(c=>c.toLowerCase().includes(search.toLowerCase())&&!rows.find(r=>r.cliente===c));
 
-  const updateRow=(id,upd)async =>{var _old=(calendar[activeDay]||[]).find(rasync =>r.id===id);if(addLog&&_old&&_old.status!==upd.status)addLog('calendar','Status '+_old.status+' → '+upd.status,_old.cliente); var finalUpd = upd.status==='atrasado' ? {...upd, wasAtrasado:true} : upd; if(_old&&_old.status!==upd.status){finalUpd={...finalUpd, statusChangedAt:Date.now()};} setCalendar(prevasync =>({...prev,[activeDay]:(prev[activeDay]||[]).map(rasync =>r.id===id?finalUpd:r)}));};
-  const deleteRow=idasync =>{var _r=(calendar[activeDay]||[]).find(xasync =>x.id===id);setCalendar(prevasync =>({...prev,[activeDay]:(prev[activeDay]||[]).filter(rasync =>r.id!==id)}));if(addLog&&_r)addLog('calendar','Removeu post',_r.cliente);};
-  const addRow=rowasync =>{setCalendar(prevasync =>({...prev,[activeDay]:[...(prev[activeDay]||[]),row]}));if(addLog)addLog('calendar','Adicionou post',row.cliente);};
+  const updateRow=(id,upd)=>{var _old=(calendar[activeDay]||[]).find(r=>r.id===id);if(addLog&&_old&&_old.status!==upd.status)addLog('calendar','Status '+_old.status+' → '+upd.status,_old.cliente); var finalUpd = upd.status==='atrasado' ? {...upd, wasAtrasado:true} : upd; if(_old&&_old.status!==upd.status){finalUpd={...finalUpd, statusChangedAt:Date.now()};} setCalendar(prev=>({...prev,[activeDay]:(prev[activeDay]||[]).map(r=>r.id===id?finalUpd:r)}));};
+  const deleteRow=id=>{var _r=(calendar[activeDay]||[]).find(x=>x.id===id);setCalendar(prev=>({...prev,[activeDay]:(prev[activeDay]||[]).filter(r=>r.id!==id)}));if(addLog&&_r)addLog('calendar','Removeu post',_r.cliente);};
+  const addRow=row=>{setCalendar(prev=>({...prev,[activeDay]:[...(prev[activeDay]||[]),row]}));if(addLog)addLog('calendar','Adicionou post',row.cliente);};
   const addExisting=name=>{addRow({id:uid(),cliente:name,tipo:"post_feed",status:"aguardando",hora:"18:00",link:"",motivo:"",colaboradores:[],copyText:"",obsText:"",files:[],parentCliente:null,createdAt:Date.now()});setSearch("");setAdding(false);};
   const addNew=()=>{const n=newName.trim().toUpperCase();if(!n)return;addRow({id:uid(),cliente:n,tipo:"post_feed",status:"aguardando",hora:"18:00",link:"",motivo:"",colaboradores:[],copyText:"",obsText:"",files:[],parentCliente:null,createdAt:Date.now()});setNewName("");setAdding(false);};
   const addSubRow=parentCliente=>{addRow({id:uid(),cliente:parentCliente,tipo:"post_feed",status:"aguardando",hora:"18:00",link:"",motivo:"",colaboradores:[],copyText:"",obsText:"",files:[],parentCliente,createdAt:Date.now()});};
@@ -2135,7 +2128,7 @@ function CalendarView({ calendar, setCalendar, activeDay, onNotify, clientes, ad
   const demandasAtrasadas = (demands || []).filter(d => d.status === "atrasado");
   const showNaosaiAlert = (naosaiPct > 0.30);
 
-  const TH=({c,w,ch})async =>(
+  const TH=({c,w,ch})=>(
     <th style={{padding:"9px 8px",fontSize:11,fontWeight:700,color:"var(--ct3)",textTransform:"uppercase",letterSpacing:"0.09em",fontFamily:POP,textAlign:ch?"center":"left",borderBottom:"2px solid var(--cbord)",whiteSpace:"nowrap",width:w,background:"var(--ccard)"}}>{c}</th>
   );
 
@@ -2253,7 +2246,7 @@ function CalendarView({ calendar, setCalendar, activeDay, onNotify, clientes, ad
               </tr></thead>
               <tbody>
                 {groups.length===0&&(<tr><td colSpan={10} style={{padding:"28px",textAlign:"center",color:"var(--ct3)",fontSize:15,fontFamily:POP}}>Nenhum cliente. Adicione abaixo ↓</td></tr>)}
-                {groups.map((group,gi)async =>(
+                {groups.map((group,gi)=>(
                   <ClientGroup key={group[0].id} group={group} groupIdx={gi} day={day} onUpdateRow={updateRow} onDeleteRow={deleteRow} onAddSubRow={addSubRow}
                     onOpenPanel={(row,field)=>setPanel({row,field})}
                     onOpenFiles={row=>setFilesPanel(row)}
@@ -2397,7 +2390,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
   const atrasados= allRows.filter(r=>r.status==="atrasado");
   const emProd  = demands.filter(d=>["em_producao","alteracao","pronto","aprovacao"].includes(d.status));
   const aguardando = demands.filter(d=>d.status==="aguardando");
-  const chartData= DAYS.map(dasync =>({label:d.short,value:(calendar[d.id]||[]).filter(rasync =>r.status==="postado").length,total:(calendar[d.id]||[]).length}));
+  const chartData= DAYS.map(d=>({label:d.short,value:(calendar[d.id]||[]).filter(r=>r.status==="postado").length,total:(calendar[d.id]||[]).length}));
 
   // Captações hoje
   const todayISO = now.toISOString().split("T")[0];
@@ -2424,7 +2417,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
     return (now - scheduled) >= 2 * 60 * 60 * 1000; // 2h in ms
   };
 
-  const reunioesHoje = (reunioes||[]).filter(rasync =>(r.data||r.date)===todayISO);
+  const reunioesHoje = (reunioes||[]).filter(r=>(r.data||r.date)===todayISO);
 
   // Captações: hide individually expired/done; hide block if all gone
   const captacoesVisiveis = captacoesHoje.filter(c =>
@@ -2666,7 +2659,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
               📋 Planejado: {planHoje.map(p=>p.titulo).join(", ")}
             </div>}
           </div>
-          {proximas7.slice(0,3).map((p,i)async =>(
+          {proximas7.slice(0,3).map((p,i)=>(
             <div key={i} style={{textAlign:"center",padding:"8px 14px",borderRadius:12,background:DCARD,border:`1px solid ${DBORD}`,flexShrink:0}}>
               <div style={{fontSize:18}}>{p.emoji}</div>
               <div style={{fontSize:11,color:DT2,fontFamily:POP,fontWeight:600,marginTop:2}}>{p.nome.length>14?p.nome.slice(0,13)+"…":p.nome}</div>
@@ -2683,7 +2676,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
           <div style={{marginBottom:16,padding:"14px 20px",borderRadius:16,background:DCARD,border:`1px solid ${DBORD}`}}>
             <div style={{display:"flex",alignItems:"center",marginBottom:10}}><div style={{fontSize:13,color:DT3,fontFamily:POP,fontWeight:600,flex:1}}>📅 Próximas datas</div><div onClick={()=>setDismissedDatas(todayKey)} style={{marginLeft:"auto",width:20,height:20,borderRadius:5,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",background:DCARD,color:DT3,fontSize:11}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.12)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.05)"}>✕</div></div>
             <div style={{display:"grid",gridTemplateColumns:hasAlerts?"1fr 1fr":"repeat(auto-fill,minmax(180px,1fr))",gap:10}}>
-              {proximas7.slice(0,hasAlerts?6:5).map((p,i)async =>(
+              {proximas7.slice(0,hasAlerts?6:5).map((p,i)=>(
                 <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:10,background:DCARD}}>
                   <span style={{fontSize:18,flexShrink:0}}>{p.emoji}</span>
                   <div style={{minWidth:0}}>
@@ -2704,7 +2697,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
           <div style={{flex:1}}>
             <div style={{display:"flex",alignItems:"center",marginBottom:4}}><div style={{fontSize:13,fontWeight:700,color:OR,fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4,flex:1}}>Captações Audiovisuais Hoje</div><div onClick={()=>setDismissedCaptac(todayKey)} style={{marginLeft:"auto",width:20,height:20,borderRadius:5,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",background:DCARD,color:DT3,fontSize:11}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.12)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.05)"}>✕</div></div>
             <div style={{display:"flex",flexWrap:"wrap",gap:12}}>
-              {captacoesVisiveis.map(casync =>(
+              {captacoesVisiveis.map(c=>(
                 <div key={c.id} style={{fontSize:14,color:DT2,fontFamily:POP,display:"flex",alignItems:"center",gap:6}}>
                   <div style={{width:6,height:6,borderRadius:"50%",background:OR}}/>
                   <strong style={{color:DT}}>{c.cliente}</strong>
@@ -2727,7 +2720,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
               <div onClick={()=>setDismissedReuniao(todayKey)} style={{marginLeft:"auto",width:20,height:20,borderRadius:5,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",background:DCARD,color:DT3,fontSize:11}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.12)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.05)"}>✕</div>
             </div>
             <div style={{display:"flex",flexWrap:"wrap",gap:12}}>
-              {reunioesVisiveis.map(rasync =>(
+              {reunioesVisiveis.map(r=>(
                 <div key={r.id} style={{fontSize:14,color:DT2,fontFamily:POP,display:"flex",alignItems:"center",gap:6}}>
                   <div style={{width:6,height:6,borderRadius:"50%",background:"#60A5FA"}}/>
                   <strong style={{color:DT}}>{r.titulo||r.title||r.cliente||r.assunto||"Reunião"}</strong>
@@ -2740,8 +2733,6 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
         </div>
       )}
 
-
-
       {/* ── KPIs ── */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
         {[
@@ -2749,7 +2740,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
           {label:"Postados",      value:postados,        color:"#1EC98C", sub:`${total?Math.round(postados/total*100):0}% concluído`, icon:"✅"},
           {label:"Pendentes",     value:pendentes,       color:"#F59E0B", sub:"aguardando post", icon:"⏳"},
           {label:"Atrasados",     value:atrasados.length,color:"#E74C3C", sub:"precisam atenção",icon:"⚠️"},
-        ].map(kasync =>(
+        ].map(k=>(
           <GlassBox key={k.label} style={{borderRadius:18,padding:"18px 20px"}} glow={k.color+"22"}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
               <div style={{fontSize:13,color:DT3,textTransform:"uppercase",letterSpacing:"0.09em",fontFamily:POP}}>{k.label}</div>
@@ -2773,7 +2764,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
           {label:"Em Produção",   value:emProd.length,     color:"#F97316", icon:"⚙️"},
           {label:"Na Fila",       value:aguardando.length, color:"#6B7280", icon:"🕐"},
           {label:"Total Clientes",value:(clientes||[]).length,color:"#3B82F6",icon:"🏢"},
-        ].map(kasync =>(
+        ].map(k=>(
           <GlassBox key={k.label} style={{borderRadius:16,padding:"14px 18px",display:"flex",alignItems:"center",gap:14}}>
             <div style={{width:40,height:40,borderRadius:12,background:`${k.color}18`,border:`1px solid ${k.color}35`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>{k.icon}</div>
             <div>
@@ -2810,7 +2801,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
         <GlassBox style={{borderRadius:18,padding:"18px 20px"}}>
           <div style={{fontSize:13,fontWeight:700,color:DT2,marginBottom:12,fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.07em"}}>Por Status</div>
           <div style={{display:"flex",flexDirection:"column",gap:7}}>
-            {STATUSES.filter(sasync =>(byStatus[s.id]||0)>0).slice(0,6).map(sasync =>(
+            {STATUSES.filter(s=>(byStatus[s.id]||0)>0).slice(0,6).map(s=>(
               <div key={s.id} style={{display:"flex",alignItems:"center",gap:8}}>
                 <div style={{width:8,height:8,borderRadius:2,background:s.color+"CC",flexShrink:0}}/>
                 <div style={{fontSize:12,color:DT2,flex:1,fontFamily:POP}}>{s.label}</div>
@@ -2838,7 +2829,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
             {atrasados.length===0
               ? <div style={{fontSize:15,color:DT3,textAlign:"center",padding:"16px 0",fontFamily:POP}}>Tudo em dia! 🎉</div>
               : <div style={{maxHeight:180,overflowY:"auto",display:"flex",flexDirection:"column"}}>
-                  {atrasados.map((r,i)async =>(
+                  {atrasados.map((r,i)=>(
                     <div key={r.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<atrasados.length-1?"1px solid var(--cbord)":"none",flexShrink:0}}>
                       <div style={{width:6,height:6,borderRadius:"50%",background:"#E74C3C",flexShrink:0}}/>
                       <div style={{flex:1}}>
@@ -3415,7 +3406,6 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
   );
 }
 
-
 // ─── CaptacaoAV View ──────────────────────────────────────────────
 function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotification, addLog }) {
   var [feedbackItem, setFeedbackItem] = useState(null);
@@ -3447,7 +3437,7 @@ function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotificatio
   // Separate finalizadas (auto-purge after 30 days)
   const cutoff=new Date(); cutoff.setDate(cutoff.getDate()-30);
   const ativas=captacoes.filter(c=>c.status!=="finalizado"&&c.status!=="cancelado");
-  const finalizadas=captacoes.filter(casync =>(c.status==="finalizado"||c.status==="cancelado")&&new Date(c.data)>=cutoff);
+  const finalizadas=captacoes.filter(c=>(c.status==="finalizado"||c.status==="cancelado")&&new Date(c.data)>=cutoff);
 
   // Group ativas by month
   const byMonth={};
@@ -3475,10 +3465,10 @@ function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotificatio
               {label:"Local",key:"local",placeholder:"Endereço ou local"},
               {label:"Data",key:"data",placeholder:"",type:"date"},
               {label:"Hora",key:"hora",placeholder:"",type:"time"},
-            ].map(fasync =>(
+            ].map(f=>(
               <div key={f.key}>
                 <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>{f.label}</div>
-                <input type={f.type||"text"} value={form[f.key]} onChange={easync =>setForm(pasync =>({...p,[f.key]:e.target.value}))} placeholder={f.placeholder}
+                <input type={f.type||"text"} value={form[f.key]} onChange={e=>setForm(p=>({...p,[f.key]:e.target.value}))} placeholder={f.placeholder}
                   style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"10px 14px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                   onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`}
                   onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}
@@ -3489,25 +3479,25 @@ function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotificatio
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
             <div>
               <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>Responsável</div>
-              <select value={form.responsavel} onChange={easync =>setForm(pasync =>({...p,responsavel:e.target.value}))}
+              <select value={form.responsavel} onChange={e=>setForm(p=>({...p,responsavel:e.target.value}))}
                 style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"10px 14px",outline:"none",fontFamily:POP}}>
                 {TEAM.map(m=><option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>)}
               </select>
             </div>
             <div>
               <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>Status</div>
-              <select value={form.status} onChange={easync =>setForm(pasync =>({...p,status:e.target.value}))}
+              <select value={form.status} onChange={e=>setForm(p=>({...p,status:e.target.value}))}
                 style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"10px 14px",outline:"none",fontFamily:POP}}>
                 {["agendado","confirmado","finalizado","cancelado"].map(s=><option key={s} value={s} style={{background:"#1a1a1a"}}>{s.charAt(0).toUpperCase()+s.slice(1)}</option>)}
               </select>
             </div>
           </div>
           <div style={{gridColumn:"1/-1"}}>
-            <TeamPicker label="Participantes" selected={form.participantes||[]} onChange={function(v){setForm(pasync =>({...p,participantes:v}));}}/>
+            <TeamPicker label="Participantes" selected={form.participantes||[]} onChange={function(v){setForm(p=>({...p,participantes:v}));}}/>
           </div>
           <div>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>Descrição</div>
-            <input value={form.descricao} onChange={easync =>setForm(pasync =>({...p,descricao:e.target.value}))} placeholder="Detalhes da captação..."
+            <input value={form.descricao} onChange={e=>setForm(p=>({...p,descricao:e.target.value}))} placeholder="Detalhes da captação..."
               style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"10px 14px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
               onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`}
               onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}
@@ -3642,7 +3632,6 @@ function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotificatio
   );
 }
 
-
 // ─── Inbound Marketing View ───────────────────────────────────────
 function InboundView({ clientes, setClientes, addLog, clientesBase }) {
   const [adding, setAdding] = useState(false);
@@ -3669,7 +3658,7 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
     const af=acaoForm[clienteId]||{};
     if(!af.acao)return;
     setClientes(prev=>prev.map(c=>c.id===clienteId?{...c,acoes:[...c.acoes,{id:uid(),mes:af.mes||"",acao:af.acao,tipo:af.tipo||"email",status:"pendente",responsavel:af.responsavel||TEAM[0].id}]}:c));
-    setAcaoForm(pasync =>({...p,[clienteId]:{}}));setShowAcaoForm(pasync =>({...p,[clienteId]:false}));
+    setAcaoForm(p=>({...p,[clienteId]:{}}));setShowAcaoForm(p=>({...p,[clienteId]:false}));
   };
   const removeAcao=(clienteId,acaoId)=>setClientes(prev=>prev.map(c=>c.id===clienteId?{...c,acoes:c.acoes.filter(a=>a.id!==acaoId)}:c));
   const updateAcaoStatus=(clienteId,acaoId,status)=>setClientes(prev=>prev.map(c=>c.id===clienteId?{...c,acoes:c.acoes.map(a=>a.id===acaoId?{...a,status}:a)}:c));
@@ -3716,10 +3705,10 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
             <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,marginTop:4}}>💡 Somente clientes que contrataram Inbound devem ser adicionados aqui.</div>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:10}}>
-            {[{label:"Contato",key:"contato"},{label:"E-mail",key:"email"},{label:"Origem",key:"origem",placeholder:"Instagram, Google..."},{label:"Data Início",key:"datainicio",type:"date"}].map(fasync =>(
+            {[{label:"Contato",key:"contato"},{label:"E-mail",key:"email"},{label:"Origem",key:"origem",placeholder:"Instagram, Google..."},{label:"Data Início",key:"datainicio",type:"date"}].map(f=>(
               <div key={f.key}>
                 <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{f.label}</div>
-                <input type={f.type||"text"} value={form[f.key]} onChange={easync =>setForm(pasync =>({...p,[f.key]:e.target.value}))} placeholder={f.placeholder||""}
+                <input type={f.type||"text"} value={form[f.key]} onChange={e=>setForm(p=>({...p,[f.key]:e.target.value}))} placeholder={f.placeholder||""}
                   style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 12px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                   onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`}
                   onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}
@@ -3728,7 +3717,7 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
             ))}
           </div>
           <div style={{marginBottom:10}}>
-            <TeamPicker label="Responsáveis" selected={form.responsaveis||[]} onChange={function(v){setForm(pasync =>({...p,responsaveis:v}));}}/>
+            <TeamPicker label="Responsáveis" selected={form.responsaveis||[]} onChange={function(v){setForm(p=>({...p,responsaveis:v}));}}/>
           </div>
           <div style={{display:"flex",gap:8}}>
             <div onClick={addCliente} style={{padding:"8px 18px",borderTopLeftRadius:9,borderTopRightRadius:0,borderBottomRightRadius:9,borderBottomLeftRadius:0,cursor:"pointer",background:`linear-gradient(135deg,${OR},#FF3D00)`,color:"var(--ct)",fontSize:14,fontWeight:700,fontFamily:POP}}>Salvar</div>
@@ -3756,7 +3745,7 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
                 var bantScore = Math.round((bant.budget+bant.authority+bant.need+bant.timing)/4);
                 var bantColor = bantScore>=75?"#22C55E":bantScore>=50?"#F59E0B":bantScore>=25?"#3B82F6":"#6B7280";
                 return (
-              <div onClick={()async =>setExpanded(pasync =>({...p,[cliente.id]:!isExp}))} style={{padding:"16px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,borderBottom:isExp?"1px solid var(--cbord)":"none"}}>
+              <div onClick={()=>setExpanded(p=>({...p,[cliente.id]:!isExp}))} style={{padding:"16px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,borderBottom:isExp?"1px solid var(--cbord)":"none"}}>
                 <div style={{width:42,height:42,borderRadius:12,background:bantColor+"18",border:"1px solid "+bantColor+"35",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:bantColor,fontFamily:POP,flexShrink:0}}>
                   <div style={{lineHeight:1}}>{bantScore}%</div>
                   <div style={{fontSize:8,color:bantColor+"80",fontWeight:600,letterSpacing:"0.05em"}}>BANT</div>
@@ -3840,22 +3829,22 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
 
                   {showAcaoForm[cliente.id]?(
                     <div style={{display:"flex",gap:8,flexWrap:"wrap",padding:"12px",borderRadius:12,background:"var(--ccard)",border:"1px solid var(--cbord)"}}>
-                      <input value={(acaoForm[cliente.id]||{}).mes||""} onChange={easync =>setAcaoForm(pasync =>({...p,[cliente.id]:{...(p[cliente.id]||{}),mes:e.target.value}}))} placeholder="Mês (ex: 03/2026)" style={{background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"6px 10px",outline:"none",fontFamily:POP,width:110}} onFocus={easync =>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={easync =>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
-                      <input value={(acaoForm[cliente.id]||{}).acao||""} onChange={easync =>setAcaoForm(pasync =>({...p,[cliente.id]:{...(p[cliente.id]||{}),acao:e.target.value}}))} placeholder="Descrição da ação..." style={{background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"6px 10px",outline:"none",fontFamily:POP,flex:1,minWidth:160}} onFocus={easync =>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={easync =>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
-                      <select value={(acaoForm[cliente.id]||{}).tipo||"email"} onChange={easync =>setAcaoForm(pasync =>({...p,[cliente.id]:{...(p[cliente.id]||{}),tipo:e.target.value}}))} style={{background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:13,padding:"6px 10px",outline:"none",fontFamily:POP}}>
+                      <input value={(acaoForm[cliente.id]||{}).mes||""} onChange={e=>setAcaoForm(p=>({...p,[cliente.id]:{...(p[cliente.id]||{}),mes:e.target.value}}))} placeholder="Mês (ex: 03/2026)" style={{background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"6px 10px",outline:"none",fontFamily:POP,width:110}} onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
+                      <input value={(acaoForm[cliente.id]||{}).acao||""} onChange={e=>setAcaoForm(p=>({...p,[cliente.id]:{...(p[cliente.id]||{}),acao:e.target.value}}))} placeholder="Descrição da ação..." style={{background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"6px 10px",outline:"none",fontFamily:POP,flex:1,minWidth:160}} onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
+                      <select value={(acaoForm[cliente.id]||{}).tipo||"email"} onChange={e=>setAcaoForm(p=>({...p,[cliente.id]:{...(p[cliente.id]||{}),tipo:e.target.value}}))} style={{background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:13,padding:"6px 10px",outline:"none",fontFamily:POP}}>
                         <option value="email" style={{background:"#1a1a1a"}}>📧 Email Marketing</option>
                         <option value="blog" style={{background:"#1a1a1a"}}>📝 Blog</option>
                         <option value="seo" style={{background:"#1a1a1a"}}>🔍 SEO</option>
                       </select>
-                      <select value={(acaoForm[cliente.id]||{}).responsavel||TEAM[0].id} onChange={easync =>setAcaoForm(pasync =>({...p,[cliente.id]:{...(p[cliente.id]||{}),responsavel:e.target.value}}))}
+                      <select value={(acaoForm[cliente.id]||{}).responsavel||TEAM[0].id} onChange={e=>setAcaoForm(p=>({...p,[cliente.id]:{...(p[cliente.id]||{}),responsavel:e.target.value}}))}
                         style={{background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"6px 10px",outline:"none",fontFamily:POP}}>
                         {TEAM.map(m=><option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name.split(" ")[0]}</option>)}
                       </select>
                       <div onClick={()=>addAcao(cliente.id)} style={{padding:"6px 14px",borderRadius:8,cursor:"pointer",background:OR,color:"var(--ct)",fontSize:14,fontWeight:700,fontFamily:POP}}>+ Adicionar</div>
-                      <div onClick={()async =>setShowAcaoForm(pasync =>({...p,[cliente.id]:false}))} style={{padding:"6px 12px",borderRadius:8,cursor:"pointer",background:"var(--ccard)",color:"var(--ct3)",fontSize:14,fontFamily:POP}}>Cancelar</div>
+                      <div onClick={()=>setShowAcaoForm(p=>({...p,[cliente.id]:false}))} style={{padding:"6px 12px",borderRadius:8,cursor:"pointer",background:"var(--ccard)",color:"var(--ct3)",fontSize:14,fontFamily:POP}}>Cancelar</div>
                     </div>
                   ):(
-                    <div onClick={()async =>setShowAcaoForm(pasync =>({...p,[cliente.id]:true}))} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 12px",borderRadius:8,cursor:"pointer",color:"rgba(255,106,0,0.65)",fontSize:13,fontFamily:POP,border:"1px dashed rgba(255,106,0,0.25)",transition:"all 0.15s"}}
+                    <div onClick={()=>setShowAcaoForm(p=>({...p,[cliente.id]:true}))} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"6px 12px",borderRadius:8,cursor:"pointer",color:"rgba(255,106,0,0.65)",fontSize:13,fontFamily:POP,border:"1px dashed rgba(255,106,0,0.25)",transition:"all 0.15s"}}
                       onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,106,0,0.08)";e.currentTarget.style.color=OR}}
                       onMouseLeave={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color="rgba(255,106,0,0.65)"}}
                     >+ Adicionar ação</div>
@@ -3869,8 +3858,6 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
     </div>
   );
 }
-
-
 
 // ─── Custom Board View ────────────────────────────────────────────
 function CustomBoardView({ board, onUpdateBoard, addLog }) {
@@ -4348,8 +4335,8 @@ function DemandasView({ demands, setDemands, user, clientes, addNotification, me
     <div>
       <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.06em"}}>{placeholder}</div>
       {multiline
-        ? <textarea value={form[key]} onChange={easync =>setForm(pasync =>({...p,[key]:e.target.value}))} rows={3} placeholder={placeholder+"..."} style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box",resize:"vertical"}} onFocus={easync =>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={easync =>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
-        : <input value={form[key]} onChange={easync =>setForm(pasync =>({...p,[key]:e.target.value}))} placeholder={placeholder+"..."} style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box"}} onFocus={easync =>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={easync =>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
+        ? <textarea value={form[key]} onChange={e=>setForm(p=>({...p,[key]:e.target.value}))} rows={3} placeholder={placeholder+"..."} style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box",resize:"vertical"}} onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
+        : <input value={form[key]} onChange={e=>setForm(p=>({...p,[key]:e.target.value}))} placeholder={placeholder+"..."} style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box"}} onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
       }
     </div>
   );
@@ -4422,7 +4409,7 @@ function DemandasView({ demands, setDemands, user, clientes, addNotification, me
             </div>
             <div>
               <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.06em"}}>Prioridade</div>
-              <select value={form.prioridade} onChange={easync =>setForm(pasync =>({...p,prioridade:e.target.value}))} style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP}}>
+              <select value={form.prioridade} onChange={e=>setForm(p=>({...p,prioridade:e.target.value}))} style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP}}>
                 <option value="baixa" style={{background:"#1a1a1a"}}>Baixa</option>
                 <option value="media" style={{background:"#1a1a1a"}}>Média</option>
                 <option value="alta" style={{background:"#1a1a1a"}}>Alta</option>
@@ -4489,8 +4476,8 @@ function DemandasView({ demands, setDemands, user, clientes, addNotification, me
         const aguardando  = sorted.filter(d=>d.status==="aguardando");
         const finalizados = sorted.filter(d=>d.status==="finalizado");
 
-        const statusLabel = sasync =>({aguardando:"Aguardando",em_producao:"Em Produção",alteracao:"Alteração",pronto:"Pronto",aprovacao:"Aprovação",finalizado:"Pedido Finalizado"}[s]||s);
-        const statusClr   = sasync =>({aguardando:"#6B7280",em_producao:OR,alteracao:"#D4A017",pronto:"#1EC98C",aprovacao:"#3B82F6",finalizado:"#A855F7"}[s]||"#888");
+        const statusLabel = s=>({aguardando:"Aguardando",em_producao:"Em Produção",alteracao:"Alteração",pronto:"Pronto",aprovacao:"Aprovação",finalizado:"Pedido Finalizado"}[s]||s);
+        const statusClr   = s=>({aguardando:"#6B7280",em_producao:OR,alteracao:"#D4A017",pronto:"#1EC98C",aprovacao:"#3B82F6",finalizado:"#A855F7"}[s]||"#888");
 
         const DemandaCard = ({d,idx,dim})=>{
           const assignee=teamObj(d.assignee);
@@ -4554,7 +4541,7 @@ function DemandasView({ demands, setDemands, user, clientes, addNotification, me
           );
         };
 
-        const SectionHeader = ({emoji,label,count,color})async =>(
+        const SectionHeader = ({emoji,label,count,color})=>(
           <div style={{display:"flex",alignItems:"center",gap:10,margin:"20px 0 10px"}}>
             <div style={{fontSize:16}}>{emoji}</div>
             <div style={{fontSize:15,fontWeight:700,color,fontFamily:POP}}>{label}</div>
@@ -5139,7 +5126,7 @@ function DatasView({ customDatas, setCustomDatas, addLog }) {
     const merged = {};
     for(let m=1; m<=12; m++) {
       const key = String(m).padStart(2,"0");
-      const base = (DATAS_2026[key]||[]).map(dasync =>({...d,_base:true}));
+      const base = (DATAS_2026[key]||[]).map(d=>({...d,_base:true}));
       const custom = (customDatas[key]||[]);
       merged[key] = [...base, ...custom].sort((a,b)=>parseInt(a.dia)-parseInt(b.dia));
     }
@@ -5226,7 +5213,7 @@ function DatasView({ customDatas, setCustomDatas, addLog }) {
         </div>
         {/* Tipo legend */}
         <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:20}}>
-          {Object.entries(TIPO_CONFIG).map(([tipo,cfg])async =>(
+          {Object.entries(TIPO_CONFIG).map(([tipo,cfg])=>(
             <div key={tipo} onClick={()=>setFilterTipo(f=>f===tipo?null:tipo)}
               style={{display:"flex",alignItems:"center",gap:5,padding:"3px 10px",borderRadius:20,cursor:"pointer",
                 background:filterTipo===tipo?cfg.bg:"rgba(255,255,255,0.03)",
@@ -5364,7 +5351,7 @@ function DatasView({ customDatas, setCustomDatas, addLog }) {
 
       {/* Weekday headers */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:5,marginBottom:5}}>
-        {WEEK_LABELS.map((w,wi)async =>(
+        {WEEK_LABELS.map((w,wi)=>(
           <div key={w} style={{textAlign:"center",padding:"8px 0",fontSize:13,fontWeight:700,
             color:wi===0?"rgba(231,76,60,0.65)":wi===6?"rgba(59,130,246,0.65)":"rgba(255,255,255,0.30)",
             fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.06em",
@@ -5469,14 +5456,14 @@ function DatasView({ customDatas, setCustomDatas, addLog }) {
                 <div style={{marginTop:4,display:"flex",flexDirection:"column",gap:5,
                   borderTop:"1px solid rgba(255,106,0,0.20)",paddingTop:6}}
                   onClick={e=>e.stopPropagation()}>
-                  <input autoFocus value={addForm.titulo} onChange={easync =>setAddForm(pasync =>({...p,titulo:e.target.value}))}
+                  <input autoFocus value={addForm.titulo} onChange={e=>setAddForm(p=>({...p,titulo:e.target.value}))}
                     onKeyDown={e=>{if(e.key==="Enter")addDate();if(e.key==="Escape")setAddingDay(null);}}
                     placeholder="Nome da data..."
                     style={{width:"100%",background:"rgba(0,0,0,0.50)",border:"1px solid rgba(255,106,0,0.45)",
                       borderRadius:7,color:"var(--ct)",fontSize:12,padding:"5px 8px",outline:"none",
                       fontFamily:POP,boxSizing:"border-box"}}
                   />
-                  <select value={addForm.tipo} onChange={easync =>setAddForm(pasync =>({...p,tipo:e.target.value}))}
+                  <select value={addForm.tipo} onChange={e=>setAddForm(p=>({...p,tipo:e.target.value}))}
                     style={{width:"100%",background:"rgba(0,0,0,0.60)",border:"1px solid var(--cbord2)",
                       borderRadius:7,color:"var(--ct)",fontSize:12,padding:"4px 6px",
                       outline:"none",fontFamily:POP}}>
@@ -5523,7 +5510,6 @@ function DatasView({ customDatas, setCustomDatas, addLog }) {
   );
 }
 
-
 function ReunioesView({ meetings, setMeetings, user, members, addNotification, clientes, addLog }) {
   const [adding, setAdding] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -5552,7 +5538,7 @@ function ReunioesView({ meetings, setMeetings, user, members, addNotification, c
   const remove = id => { var _m=meetings.find(m=>m.id===id); setMeetings(p=>p.filter(m=>m.id!==id)); if(addLog&&_m)addLog('reunioes','Removeu reunião',_m.title); };
   const updateStatus = (id,st) => { setMeetings(p=>p.map(m=>m.id===id?{...m,status:st}:m)); };
   var STATUS_REUNIAO = [{id:"agendada",label:"Agendada",color:"#3B82F6"},{id:"realizada",label:"Realizada",color:"#22C55E"},{id:"cancelada",label:"Cancelada",color:"#EF4444"},{id:"remarcada",label:"Remarcada",color:"#F59E0B"}];
-  const toggleAttendee = id async => setForm(pasync =>({...p,attendees:p.attendees.includes(id)?p.attendees.filter(xasync =>x!==id):[...p.attendees,id]}));
+  const toggleAttendee = id => setForm(p=>({...p,attendees:p.attendees.includes(id)?p.attendees.filter(x=>x!==id):[...p.attendees,id]}));
   const markPast = m => { if(m.date < new Date().toISOString().slice(0,10)) { setFeedbackItem(m); } };
 
   const fmtDate = date => {
@@ -5567,11 +5553,10 @@ function ReunioesView({ meetings, setMeetings, user, members, addNotification, c
   const past     = sorted.filter(m=>m.date<today);
   // auto-trigger feedback for most recent past meeting that user attended (if not yet rated)
 
-
   const inp = (label,key,type="text",placeholder="") => (
     <div>
       <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.06em"}}>{label}</div>
-      <input type={type} value={form[key]} onChange={easync =>setForm(pasync =>({...p,[key]:e.target.value}))} placeholder={placeholder}
+      <input type={type} value={form[key]} onChange={e=>setForm(p=>({...p,[key]:e.target.value}))} placeholder={placeholder}
         style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box",colorScheme:"dark"}}
         onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`}
         onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}
@@ -5672,7 +5657,7 @@ function ReunioesView({ meetings, setMeetings, user, members, addNotification, c
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,marginBottom:6,textTransform:"uppercase",letterSpacing:"0.06em"}}>Responsável</div>
             <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:10}}>
               {TEAM.map(function(m){ var sel=form.responsavel===m.id; return (
-                <div key={m.id} onClick={function(){setForm(pasync =>({...p,responsavel:sel?"":m.id}));}} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:20,cursor:"pointer",background:sel?m.color+"28":"rgba(255,255,255,0.04)",border:sel?"1px solid "+m.color+"55":"1px solid var(--cbord)",transition:"all 0.15s"}}>
+                <div key={m.id} onClick={function(){setForm(p=>({...p,responsavel:sel?"":m.id}));}} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:20,cursor:"pointer",background:sel?m.color+"28":"rgba(255,255,255,0.04)",border:sel?"1px solid "+m.color+"55":"1px solid var(--cbord)",transition:"all 0.15s"}}>
                   <div style={{width:20,height:20,borderRadius:"50%",background:m.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"#fff",fontWeight:700,fontFamily:POP}}>{m.initials}</div>
                   <span style={{fontSize:12,color:sel?"#fff":"rgba(255,255,255,0.50)",fontFamily:POP}}>{m.name.split(" ")[0]}</span>
                   {sel&&<span style={{fontSize:10,color:m.color}}>✓</span>}
@@ -5694,7 +5679,7 @@ function ReunioesView({ meetings, setMeetings, user, members, addNotification, c
           </div>
           <div style={{marginBottom:12}}>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.06em"}}>Observações</div>
-            <textarea value={form.notes} onChange={easync =>setForm(pasync =>({...p,notes:e.target.value}))} rows={2} placeholder="Pauta, anotações..." style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box",resize:"vertical"}} onFocus={easync =>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={easync =>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
+            <textarea value={form.notes} onChange={e=>setForm(p=>({...p,notes:e.target.value}))} rows={2} placeholder="Pauta, anotações..." style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box",resize:"vertical"}} onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
           </div>
           <div style={{marginBottom:12}}>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,marginBottom:6,textTransform:"uppercase",letterSpacing:"0.06em"}}>Status da Reunião</div>
@@ -5721,7 +5706,7 @@ function ReunioesView({ meetings, setMeetings, user, members, addNotification, c
             <div style={{flex:1,height:1,background:"var(--ccardb)"}}/>
           </div>
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
-            {past.reverse().map(masync =>(
+            {past.reverse().map(m=>(
               <div key={m.id} style={{display:"flex",alignItems:"center",gap:8}}>
                 <div style={{flex:1}}><MeetingCard m={m} dim/></div>
                 {user&&<div onClick={function(){setFeedbackItem(m);}} style={{flexShrink:0,padding:"5px 12px",borderRadius:20,cursor:"pointer",background:"rgba(168,85,247,0.12)",border:"1px solid rgba(168,85,247,0.25)",color:"rgba(168,85,247,0.80)",fontSize:11,fontFamily:POP,fontWeight:600,whiteSpace:"nowrap"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(168,85,247,0.22)";}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(168,85,247,0.12)";}}>⭐ Avaliar</div>}
@@ -5958,7 +5943,6 @@ function FieldTypeForm({ newFieldType, setNewFieldType, newFieldLabel, setNewFie
     </div>
   );
 }
-
 
 // ─── Customer Success ─────────────────────────────────────────────
 function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLog }) {
@@ -6544,7 +6528,6 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
     </div>
   );
 }
-
 
 // ─── Área Privada — Banco de Dados Flexível ───────────────────────
 const FIELD_TYPES = [
@@ -7205,7 +7188,6 @@ function PrivateBoardsView({ boards, setBoards, user, addLog }) {
     </div>
   );
 }
-
 
 // ─── Private Entry Row (fix: no hook in map) ─────────────────────
 function PrivateEntryRow({ entry: e, boardId, onRemove }) {
@@ -8383,7 +8365,6 @@ function ChecklistView({ clientes, setClientes, demands, calendar, calendarHisto
   );
 }
 
-
 // ─── CRM View ─────────────────────────────────────────────────────
 function CRMLead({ lead, leads, setLeads, user, addLog, onBack }) {
   var sc = CRM_STAGES.find(function(s){return s.id===lead.stage;})||CRM_STAGES[0];
@@ -8943,7 +8924,6 @@ function PipelineListView({ pipeLeads, kanbanStages, onOpen, setLeads, addLog, f
     </div>
   );
 }
-
 
 // ── KanbanLeadCard — defined OUTSIDE CRMPipeline to keep stable identity ──
 function KanbanLeadCard({ l, stage, dragId, dragIdRef, onDragStart, onDragEnd, onOpen }) {
@@ -9971,8 +9951,6 @@ function SDRView({ user, addLog, leads: _leads, setLeads: _setLeads, crmLeads, a
         </div>
         <div onClick={function(){setShowForm(function(v){return !v;});}} style={{padding:"9px 18px",borderTopLeftRadius:11,borderTopRightRadius:0,borderBottomRightRadius:11,borderBottomLeftRadius:0,cursor:"pointer",background:"linear-gradient(135deg,"+PU+",#7C3AED)",color:"var(--ct)",fontSize:14,fontWeight:700,fontFamily:POP}}>+ Novo Lead</div>
       </div>
-
-
 
       {/* Form */}
       {showForm && (
@@ -11230,7 +11208,6 @@ function CRMShell({ user, onBack, addLog, chatUnread, activityLog, onUpdateUser,
   );
 }
 
-
 // ─── Login Screen ─────────────────────────────────────────────────
 // ─── Admin Shell (stub — Bloco 4) ────────────────────────────────
 // ─── PLANNER (private weekly board) ──────────────────────────────
@@ -11337,12 +11314,12 @@ function PlannerView({ user }) {
                 {tasks.length>0&&<div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP}}>{tasks.filter(function(t){return t.done;}).length}/{tasks.length}</div>}
               </div>
               <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:8}}>
-                {tasks.map(async function(t){
+                {tasks.map(function(t){
                   return (
                     <div key={t.id} style={{display:"flex",alignItems:"flex-start",gap:5,padding:"5px 7px",borderRadius:8,background:t.done?"rgba(34,197,94,0.06)":"rgba(255,255,255,0.04)",border:t.done?"1px solid rgba(34,197,94,0.15)":"1px solid var(--cbord)"}}>
-                      <div onClick={async function(){toggleTask(di,t.id);}} style={{width:14,height:14,borderRadius:4,border:t.done?"2px solid #22C55E":"2px solid var(--cbord2)",background:t.done?"#22C55E":"transparent",flexShrink:0,marginTop:2,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"var(--ct)"}}>{t.done?"✓":""}</div>
+                      <div onClick={function(){toggleTask(di,t.id);}} style={{width:14,height:14,borderRadius:4,border:t.done?"2px solid #22C55E":"2px solid var(--cbord2)",background:t.done?"#22C55E":"transparent",flexShrink:0,marginTop:2,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"var(--ct)"}}>{t.done?"✓":""}</div>
                       <div style={{fontSize:12,color:t.done?"rgba(255,255,255,0.30)":"rgba(255,255,255,0.75)",fontFamily:POP,flex:1,lineHeight:1.4,textDecoration:t.done?"line-through":"none",wordBreak:"break-word"}}>{t.text}{t.carried&&<span title="Trazida da semana anterior" style={{marginLeft:4,fontSize:11,opacity:0.6}}>↩</span>}</div>
-                      <div onClick={async function(){removeTask(di,t.id);}} style={{cursor:"pointer",color:"var(--ct3)",fontSize:12,flexShrink:0,lineHeight:1}} onMouseEnter={async function(e){e.currentTarget.style.color="#E74C3C";}} onMouseLeave={async function(e){e.currentTarget.style.color="rgba(255,255,255,0.15)";}}>×</div>
+                      <div onClick={function(){removeTask(di,t.id);}} style={{cursor:"pointer",color:"var(--ct3)",fontSize:12,flexShrink:0,lineHeight:1}} onMouseEnter={function(e){e.currentTarget.style.color="#E74C3C";}} onMouseLeave={function(e){e.currentTarget.style.color="rgba(255,255,255,0.15)";}}>×</div>
                     </div>
                   );
                 })}
@@ -14311,7 +14288,6 @@ function GestaoRiscoView({ leads, clientes, csData, addLog }) {
   );
 }
 
-
 // ─── Avisos Admin ─────────────────────────────────────────────────
 // Rich text toolbar actions
 function RichBar({ onCmd, onImg }) {
@@ -14635,7 +14611,6 @@ function VendasPendentesPanel({ vendas, setVendas, onGoContratos }) {
   );
 }
 
-
 function SettingsViewAdmin() {
   var ctx = React.useContext(ConfigCtx);
   if(!ctx) return <div style={{padding:24,color:"var(--ct)",fontFamily:POP}}>Configurações indisponíveis</div>;
@@ -14652,7 +14627,6 @@ function SettingsViewAdmin() {
     categoriasDocs={ctx.categoriasDocs} setCategoriasDocs={ctx.setCategoriasDocs}
   />;
 }
-
 
 // ─────── PORTAL DO CLIENTE - DASHBOARD ───────
 
@@ -14790,12 +14764,12 @@ function ClientePortalView({ user, clienteUser, clienteId, clientes, planejament
                     
                     <div style={{marginBottom:16}}>
                       <div style={{fontSize:12,color:CT3,fontFamily:POP,marginBottom:6,textTransform:"uppercase",fontWeight:600}}>Título</div>
-                      <input value={formCriar.titulo} onChange={easync =>setFormCriar(pasync =>({...p,titulo:e.target.value}))} placeholder="Descreva sua solicitação..." style={{width:"100%",padding:"12px 16px",borderRadius:12,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",color:CT,fontSize:14,fontFamily:POP,outline:"none",boxSizing:"border-box"}}/>
+                      <input value={formCriar.titulo} onChange={e=>setFormCriar(p=>({...p,titulo:e.target.value}))} placeholder="Descreva sua solicitação..." style={{width:"100%",padding:"12px 16px",borderRadius:12,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",color:CT,fontSize:14,fontFamily:POP,outline:"none",boxSizing:"border-box"}}/>
                     </div>
 
                     <div style={{marginBottom:16}}>
                       <div style={{fontSize:12,color:CT3,fontFamily:POP,marginBottom:6,textTransform:"uppercase",fontWeight:600}}>Descrição</div>
-                      <textarea value={formCriar.descricao} onChange={easync =>setFormCriar(pasync =>({...p,descricao:e.target.value}))} placeholder="Detalhes da solicitação..." rows={4} style={{width:"100%",padding:"12px 16px",borderRadius:12,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",color:CT,fontSize:14,fontFamily:POP,outline:"none",boxSizing:"border-box",resize:"vertical"}}/>
+                      <textarea value={formCriar.descricao} onChange={e=>setFormCriar(p=>({...p,descricao:e.target.value}))} placeholder="Detalhes da solicitação..." rows={4} style={{width:"100%",padding:"12px 16px",borderRadius:12,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",color:CT,fontSize:14,fontFamily:POP,outline:"none",boxSizing:"border-box",resize:"vertical"}}/>
                     </div>
 
                     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:24}}>
@@ -14809,11 +14783,11 @@ function ClientePortalView({ user, clienteUser, clienteId, clientes, planejament
                           </div>
                           {showTipoDropdown && (
                             <div style={{position:"absolute",bottom:"calc(100% + 4px)",left:0,right:0,background:"#0a0805",border:"1px solid rgba(255,255,255,0.15)",borderRadius:10,zIndex:1000,overflow:"hidden",boxShadow:"0 4px 12px rgba(0,0,0,0.3)",maxHeight:"300px",overflowY:"auto"}}>
-                              <div onClick={()async =>{setFormCriar(pasync =>({...p,formato:""}));setShowTipoDropdown(false);}} style={{padding:"10px 12px",cursor:"pointer",color:CT3,fontSize:13,borderBottom:"1px solid rgba(255,255,255,0.08)",transition:"all 0.2s"}} onMouseEnter={easync =>e.currentTarget.style.background="rgba(255,106,0,0.15)"} onMouseLeave={easync =>e.currentTarget.style.background="transparent"}>
+                              <div onClick={()=>{setFormCriar(p=>({...p,formato:""}));setShowTipoDropdown(false);}} style={{padding:"10px 12px",cursor:"pointer",color:CT3,fontSize:13,borderBottom:"1px solid rgba(255,255,255,0.08)",transition:"all 0.2s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,106,0,0.15)"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                                 Selecione
                               </div>
                               {(clienteConfig?.tiposSolicitacao || ["Reels","Feed","Stories","TikTok","Design"]).map(tipo => (
-                                <div key={tipo} onClick={()async =>{setFormCriar(pasync =>({...p,formato:tipo}));setShowTipoDropdown(false);}} style={{padding:"10px 12px",cursor:"pointer",color:formCriar.formato===tipo?"#FF6A00":CT,fontSize:13,background:formCriar.formato===tipo?"rgba(255,106,0,0.15)":"transparent",fontWeight:formCriar.formato===tipo?700:400,borderBottom:"1px solid rgba(255,255,255,0.08)",transition:"all 0.2s"}} onMouseEnter={easync =>e.currentTarget.style.background="rgba(255,106,0,0.10)"} onMouseLeave={easync =>e.currentTarget.style.background=formCriar.formato===tipo?"rgba(255,106,0,0.15)":"transparent"}>
+                                <div key={tipo} onClick={()=>{setFormCriar(p=>({...p,formato:tipo}));setShowTipoDropdown(false);}} style={{padding:"10px 12px",cursor:"pointer",color:formCriar.formato===tipo?"#FF6A00":CT,fontSize:13,background:formCriar.formato===tipo?"rgba(255,106,0,0.15)":"transparent",fontWeight:formCriar.formato===tipo?700:400,borderBottom:"1px solid rgba(255,255,255,0.08)",transition:"all 0.2s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,106,0,0.10)"} onMouseLeave={e=>e.currentTarget.style.background=formCriar.formato===tipo?"rgba(255,106,0,0.15)":"transparent"}>
                                   {tipo}
                                 </div>
                               ))}
@@ -14833,7 +14807,7 @@ function ClientePortalView({ user, clienteUser, clienteId, clientes, planejament
                           {showPriorDropdown && (
                             <div style={{position:"absolute",bottom:"calc(100% + 4px)",left:0,right:0,background:"#0a0805",border:"1px solid rgba(255,255,255,0.15)",borderRadius:10,zIndex:1000,overflow:"hidden",boxShadow:"0 4px 12px rgba(0,0,0,0.3)",maxHeight:"300px",overflowY:"auto"}}>
                               {[{val:"media",label:"Normal"},{val:"alta",label:"Alta"},{val:"urgente",label:"Urgente"}].map(p => (
-                                <div key={p.val} onClick={()async =>{setFormCriar(prevasync =>({...prev,prioridade:p.val}));setShowPriorDropdown(false);}} style={{padding:"10px 12px",cursor:"pointer",color:formCriar.prioridade===p.val?"#FF6A00":CT,fontSize:13,background:formCriar.prioridade===p.val?"rgba(255,106,0,0.15)":"transparent",fontWeight:formCriar.prioridade===p.val?700:400,borderBottom:"1px solid rgba(255,255,255,0.08)",transition:"all 0.2s"}} onMouseEnter={easync =>e.currentTarget.style.background="rgba(255,106,0,0.10)"} onMouseLeave={easync =>e.currentTarget.style.background=formCriar.prioridade===p.val?"rgba(255,106,0,0.15)":"transparent"}>
+                                <div key={p.val} onClick={()=>{setFormCriar(prev=>({...prev,prioridade:p.val}));setShowPriorDropdown(false);}} style={{padding:"10px 12px",cursor:"pointer",color:formCriar.prioridade===p.val?"#FF6A00":CT,fontSize:13,background:formCriar.prioridade===p.val?"rgba(255,106,0,0.15)":"transparent",fontWeight:formCriar.prioridade===p.val?700:400,borderBottom:"1px solid rgba(255,255,255,0.08)",transition:"all 0.2s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,106,0,0.10)"} onMouseLeave={e=>e.currentTarget.style.background=formCriar.prioridade===p.val?"rgba(255,106,0,0.15)":"transparent"}>
                                   {p.label}
                                 </div>
                               ))}
@@ -15318,7 +15292,7 @@ function AdminClientesGestaoPanel({ clienteUsers, setClienteUsers, clienteInfos,
                       return (
                         <div key={r.id} style={{padding:10,borderRadius:8,background:"rgba(255,255,255,0.04)",border:"1px solid var(--cbord)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                           <div style={{fontSize:11,color:CT3}}>{member?.name || r.usuarioId} ({r.cargo})</div>
-                          <div onClick={()async =>setClienteInfos(prevasync =>({...prev,[selectedClienteInfo]:{...prev[selectedClienteInfo],responsaveis:prev[selectedClienteInfo].responsaveis.filter(xasync =>x.id!==r.id)}}))} style={{cursor:"pointer",color:"#EF4444",fontSize:10}}>✕</div>
+                          <div onClick={()=>setClienteInfos(prev=>({...prev,[selectedClienteInfo]:{...prev[selectedClienteInfo],responsaveis:prev[selectedClienteInfo].responsaveis.filter(x=>x.id!==r.id)}}))} style={{cursor:"pointer",color:"#EF4444",fontSize:10}}>✕</div>
                         </div>
                       );
                     })}
@@ -15339,7 +15313,7 @@ function AdminClientesGestaoPanel({ clienteUsers, setClienteUsers, clienteInfos,
                 </div>
                 <div>
                   <div style={{fontSize:11,color:CT3,marginBottom:4}}>Filial</div>
-                  <select value={clienteInfos[selectedClienteInfo]?.filialId||""} onChange={easync =>setClienteInfos(prevasync =>({...prev,[selectedClienteInfo]:{...prev[selectedClienteInfo],filialId:e.target.value}}))} style={{...IS,background:"rgba(255,255,255,0.04)"}}>
+                  <select value={clienteInfos[selectedClienteInfo]?.filialId||""} onChange={e=>setClienteInfos(prev=>({...prev,[selectedClienteInfo]:{...prev[selectedClienteInfo],filialId:e.target.value}}))} style={{...IS,background:"rgba(255,255,255,0.04)"}}>
                     <option value="">Selecione uma filial</option>
                     {filiais.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}
                   </select>
@@ -15758,7 +15732,6 @@ function AdminShell({ user, onBack, addLog, chatUnread, activityLog, onUpdateUse
   );
 }
 
-
 // ─────── PORTAL DO CLIENTE - TELAS ───────
 
 function ClienteLoginScreen({ onSelectType, clienteConfig }) {
@@ -15889,7 +15862,7 @@ function ClienteEntryScreen({ onLogin, onBack, clienteUsers }) {
     }
 
     // Find user by email (case-insensitive)
-    var user = clienteUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+    var user = clienteUsers.find(u async => u.email.toLowerCase() === email.toLowerCase());
     
     if(!user) {
       setErr("Email ou senha incorretos.");
@@ -16207,7 +16180,7 @@ function AreaSelector({ user, onSelect, adminVendas, onLogout }) {
 function ToastArea({ toasts }) {
   return (
     <div style={{position:"fixed",bottom:28,right:28,zIndex:9999,display:"flex",flexDirection:"column",gap:10,pointerEvents:"none"}}>
-      {toasts.map(tasync =>(
+      {toasts.map(t=>(
         <div key={t.id} style={{padding:"12px 18px",borderRadius:14,background:"rgba(14,10,6,0.97)",backdropFilter:"blur(28px)",border:"1px solid var(--cbord2)",display:"flex",alignItems:"center",gap:10,animation:"fadeUp 0.3s ease",maxWidth:340}}>
           <div style={{fontSize:18}}>{t.icon||"🔔"}</div>
           <div style={{fontSize:14,color:"var(--ct2)",fontFamily:POP}}>{t.text}</div>
@@ -16268,15 +16241,15 @@ function QuickAccessPanel({ items, setItems, onClose, user }) {
             <div style={{marginBottom:12}}>
               <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Emoji</div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
-                {PRESET_EMOJIS.map(emasync =>(
-                  <div key={em} onClick={()async =>setForm(pasync =>({...p,emoji:em}))}
+                {PRESET_EMOJIS.map(em=>(
+                  <div key={em} onClick={()=>setForm(p=>({...p,emoji:em}))}
                     style={{width:34,height:34,borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,
                       background:form.emoji===em?"rgba(255,165,0,0.22)":"rgba(255,255,255,0.05)",
                       border:form.emoji===em?"2px solid rgba(255,165,0,0.55)":"2px solid transparent",
                       transition:"all 0.12s"}}>{em}</div>
                 ))}
               </div>
-              <input value={form.emoji} onChange={easync =>setForm(pasync =>({...p,emoji:e.target.value.slice(-2)||e.target.value.slice(-1)||"🔗"}))} placeholder="ou cole seu emoji..."
+              <input value={form.emoji} onChange={e=>setForm(p=>({...p,emoji:e.target.value.slice(-2)||e.target.value.slice(-1)||"🔗"}))} placeholder="ou cole seu emoji..."
                 style={{width:110,background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:20,padding:"5px 10px",outline:"none",fontFamily:POP,textAlign:"center"}}/>
             </div>
 
@@ -16284,13 +16257,13 @@ function QuickAccessPanel({ items, setItems, onClose, user }) {
             <div style={{marginBottom:12}}>
               <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Cor do Card</div>
               <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-                {PRESET_COLORS.map(casync =>(
-                  <div key={c} onClick={()async =>setForm(pasync =>({...p,cor:c}))}
+                {PRESET_COLORS.map(c=>(
+                  <div key={c} onClick={()=>setForm(p=>({...p,cor:c}))}
                     style={{width:26,height:26,borderRadius:"50%",background:c,cursor:"pointer",
                       border:form.cor===c?"3px solid rgba(255,255,255,0.90)":"3px solid transparent",
                       boxShadow:form.cor===c?`0 0 10px ${c}88`:"none",transition:"all 0.15s"}}/>
                 ))}
-                <input type="color" value={form.cor} onChange={easync =>setForm(pasync =>({...p,cor:e.target.value}))}
+                <input type="color" value={form.cor} onChange={e=>setForm(p=>({...p,cor:e.target.value}))}
                   style={{width:26,height:26,borderRadius:"50%",border:"none",cursor:"pointer",background:"transparent",padding:0}}
                   title="Cor personalizada"/>
               </div>
@@ -16300,14 +16273,14 @@ function QuickAccessPanel({ items, setItems, onClose, user }) {
             <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:14}}>
               <div>
                 <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Nome</div>
-                <input value={form.nome} onChange={easync =>setForm(pasync =>({...p,nome:e.target.value}))} placeholder="Ex: Webmail, Drive, Analytics..."
+                <input value={form.nome} onChange={e=>setForm(p=>({...p,nome:e.target.value}))} placeholder="Ex: Webmail, Drive, Analytics..."
                   style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                   onFocus={e=>e.target.style.border="1px solid rgba(255,165,0,0.50)"}
                   onBlur={e=>e.target.style.border="1px solid var(--cbord2)"}/>
               </div>
               <div>
                 <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Link</div>
-                <input value={form.link} onChange={easync =>setForm(pasync =>({...p,link:e.target.value}))} placeholder="https://..."
+                <input value={form.link} onChange={e=>setForm(p=>({...p,link:e.target.value}))} placeholder="https://..."
                   style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                   onFocus={e=>e.target.style.border="1px solid rgba(255,165,0,0.50)"}
                   onBlur={e=>e.target.style.border="1px solid var(--cbord2)"}
@@ -16356,7 +16329,7 @@ function QuickAccessPanel({ items, setItems, onClose, user }) {
             </div>
           )}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            {items.map(itemasync =>(
+            {items.map(item=>(
               <div key={item.id} style={{position:"relative",borderRadius:16,background:item.cor+"14",border:`1px solid ${item.cor}33`,
                 padding:"18px 16px",cursor:"pointer",transition:"all 0.2s",overflow:"hidden"}}
                 onClick={()=>window.open(item.link,"_blank","noopener,noreferrer")}
@@ -16391,7 +16364,6 @@ function QuickAccessPanel({ items, setItems, onClose, user }) {
     </div>
   );
 }
-
 
 // ─── Main App ─────────────────────────────────────────────────────
 function FormaFooter() {
@@ -16637,13 +16609,9 @@ await accessLogCRUD.add(next);}catch(e){}
   ]);
   const [showQuickAccess, setShowQuickAccess] = useState(false);
 
-  React.useEffect(() async => {
-    const load = async () => {
-      try{ // Firebase: notifications
-        await notificationsCRUD.add(notifications.slice(0,60));
-      }catch(e){}
-    };
-    load();
+  React.useEffect(async function(){
+    try{ // Firebase: notifications
+await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
   },[notifications]);
   const addNotification = React.useCallback(function(toId,fromId,fromName,type,text){setNotifications(function(p){return [{id:uid(),toId:toId,fromId:fromId,fromName:fromName,type:type,text:text,ts:Date.now(),read:false},...p].slice(0,60);});},[]);
   const markAllNotifsRead=React.useCallback(function(){setNotifications(function(p){return p.map(function(n){return Object.assign({},n,{read:true});});});},[]);
@@ -16787,7 +16755,6 @@ await accessLogCRUD.add(next);}catch(e){}
     if(activeBoardId===id){setActiveBoardId(null);setView("dashboard");}
   };
 
-
   // CSS custom properties — must be before any early returns
   React.useEffect(function(){
     var r = document.documentElement;
@@ -16834,7 +16801,7 @@ await accessLogCRUD.add(next);}catch(e){}
   if(!area) return <ThemeCtx.Provider value={theme}><AreaSelector user={user} onSelect={setArea} adminVendas={adminVendas} onLogout={function(){setUser(null);setArea(null);}}/></ThemeCtx.Provider>;
   // CRMShell and AdminShell are rendered inside ConfigCtx.Provider below
 
-  const NAVDAYS = DAYS.map(dasync =>({id:d.id,label:d.short,full:d.label}));
+  const NAVDAYS = DAYS.map(d=>({id:d.id,label:d.short,full:d.label}));
 
   // Nav items
   const NAV_ITEMS=[
@@ -16843,8 +16810,6 @@ await accessLogCRUD.add(next);}catch(e){}
 
   const currentBoard=customBoards.find(b=>b.id===activeBoardId);
   const configValue = { statuses, setStatuses, tipos, setTipos, tiposEntrega, setTiposEntrega, monthEmojis, setMonthEmojis, navConfig, setNavConfig, crmStages, setCrmStages, crmOrigens, setCrmOrigens, finCats, setFinCats, demandaFormatos, setDemandaFormatos, clienteTags, setClienteTags, theme, categoriasDocs, setCategoriasDocs };
-
-
 
   return (
     <ConfigCtx.Provider value={configValue}>
@@ -17283,7 +17248,7 @@ function MyProfilePanel({ member, onSave, onClose }) {
   const Field = ({label, k, type, placeholder}) => (
     <div>
       <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>{label}</div>
-      <input type={type} value={form[k]||""} onChange={easync =>setForm(pasync =>({...p,[k]:e.target.value}))} placeholder={placeholder}
+      <input type={type} value={form[k]||""} onChange={e=>setForm(p=>({...p,[k]:e.target.value}))} placeholder={placeholder}
         style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"9px 13px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
         onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
         onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
@@ -17305,7 +17270,7 @@ function MyProfilePanel({ member, onSave, onClose }) {
         {/* Avatar */}
         <div style={{display:"flex",justifyContent:"center",marginBottom:24}}>
           <PhotoUpload photo={form.photo} color={form.color} initials={form.initials} size={90}
-            onChange={urlasync =>setForm(pasync =>({...p,photo:url}))}/>
+            onChange={url=>setForm(p=>({...p,photo:url}))}/>
         </div>
 
         <div style={{display:"flex",flexDirection:"column",gap:14,marginBottom:20}}>
@@ -17317,7 +17282,7 @@ function MyProfilePanel({ member, onSave, onClose }) {
           <Field label="Data de entrada" k="joinDate" type="date"/>
           <div>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>Sobre mim</div>
-            <textarea value={form.bio||""} onChange={easync =>setForm(pasync =>({...p,bio:e.target.value}))} rows={3} placeholder="Uma breve descrição sobre você..."
+            <textarea value={form.bio||""} onChange={e=>setForm(p=>({...p,bio:e.target.value}))} rows={3} placeholder="Uma breve descrição sobre você..."
               style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"9px 13px",outline:"none",fontFamily:POP,resize:"none",boxSizing:"border-box",transition:"border 0.2s",lineHeight:1.6}}
               onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
               onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
@@ -17334,7 +17299,7 @@ function MyProfilePanel({ member, onSave, onClose }) {
           </div>
           {changePw&&(
             <div style={{marginTop:14,display:"flex",flexDirection:"column",gap:10,animation:"fadeUp 0.2s ease"}}>
-              {[{label:"Nova senha",val:newPw,set:setNewPw},{label:"Confirmar senha",val:confirmPw,set:setConfirmPw}].map(fasync =>(
+              {[{label:"Nova senha",val:newPw,set:setNewPw},{label:"Confirmar senha",val:confirmPw,set:setConfirmPw}].map(f=>(
                 <div key={f.label}>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,marginBottom:5}}>{f.label}</div>
                   <input type="password" value={f.val} onChange={e=>{f.set(e.target.value);setPwErr("");}}
@@ -17494,7 +17459,7 @@ function MembersView({ members, currentUser, onUpdateMember, onCelebrate, theme,
             color:selectedFilial===null?OR:"var(--ct3)",transition:"all 0.15s"}}>
             📍 Todas as Filiais
           </div>
-          {(filiais || []).map(fasync =>(
+          {(filiais || []).map(f=>(
             <div key={f.id} onClick={()=>setSelectedFilial(f.id)} style={{padding:"6px 14px",borderRadius:20,cursor:"pointer",fontSize:13,fontWeight:selectedFilial===f.id?700:500,fontFamily:POP,
               background:selectedFilial===f.id?f.cor+"20":"rgba(255,255,255,0.04)",
               border:selectedFilial===f.id?`1px solid ${f.cor}40`:"1px solid rgba(255,255,255,0.10)",
@@ -17606,7 +17571,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
     const file = e.target.files&&e.target.files[0]; if(!file) return;
     const reader = new FileReader();
     reader.onload = ev => {
-      if(forForm) setClienteForm(pasync =>({...p,logoUrl:ev.target.result}));
+      if(forForm) setClienteForm(p=>({...p,logoUrl:ev.target.result}));
       else setClientes(p=>p.map(c=>c.id===activeId?{...c,logoUrl:ev.target.result}:c));
     };
     reader.readAsDataURL(file);
@@ -17675,17 +17640,17 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
 
       {/* Core fields */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
-        {[["Nome","nome"],["Setor","setor"],["Site","site"]].map(([l,k])async =>(
+        {[["Nome","nome"],["Setor","setor"],["Site","site"]].map(([l,k])=>(
           <div key={k}>
             <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,marginBottom:4,textTransform:"uppercase"}}>{l}</div>
-            <input value={clienteForm[k]||""} onChange={easync =>setClienteForm(pasync =>({...p,[k]:e.target.value}))}
+            <input value={clienteForm[k]||""} onChange={e=>setClienteForm(p=>({...p,[k]:e.target.value}))}
               style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
               onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
           </div>
         ))}
         <div>
           <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,marginBottom:4,textTransform:"uppercase"}}>Cliente Desde</div>
-          <input type="date" value={clienteForm.desde||""} onChange={easync =>setClienteForm(pasync =>({...p,desde:e.target.value}))}
+          <input type="date" value={clienteForm.desde||""} onChange={e=>setClienteForm(p=>({...p,desde:e.target.value}))}
             style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box",colorScheme:"dark"}}
             onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
         </div>
@@ -17694,7 +17659,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
           return (
             <div key={k}>
               <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,marginBottom:4,textTransform:"uppercase"}}>{l}</div>
-              <input value={(clienteForm[obj]||{})[field]||""} onChange={easync =>setClienteForm(pasync =>({...p,[obj]:{...(p[obj]||{}),[field]:e.target.value}}))}
+              <input value={(clienteForm[obj]||{})[field]||""} onChange={e=>setClienteForm(p=>({...p,[obj]:{...(p[obj]||{}),[field]:e.target.value}}))}
                 style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                 onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
             </div>
@@ -17702,7 +17667,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
         })}
         <div>
           <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,marginBottom:4,textTransform:"uppercase"}}>Filial</div>
-          <select value={clienteForm.filialId||"fil_santiago"} onChange={easync =>setClienteForm(pasync =>({...p,filialId:e.target.value}))}
+          <select value={clienteForm.filialId||"fil_santiago"} onChange={e=>setClienteForm(p=>({...p,filialId:e.target.value}))}
             style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box",colorScheme:"dark"}}>
             <option value="fil_santiago" style={{background:"#1a1a1a"}}>Santiago</option>
             <option value="fil_poa" style={{background:"#1a1a1a"}}>Porto Alegre</option>
@@ -17710,7 +17675,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
         </div>
         <div>
           <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,marginBottom:4,textTransform:"uppercase"}}>Sigla (se não usar logo)</div>
-          <input value={clienteForm.logo||""} onChange={easync =>setClienteForm(pasync =>({...p,logo:e.target.value.slice(0,3).toUpperCase()}))} maxLength={3}
+          <input value={clienteForm.logo||""} onChange={e=>setClienteForm(p=>({...p,logo:e.target.value.slice(0,3).toUpperCase()}))} maxLength={3}
             style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:16,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box",fontWeight:700,textTransform:"uppercase"}}
             onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
         </div>
@@ -17720,14 +17685,14 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
       <div style={{marginBottom:12}}>
         <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,marginBottom:6,textTransform:"uppercase"}}>Cor do cliente</div>
         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-          {EXTRA_COLORS.map(casync =>(
-            <div key={c} onClick={()async =>setClienteForm(pasync =>({...p,cor:c}))}
+          {EXTRA_COLORS.map(c=>(
+            <div key={c} onClick={()=>setClienteForm(p=>({...p,cor:c}))}
               style={{width:20,height:20,borderRadius:5,background:c,cursor:"pointer",
                 border:clienteForm.cor===c?"3px solid #fff":"2px solid transparent",
                 transform:clienteForm.cor===c?"scale(1.15)":"scale(1)",transition:"all 0.15s"}}/>
           ))}
           <label style={{width:20,height:20,borderRadius:5,background:"linear-gradient(135deg,#ff0080,#ff8c00,#00f2c3)",cursor:"pointer",border:"2px solid var(--cbord2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11}} title="Cor personalizada">
-            +<input type="color" value={clienteForm.cor} onChange={easync =>setClienteForm(pasync =>({...p,cor:e.target.value}))} style={{position:"absolute",opacity:0,pointerEvents:"none",width:0,height:0}}/>
+            +<input type="color" value={clienteForm.cor} onChange={e=>setClienteForm(p=>({...p,cor:e.target.value}))} style={{position:"absolute",opacity:0,pointerEvents:"none",width:0,height:0}}/>
           </label>
         </div>
       </div>
@@ -17739,7 +17704,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
           {_dynamicTags.map(function(tagObj){
             var t=tagObj.label; var tc=tagObj.cor;
             const sel=(clienteForm.tags||[]).includes(t);
-            return <div key={t} onClick={()async =>setClienteForm(pasync =>({...p,tags:sel?p.tags.filter(xasync =>x!==t):[...(p.tags||[]),t]}))}
+            return <div key={t} onClick={()=>setClienteForm(p=>({...p,tags:sel?p.tags.filter(x=>x!==t):[...(p.tags||[]),t]}))}
               style={{padding:"3px 10px",borderRadius:20,cursor:"pointer",background:sel?`${tc}22`:"rgba(255,255,255,0.04)",border:sel?`1px solid ${tc}55`:"1px solid var(--cbord)",color:sel?tc:"rgba(255,255,255,0.40)",fontSize:12,fontFamily:POP,transition:"all 0.15s"}}>{t}</div>;
           })}
         </div>
@@ -17773,7 +17738,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
         <div style={{flex:1}}>
           <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
             <div style={{fontSize:22,fontWeight:800,color:"var(--ct)",fontFamily:POP}}>{active.nome}</div>
-            {(active.tags||[]).map(tasync =>(
+            {(active.tags||[]).map(t=>(
               <div key={t} style={{padding:"2px 10px",borderRadius:20,background:`${TAG_COLORS[t]||"#888"}22`,border:`1px solid ${TAG_COLORS[t]||"#888"}55`,color:TAG_COLORS[t]||"#888",fontSize:11,fontWeight:700,fontFamily:POP,letterSpacing:"0.06em"}}>{t}</div>
             ))}
           </div>
@@ -17814,23 +17779,23 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
               <div style={{display:"grid",gridTemplateColumns:"1fr 80px 120px",gap:8,marginBottom:8}}>
                 <div>
                   <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,marginBottom:3,textTransform:"uppercase"}}>Tipo de entrega</div>
-                  <select value={escopoForm.tipo} onChange={easync =>setEscopoForm(pasync =>({...p,tipo:e.target.value}))}
+                  <select value={escopoForm.tipo} onChange={e=>setEscopoForm(p=>({...p,tipo:e.target.value}))}
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:7,color:"var(--ct)",fontSize:13,padding:"6px 8px",outline:"none",fontFamily:POP,boxSizing:"border-box",colorScheme:"dark"}}
                     onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}>
                     <option value="" style={{background:"#1a1a1a",color:"#fff"}}>— Selecione —</option>
                     {(tiposEntrega||[]).map(t=><option key={t.id} value={t.id} style={{background:"#1a1a1a",color:"#fff"}}>{t.label}</option>)}
                   </select>
                 </div>
-                {[["Qtd","qtd"],["Unidade","unidade"]].map(([label,key])async =>(
+                {[["Qtd","qtd"],["Unidade","unidade"]].map(([label,key])=>(
                   <div key={key}>
                     <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,marginBottom:3,textTransform:"uppercase"}}>{label}</div>
-                    <input value={escopoForm[key]} onChange={easync =>setEscopoForm(pasync =>({...p,[key]:e.target.value}))} placeholder={label+"..."}
+                    <input value={escopoForm[key]} onChange={e=>setEscopoForm(p=>({...p,[key]:e.target.value}))} placeholder={label+"..."}
                       style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:7,color:"var(--ct)",fontSize:13,padding:"6px 8px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                       onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.5)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}/>
                   </div>
                 ))}
               </div>
-              <input value={escopoForm.descricao} onChange={easync =>setEscopoForm(pasync =>({...p,descricao:e.target.value}))} placeholder="Descrição detalhada..."
+              <input value={escopoForm.descricao} onChange={e=>setEscopoForm(p=>({...p,descricao:e.target.value}))} placeholder="Descrição detalhada..."
                 style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:7,color:"var(--ct)",fontSize:13,padding:"6px 8px",outline:"none",fontFamily:POP,boxSizing:"border-box",marginBottom:8}}/>
               <div style={{display:"flex",gap:6}}>
                 <div onClick={addEscopo} style={{padding:"5px 14px",borderRadius:8,cursor:"pointer",background:OR,color:"var(--ct)",fontSize:13,fontWeight:700,fontFamily:POP}}>Salvar</div>
@@ -17841,7 +17806,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
 
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
             {(active.escopo||[]).length===0&&<GlassBox style={{borderRadius:14,padding:"28px",textAlign:"center"}}><div style={{fontSize:14,color:"var(--ct3)",fontFamily:POP}}>Nenhum item no escopo ainda</div></GlassBox>}
-            {(active.escopo||[]).map((e,i)async =>(
+            {(active.escopo||[]).map((e,i)=>(
               <GlassBox key={e.id} style={{borderRadius:14,padding:"14px 16px",borderLeft:`3px solid ${active.cor}`}}>
                 <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
                   <div style={{width:32,height:32,borderRadius:10,background:`${active.cor}18`,border:`1px solid ${active.cor}35`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
@@ -17870,7 +17835,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
           <GlassBox style={{borderRadius:18,padding:"18px 20px"}}>
             <div style={{fontSize:13,fontWeight:700,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:14}}>Resumo</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-              {[{label:"Itens no escopo",val:(active.escopo||[]).length,icon:"📋"},{label:"Total entregas/mês",val:(active.escopo||[]).reduce((s,e)async =>{const n=parseInt(e.qtd)||0;return s+n;},0),icon:"📦"}].map(({label,val,icon})async =>(
+              {[{label:"Itens no escopo",val:(active.escopo||[]).length,icon:"📋"},{label:"Total entregas/mês",val:(active.escopo||[]).reduce((s,e)=>{const n=parseInt(e.qtd)||0;return s+n;},0),icon:"📦"}].map(({label,val,icon})=>(
                 <div key={label} style={{background:"var(--ccard)",borderRadius:12,padding:"12px",textAlign:"center",border:"1px solid var(--cbord)"}}>
                   <div style={{fontSize:20,marginBottom:4}}>{icon}</div>
                   <div style={{fontSize:22,fontWeight:800,color:active.cor,fontFamily:POP,lineHeight:1}}>{val}</div>
@@ -17985,7 +17950,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
         {user.isManager&&<div onClick={()=>{setClienteForm(blankForm);setEditingId(null);setShowForm(true);}} style={{padding:"8px 16px",borderTopLeftRadius:10,borderTopRightRadius:0,borderBottomRightRadius:10,borderBottomLeftRadius:0,cursor:"pointer",background:OR,color:"var(--ct)",fontSize:14,fontWeight:700,fontFamily:POP}}>+ Novo Cliente</div>}
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:16}}>
-        {clientes.map(casync =>(
+        {clientes.map(c=>(
           <div key={c.id} onClick={()=>setActiveId(c.id)}
             style={{borderRadius:22,cursor:"pointer",overflow:"hidden",position:"relative",background:"var(--ccard)",border:"1px solid var(--cbord)",transition:"all 0.25s"}}
             onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 12px 40px ${c.cor}30`;e.currentTarget.style.border=`1px solid ${c.cor}50`;}}
@@ -18011,7 +17976,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
                 )}
               </div>
               <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:14,minHeight:22}}>
-                {(c.escopo||[]).slice(0,3).map(easync =>(
+                {(c.escopo||[]).slice(0,3).map(e=>(
                   <div key={e.id} style={{padding:"2px 8px",borderRadius:20,background:`${c.cor}15`,border:`1px solid ${c.cor}35`,color:"var(--ct2)",fontSize:11,fontFamily:POP,fontWeight:600,whiteSpace:"nowrap"}}>{e.tipo}</div>
                 ))}
                 {(c.escopo||[]).length>3&&<div style={{padding:"2px 8px",borderRadius:20,background:"var(--ccard)",color:"var(--ct3)",fontSize:11,fontFamily:POP}}>+{c.escopo.length-3}</div>}
@@ -18704,7 +18669,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
                     )}
                     {msg.text&&<div style={{fontSize:15,color:"var(--ct)",fontFamily:POP,lineHeight:1.55,wordBreak:"break-word"}}>{renderText(msg.text)}</div>}
                     {/* Files */}
-                    {msg.files&&msg.files.map((f,fi)async =>(
+                    {msg.files&&msg.files.map((f,fi)=>(
                       <div key={fi} style={{marginTop:6,display:"inline-block"}}>
                         {f.type&&f.type.startsWith("image/") ? (
                           <div style={{position:"relative",display:"inline-block"}}>
@@ -18732,7 +18697,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
                     {/* Reactions */}
                     {Object.keys(msg.reactions||{}).length>0&&(
                       <div style={{display:"flex",gap:4,flexWrap:"wrap",marginTop:4}}>
-                        {Object.entries(msg.reactions).map(([emoji,users])async =>(
+                        {Object.entries(msg.reactions).map(([emoji,users])=>(
                           <div key={emoji} onClick={()=>toggleReaction(msg.id,emoji)}
                             style={{display:"flex",alignItems:"center",gap:4,padding:"3px 8px",borderRadius:20,cursor:"pointer",
                               background:users.includes(user.id)?"rgba(255,106,0,0.22)":"rgba(255,255,255,0.07)",
@@ -18751,7 +18716,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
                     {reactionPickerMsgId===msg.id&&(
                       <div style={{display:"flex",gap:5,padding:"6px 10px",borderRadius:16,background:"rgba(20,15,8,0.98)",border:"1px solid var(--cbord2)",marginTop:4,width:"fit-content"}}
                         onClick={e=>e.stopPropagation()}>
-                        {CHAT_EMOJI_REACTIONS.map(emasync =>(
+                        {CHAT_EMOJI_REACTIONS.map(em=>(
                           <div key={em} onClick={()=>toggleReaction(msg.id,em)}
                             style={{width:30,height:30,borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,transition:"all 0.15s"}}
                             onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.12)"}
@@ -18794,7 +18759,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
             {/* @mention autocomplete */}
             {showMentions&&(
               <div style={{position:"absolute",bottom:"100%",left:20,right:20,background:"rgba(18,12,6,0.98)",border:"1px solid var(--cbord2)",borderRadius:14,padding:"6px",zIndex:10,marginBottom:4}}>
-                {(activeDmId ? members : members.filter(masync =>(activeChannel&&activeChannel.members).includes(m.id)))
+                {(activeDmId ? members : members.filter(m=>(activeChannel&&activeChannel.members).includes(m.id)))
                   .filter(m=>m.name.toLowerCase().includes(mentionFilter.toLowerCase())).map(m=>{
                   return (
                     <div key={m.id} onClick={()=>insertMention(m.name.split(" ")[0])}
@@ -18906,7 +18871,7 @@ function CreateChannelModal({ members, user, onClose, onCreate }) {
             >{emoji}</div>
             {emojiOpen&&(
               <div style={{position:"absolute",top:"calc(100% + 6px)",left:0,zIndex:10,background:"rgba(18,12,6,0.98)",border:"1px solid var(--cbord2)",borderRadius:14,padding:"8px",display:"flex",flexWrap:"wrap",gap:4,width:220}}>
-                {EMOJI_OPTS.map(emasync =>(
+                {EMOJI_OPTS.map(em=>(
                   <div key={em} onClick={()=>{setEmoji(em);setEmojiOpen(false);}}
                     style={{width:32,height:32,borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,transition:"background 0.15s",background:emoji===em?"rgba(255,106,0,0.25)":"transparent"}}
                     onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.10)"}
@@ -19087,7 +19052,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
 
   const ColorGrid = ({value, onChange}) => (
     <div style={{display:"flex",flexWrap:"wrap",gap:5,marginTop:8}}>
-      {PRESET_COLORS.map(casync =>(
+      {PRESET_COLORS.map(c=>(
         <div key={c} onClick={()=>onChange(c)} style={{width:22,height:22,borderRadius:6,background:c,cursor:"pointer",
           border:value===c?"2px solid #fff":"2px solid transparent",boxSizing:"border-box",flexShrink:0,transition:"transform 0.15s"}}
           onMouseEnter={e=>e.currentTarget.style.transform="scale(1.2)"}
@@ -19170,7 +19135,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
         onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.12)`}
       />
       <div style={{display:"flex",flexWrap:"wrap",gap:5,marginTop:8}}>
-        {suggestions.map((em,i)async =>(
+        {suggestions.map((em,i)=>(
           <div key={i} onClick={()=>onChange(em)}
             style={{width:34,height:34,borderRadius:8,cursor:"pointer",fontSize:20,
               display:"flex",alignItems:"center",justifyContent:"center",
@@ -19206,7 +19171,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
             <span style={{fontSize:13,fontWeight:400,color:"var(--ct3)",marginLeft:8}}>({items.length})</span>
           </div>
           <div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:420,overflowY:"auto"}}>
-            {items.map((item,idx)async =>(
+            {items.map((item,idx)=>(
               <div key={idx} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:12,
                 background:"var(--ccard)",border:"1px solid var(--cbord)"}}>
                 <div style={{width:28,height:28,borderRadius:8,background:item.color+"CC",flexShrink:0,border:"2px solid "+item.color+"66"}}/>
@@ -19274,7 +19239,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
       <div style={{fontSize:15,fontWeight:700,color:"var(--ct)",fontFamily:POP,marginBottom:4}}>Ícones dos Meses</div>
       <div style={{fontSize:13,color:"var(--ct3)",fontFamily:POP,marginBottom:20}}>Clique em qualquer mês para trocar o ícone</div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:10}}>
-        {MONTH_NAMES.map((name,i)async =>(
+        {MONTH_NAMES.map((name,i)=>(
           <div key={i}>
             <div onClick={()=>{setEditingMonthIdx(editingMonthIdx===i?null:i);setEmojiInput(monthEmojis[i]);}}
               style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",borderTopLeftRadius:14,borderTopRightRadius:0,borderBottomRightRadius:14,borderBottomLeftRadius:0,cursor:"pointer",
@@ -19324,7 +19289,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
         <div style={{fontSize:15,fontWeight:700,color:"var(--ct)",fontFamily:POP,marginBottom:4}}>Itens do menu</div>
         <div style={{fontSize:13,color:"var(--ct3)",fontFamily:POP,marginBottom:16}}>Clique em ✏️ para editar nome e ícone</div>
         <div style={{display:"flex",flexDirection:"column",gap:6}}>
-          {navConfig.map((item,idx)async =>(
+          {navConfig.map((item,idx)=>(
             <div key={item.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:12,
               background:(editingNav&&editingNav.idx)===idx?"rgba(255,106,0,0.06)":"rgba(255,255,255,0.03)",
               border:(editingNav&&editingNav.idx)===idx?"1px solid rgba(255,106,0,0.30)":"1px solid var(--cbord)",transition:"all 0.2s"}}>
@@ -19417,7 +19382,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
               <span style={{fontSize:13,fontWeight:400,color:"var(--ct3)",marginLeft:8}}>({tiposEntrega.length})</span>
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:420,overflowY:"auto"}}>
-              {tiposEntrega.map((tipo,idx)async =>(
+              {tiposEntrega.map((tipo,idx)=>(
                 <div key={idx} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:12,background:"var(--ccard)",border:"1px solid var(--cbord)"}}>
                   <div style={{width:28,height:28,borderRadius:8,background:tipo.color+"CC",flexShrink:0,border:"2px solid "+tipo.color+"66"}}/>
                   <div style={{flex:1}}>
@@ -19479,7 +19444,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
           <GlassBox style={{borderRadius:20,padding:"20px"}}>
             <div style={{fontSize:15,fontWeight:700,color:"var(--ct)",fontFamily:POP,marginBottom:16}}>Estágios do Pipeline <span style={{fontSize:13,fontWeight:400,color:"var(--ct3)",marginLeft:8}}>({_crmStages.length})</span></div>
             <div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:400,overflowY:"auto"}}>
-              {_crmStages.map((s,idx)async =>(
+              {_crmStages.map((s,idx)=>(
                 (editingStage&&editingStage.idx)===idx ? (
                   <div key={idx} style={{padding:"12px",borderRadius:12,background:"rgba(255,106,0,0.08)",border:"1px solid rgba(255,106,0,0.30)"}}>
                     <input value={editingStage.label} onChange={e=>setEditingStage({...editingStage,label:e.target.value})}
@@ -19561,7 +19526,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
           <GlassBox style={{borderRadius:20,padding:"20px"}}>
             <div style={{fontSize:15,fontWeight:700,color:"var(--ct)",fontFamily:POP,marginBottom:16}}>Categorias ativas <span style={{fontSize:13,fontWeight:400,color:"var(--ct3)",marginLeft:8}}>({_finCats.length})</span></div>
             <div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:400,overflowY:"auto"}}>
-              {_finCats.map((cat,idx)async =>(
+              {_finCats.map((cat,idx)=>(
                 <div key={idx} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:12,background:"var(--ccard)",border:"1px solid var(--cbord)"}}>
                   <div style={{fontSize:20,flexShrink:0}}>{cat.icon}</div>
                   <div style={{flex:1,fontSize:13,fontWeight:600,color:"var(--ct)",fontFamily:POP}}>{cat.label}</div>
@@ -19588,7 +19553,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
           <GlassBox style={{borderRadius:20,padding:"20px"}}>
             <div style={{fontSize:15,fontWeight:700,color:"var(--ct)",fontFamily:POP,marginBottom:16}}>Formatos ativos <span style={{fontSize:13,fontWeight:400,color:"var(--ct3)",marginLeft:8}}>({_formatos.length})</span></div>
             <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-              {_formatos.map((f,idx)async =>(
+              {_formatos.map((f,idx)=>(
                 <div key={idx} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 12px",borderRadius:20,background:"var(--ccard)",border:"1px solid var(--cbord)"}}>
                   <span style={{fontSize:13,color:"var(--ct)",fontFamily:POP}}>{f}</span>
                   <div onClick={()=>removeFormato(idx)} style={{width:16,height:16,borderRadius:"50%",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"var(--ct3)",fontSize:10}} onMouseEnter={e=>{e.currentTarget.style.color="#EF4444";}} onMouseLeave={e=>{e.currentTarget.style.color="rgba(255,255,255,0.4)";}}>✕</div>
@@ -19738,7 +19703,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
   const Field = ({label,k,type,placeholder}) => (
     <div>
       <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{label}</div>
-      <input type={type} value={form[k]||""} onChange={easync =>setForm(pasync =>({...p,[k]:e.target.value}))} placeholder={placeholder}
+      <input type={type} value={form[k]||""} onChange={e=>setForm(p=>({...p,[k]:e.target.value}))} placeholder={placeholder}
         style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
         onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
         onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
@@ -19770,7 +19735,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
     setGroupForm({nome:"",cor:"#FF6A00",icon:"🎨",descricao:"",membros:[]});setCreatingGroup(false);
   };
   const removeGroup = id=>{if(confirm("Remover grupo?"))setGroups(prev=>prev.filter(g=>g.id!==id));};
-  const toggleGroupMember = midasync =>setGroupForm(pasync =>({...p,membros:p.membros.includes(mid)?p.membros.filter(xasync =>x!==mid):[...p.membros,mid]}));
+  const toggleGroupMember = mid=>setGroupForm(p=>({...p,membros:p.membros.includes(mid)?p.membros.filter(x=>x!==mid):[...p.membros,mid]}));
 
   // Filiais management
   const saveFilial = () => {
@@ -19807,7 +19772,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
       <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20,flexWrap:"wrap"}}>
         <div style={{fontSize:18,fontWeight:700,color:"var(--ct)",fontFamily:POP,flex:1}}>⚙️ Administração</div>
         <div style={{display:"flex",gap:6,background:"var(--ccard)",borderRadius:12,padding:4}}>
-          {[{id:"usuarios",label:"👤 Usuários"},{id:"grupos",label:"👥 Grupos"},{id:"filiais",label:"🏢 Filiais"},{id:"pins",label:"🔐 PINs"}].map(tasync =>(
+          {[{id:"usuarios",label:"👤 Usuários"},{id:"grupos",label:"👥 Grupos"},{id:"filiais",label:"🏢 Filiais"},{id:"pins",label:"🔐 PINs"}].map(t=>(
             <div key={t.id} onClick={()=>setAdminTab(t.id)} style={{padding:"7px 16px",borderTopLeftRadius:9,borderTopRightRadius:0,borderBottomRightRadius:9,borderBottomLeftRadius:0,cursor:"pointer",fontSize:13,fontWeight:adminTab===t.id?700:500,fontFamily:POP,
               background:adminTab===t.id?"rgba(255,106,0,0.18)":"transparent",
               color:adminTab===t.id?OR:"rgba(255,255,255,0.45)",
@@ -19842,15 +19807,15 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
           {/* Photo */}
           <div style={{display:"flex",justifyContent:"center",marginBottom:18}}>
             <PhotoUpload photo={form.photo} color={form.color} initials={autoInitials(form.name)||"?"} size={72}
-              onChange={urlasync =>setForm(pasync =>({...p,photo:url}))}/>
+              onChange={url=>setForm(p=>({...p,photo:url}))}/>
           </div>
 
           {/* Color picker */}
           <div style={{marginBottom:16}}>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Cor do perfil</div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              {COLORS.map(casync =>(
-                <div key={c} onClick={()async =>setForm(pasync =>({...p,color:c}))} style={{width:28,height:28,borderRadius:"50%",background:c,cursor:"pointer",
+              {COLORS.map(c=>(
+                <div key={c} onClick={()=>setForm(p=>({...p,color:c}))} style={{width:28,height:28,borderRadius:"50%",background:c,cursor:"pointer",
                   border:form.color===c?`3px solid rgba(255,255,255,0.90)`:"3px solid transparent",
                   boxShadow:form.color===c?`0 0 12px ${c}88`:"none",transition:"all 0.15s"}}/>
               ))}
@@ -19869,7 +19834,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
 
           <div style={{marginBottom:12}}>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Bio</div>
-            <textarea value={form.bio||""} onChange={easync =>setForm(pasync =>({...p,bio:e.target.value}))} rows={2} placeholder="Breve descrição..."
+            <textarea value={form.bio||""} onChange={e=>setForm(p=>({...p,bio:e.target.value}))} rows={2} placeholder="Breve descrição..."
               style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,resize:"none",boxSizing:"border-box"}}
               onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
               onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
@@ -19879,7 +19844,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
           {/* Filial */}
           <div style={{marginBottom:14}}>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Filial</div>
-            <select value={form.filialId||"fil_santiago"} onChange={easync =>setForm(pasync =>({...p,filialId:e.target.value}))}
+            <select value={form.filialId||"fil_santiago"} onChange={e=>setForm(p=>({...p,filialId:e.target.value}))}
               style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",cursor:"pointer"}}
               onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
               onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
@@ -20002,12 +19967,12 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
       <GlassBox style={{borderRadius:20,overflow:"hidden"}}>
         <table style={{width:"100%",borderCollapse:"collapse"}}>
           <thead><tr>
-            {["Usuário","Cargo","E-mail","Entrada","Nível","Senha","Ações"].map(hasync =>(
+            {["Usuário","Cargo","E-mail","Entrada","Nível","Senha","Ações"].map(h=>(
               <th key={h} style={{padding:"11px 16px",fontSize:11,fontWeight:700,color:"var(--ct3)",textTransform:"uppercase",letterSpacing:"0.09em",fontFamily:POP,textAlign:"left",borderBottom:"2px solid var(--cbord)",background:"var(--ccard)",whiteSpace:"nowrap"}}>{h}</th>
             ))}
           </tr></thead>
           <tbody>
-            {members.map((m,i)async =>(
+            {members.map((m,i)=>(
               <tr key={m.id} style={{borderBottom:i<members.length-1?"2px solid var(--cbord)":"none",background:i%2===0?"rgba(255,255,255,0.01)":"transparent",transition:"background 0.15s"}}
                 onMouseEnter={e=>e.currentTarget.style.background="rgba(255,106,0,0.04)"}
                 onMouseLeave={e=>e.currentTarget.style.background=i%2===0?"rgba(255,255,255,0.01)":"transparent"}
@@ -20089,8 +20054,8 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               <div style={{marginBottom:14}}>
                 <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Ícone</div>
                 <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                  {GROUP_ICONS.map(icasync =>(
-                    <div key={ic} onClick={()async =>setGroupForm(pasync =>({...p,icon:ic}))} style={{width:36,height:36,borderRadius:9,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,
+                  {GROUP_ICONS.map(ic=>(
+                    <div key={ic} onClick={()=>setGroupForm(p=>({...p,icon:ic}))} style={{width:36,height:36,borderRadius:9,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,
                       background:groupForm.icon===ic?"rgba(59,130,246,0.25)":"rgba(255,255,255,0.05)",
                       border:groupForm.icon===ic?"2px solid rgba(59,130,246,0.55)":"2px solid transparent",transition:"all 0.15s"}}>{ic}</div>
                   ))}
@@ -20100,8 +20065,8 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               <div style={{marginBottom:14}}>
                 <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Cor</div>
                 <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                  {GROUP_COLORS.map(casync =>(
-                    <div key={c} onClick={()async =>setGroupForm(pasync =>({...p,cor:c}))} style={{width:26,height:26,borderRadius:"50%",background:c,cursor:"pointer",
+                  {GROUP_COLORS.map(c=>(
+                    <div key={c} onClick={()=>setGroupForm(p=>({...p,cor:c}))} style={{width:26,height:26,borderRadius:"50%",background:c,cursor:"pointer",
                       border:groupForm.cor===c?"3px solid rgba(255,255,255,0.90)":"3px solid transparent",
                       boxShadow:groupForm.cor===c?`0 0 10px ${c}88`:"none",transition:"all 0.15s"}}/>
                   ))}
@@ -20110,14 +20075,14 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Nome do Grupo</div>
-                  <input value={groupForm.nome} onChange={easync =>setGroupForm(pasync =>({...p,nome:e.target.value}))} placeholder="Ex: Criação, Comercial..."
+                  <input value={groupForm.nome} onChange={e=>setGroupForm(p=>({...p,nome:e.target.value}))} placeholder="Ex: Criação, Comercial..."
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(59,130,246,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
                 </div>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Descrição</div>
-                  <input value={groupForm.descricao} onChange={easync =>setGroupForm(pasync =>({...p,descricao:e.target.value}))} placeholder="Breve descrição..."
+                  <input value={groupForm.descricao} onChange={e=>setGroupForm(p=>({...p,descricao:e.target.value}))} placeholder="Breve descrição..."
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(59,130,246,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
@@ -20185,7 +20150,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
                     {groupMembers.length===0
                       ? <div style={{fontSize:13,color:"var(--ct3)",fontFamily:POP,fontStyle:"italic"}}>Sem membros</div>
                       : <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                          {groupMembers.map(masync =>(
+                          {groupMembers.map(m=>(
                             <div key={m.id} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 9px",borderRadius:20,background:m.color+"18",border:`1px solid ${m.color}33`}}>
                               <div style={{width:18,height:18,borderRadius:"50%",overflow:"hidden",background:m.color+"22",border:`1px solid ${m.color}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:700,color:m.color,fontFamily:POP}}>
                                 {m.photo?<img src={m.photo} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:m.initials}
@@ -20215,14 +20180,14 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Nome da Filial</div>
-                  <input value={filialForm.nome} onChange={easync =>setFilialForm(pasync =>({...p,nome:e.target.value}))} placeholder="Ex: Santiago, Porto Alegre..."
+                  <input value={filialForm.nome} onChange={e=>setFilialForm(p=>({...p,nome:e.target.value}))} placeholder="Ex: Santiago, Porto Alegre..."
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
                 </div>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Sigla</div>
-                  <input value={filialForm.sigla} onChange={easync =>setFilialForm(pasync =>({...p,sigla:e.target.value.toUpperCase().slice(0,3)}))} placeholder="Ex: STG"
+                  <input value={filialForm.sigla} onChange={e=>setFilialForm(p=>({...p,sigla:e.target.value.toUpperCase().slice(0,3)}))} placeholder="Ex: STG"
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",textTransform:"uppercase"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
@@ -20231,14 +20196,14 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Razão Social</div>
-                  <input value={filialForm.razaoSocial} onChange={easync =>setFilialForm(pasync =>({...p,razaoSocial:e.target.value}))} placeholder="Ex: FormaStudio LTDA"
+                  <input value={filialForm.razaoSocial} onChange={e=>setFilialForm(p=>({...p,razaoSocial:e.target.value}))} placeholder="Ex: FormaStudio LTDA"
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
                 </div>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>CNPJ</div>
-                  <input value={filialForm.cnpj} onChange={easync =>setFilialForm(pasync =>({...p,cnpj:e.target.value}))} placeholder="XX.XXX.XXX/0001-XX"
+                  <input value={filialForm.cnpj} onChange={e=>setFilialForm(p=>({...p,cnpj:e.target.value}))} placeholder="XX.XXX.XXX/0001-XX"
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
@@ -20252,14 +20217,14 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>E-mail</div>
-                  <input type="email" value={filialForm.email} onChange={easync =>setFilialForm(pasync =>({...p,email:e.target.value}))} placeholder="contato@filial.com"
+                  <input type="email" value={filialForm.email} onChange={e=>setFilialForm(p=>({...p,email:e.target.value}))} placeholder="contato@filial.com"
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
                 </div>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Telefone</div>
-                  <input value={filialForm.telefone} onChange={easync =>setFilialForm(pasync =>({...p,telefone:e.target.value}))} placeholder="(XX) 9XXXX-XXXX"
+                  <input value={filialForm.telefone} onChange={e=>setFilialForm(p=>({...p,telefone:e.target.value}))} placeholder="(XX) 9XXXX-XXXX"
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
@@ -20273,21 +20238,21 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr",gap:12,marginBottom:12}}>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Rua/Avenida</div>
-                  <input value={filialForm.endereco} onChange={easync =>setFilialForm(pasync =>({...p,endereco:e.target.value}))} placeholder="Ex: Rua Exemplo"
+                  <input value={filialForm.endereco} onChange={e=>setFilialForm(p=>({...p,endereco:e.target.value}))} placeholder="Ex: Rua Exemplo"
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
                 </div>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Número</div>
-                  <input value={filialForm.numero} onChange={easync =>setFilialForm(pasync =>({...p,numero:e.target.value}))} placeholder="123"
+                  <input value={filialForm.numero} onChange={e=>setFilialForm(p=>({...p,numero:e.target.value}))} placeholder="123"
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
                 </div>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Complemento</div>
-                  <input value={filialForm.complemento} onChange={easync =>setFilialForm(pasync =>({...p,complemento:e.target.value}))} placeholder="Sala 101"
+                  <input value={filialForm.complemento} onChange={e=>setFilialForm(p=>({...p,complemento:e.target.value}))} placeholder="Sala 101"
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
@@ -20296,23 +20261,23 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               <div style={{display:"grid",gridTemplateColumns:"1fr 2fr 1fr",gap:12}}>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>CEP</div>
-                  <input value={filialForm.cep} onChange={easync =>setFilialForm(pasync =>({...p,cep:e.target.value}))} placeholder="90000-000"
+                  <input value={filialForm.cep} onChange={e=>setFilialForm(p=>({...p,cep:e.target.value}))} placeholder="90000-000"
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
                 </div>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Cidade</div>
-                  <input value={filialForm.cidade} onChange={easync =>setFilialForm(pasync =>({...p,cidade:e.target.value}))} placeholder="Ex: Porto Alegre"
+                  <input value={filialForm.cidade} onChange={e=>setFilialForm(p=>({...p,cidade:e.target.value}))} placeholder="Ex: Porto Alegre"
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
                 </div>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>UF</div>
-                  <select value={filialForm.estado} onChange={easync =>setFilialForm(pasync =>({...p,estado:e.target.value}))}
+                  <select value={filialForm.estado} onChange={e=>setFilialForm(p=>({...p,estado:e.target.value}))}
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}>
-                    {["RS","SC","PR","SP","MG","RJ","BA","PE","CE","PA","GO","MT","DF","ES","PB","RN","AC","AL","AP","AM","MS","RO","RR","TO"].map(ufasync =>(<option key={uf} value={uf} style={{background:"#1a1a1a"}}>{uf}</option>))}
+                    {["RS","SC","PR","SP","MG","RJ","BA","PE","CE","PA","GO","MT","DF","ES","PB","RN","AC","AL","AP","AM","MS","RO","RR","TO"].map(uf=>(<option key={uf} value={uf} style={{background:"#1a1a1a"}}>{uf}</option>))}
                   </select>
                 </div>
               </div>
@@ -20324,15 +20289,15 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Gerente Responsável</div>
-                  <select value={filialForm.gerente} onChange={easync =>setFilialForm(pasync =>({...p,gerente:e.target.value}))}
+                  <select value={filialForm.gerente} onChange={e=>setFilialForm(p=>({...p,gerente:e.target.value}))}
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}>
                     <option value="" style={{background:"#1a1a1a"}}>— Selecionar —</option>
-                    {members.map(masync =>(<option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>))}
+                    {members.map(m=>(<option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>))}
                   </select>
                 </div>
                 <div>
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>Data de Abertura</div>
-                  <input type="date" value={filialForm.dataAbertura} onChange={easync =>setFilialForm(pasync =>({...p,dataAbertura:e.target.value}))}
+                  <input type="date" value={filialForm.dataAbertura} onChange={e=>setFilialForm(p=>({...p,dataAbertura:e.target.value}))}
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
                     onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                     onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
@@ -20344,8 +20309,8 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
             <div style={{marginBottom:14}}>
               <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>🎨 Cor da Filial</div>
               <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                {["#FF6A00","#A855F7","#3B82F6","#1EC98C","#22C55E","#F59E0B","#EF4444","#E91E8C","#06B6D4","#8B5CF6"].map(casync =>(
-                  <div key={c} onClick={()async =>setFilialForm(pasync =>({...p,cor:c}))} style={{width:28,height:28,borderRadius:"50%",background:c,cursor:"pointer",
+                {["#FF6A00","#A855F7","#3B82F6","#1EC98C","#22C55E","#F59E0B","#EF4444","#E91E8C","#06B6D4","#8B5CF6"].map(c=>(
+                  <div key={c} onClick={()=>setFilialForm(p=>({...p,cor:c}))} style={{width:28,height:28,borderRadius:"50%",background:c,cursor:"pointer",
                     border:filialForm.cor===c?`3px solid rgba(255,255,255,0.90)`:"3px solid transparent",
                     boxShadow:filialForm.cor===c?`0 0 12px ${c}88`:"none",transition:"all 0.15s"}}/>
                 ))}
@@ -20354,7 +20319,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
 
             <div style={{marginBottom:12}}>
               <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>📝 Observações</div>
-              <textarea value={filialForm.obs} onChange={easync =>setFilialForm(pasync =>({...p,obs:e.target.value}))} placeholder="Notas adicionais sobre a filial..."
+              <textarea value={filialForm.obs} onChange={e=>setFilialForm(p=>({...p,obs:e.target.value}))} placeholder="Notas adicionais sobre a filial..."
                 style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",resize:"vertical",minHeight:"60px"}}
                 onFocus={e=>e.target.style.border="1px solid rgba(34,197,94,0.50)"}
                 onBlur={e=>e.target.style.border="1px solid var(--cbord)"}/>
@@ -20362,7 +20327,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
 
             <div style={{marginBottom:18}}>
               <label style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer",fontSize:14,fontFamily:POP,color:"var(--ct)"}}>
-                <input type="checkbox" checked={filialForm.ativo} onChange={easync =>setFilialForm(pasync =>({...p,ativo:e.target.checked}))}
+                <input type="checkbox" checked={filialForm.ativo} onChange={e=>setFilialForm(p=>({...p,ativo:e.target.checked}))}
                   style={{width:18,height:18,cursor:"pointer"}}/>
                 Filial ativa
               </label>
@@ -20384,7 +20349,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
                 Nenhuma filial criada
               </div>
             )}
-            {filiais.map(fasync =>(
+            {filiais.map(f=>(
               <GlassBox key={f.id} style={{borderRadius:20,padding:"20px",border:`1px solid ${f.cor}25`}} glow={f.cor+"18"}>
                 <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:14}}>
                   <div style={{display:"flex",alignItems:"center",gap:12,flex:1}}>
@@ -20523,7 +20488,6 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
     </div>
   );
 }
-
 
 // ─── Quadro Especiais ──────────────────────────────────────────────────────
 function EspeciaisView({ clientes, addLog }) {
