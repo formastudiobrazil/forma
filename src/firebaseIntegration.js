@@ -216,20 +216,3 @@ export const listenToCollection = (collectionName, callback) => {
   // Implementar com onSnapshot() para sincronização em tempo real
   console.log('⏳ Real-time listeners serão implementados na fase 2');
 };
-
-export default {
-  readCollection,
-  readDocument,
-  writeDocument,
-  updateDocument,
-  deleteDocument,
-  loadClientes,
-  loadMembers,
-  loadDemands,
-  loadCalendar,
-  saveCliente,
-  saveMember,
-  saveDemand,
-  saveCalendarEvent,
-  deleteCliente
-};
