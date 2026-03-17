@@ -16680,14 +16680,14 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
             updated[day] = rows.map(function(r){
               if(SAFE.indexOf(r.status) === -1) {
                 changed = true;
-                return Object.assign({}, r, {status:"atrasado"});
+                // return Object.assign({}, r, {status:"atrasado"});
               }
               return r;
             });
           }
           if(changed) setAtrasadoAlert(true);
           return changed ? updated : prev;
-        });
+          // });
       }
     }
     check();
@@ -16707,7 +16707,7 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
       // Archive snapshot (no files)
       // setCalendar(function(prev){
         var snapshot = {};
-        DAYS.forEach(function(d){ snapshot[d.id]=(prev[d.id]||[]).map(function(r){return Object.assign({},r,{files:[]});}); });
+        // DAYS.forEach(function(d){ snapshot[d.id]=(prev[d.id]||[]).map(function(r){return Object.assign({},r,{files:[]});}); });
         var mon = getThisWeekMonday();
         mon.setDate(mon.getDate()-7); // last week
         var wKey = weekKeyFromMonday(mon);
