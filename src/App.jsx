@@ -109,7 +109,7 @@ class ErrorBoundary extends React.Component {
 
 // persistência via useState (migrar para API futuramente)
 
-import { initializeApp, getApp } from "firebase/app";
+import { initializeApp, getApp, getApps } from "firebase/app";
 import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 
@@ -126,11 +126,10 @@ const FIREBASE_CONFIG = {
   appId: "1:219418656334:web:432ac272547d9e85950d1f"
 };
 
-let firebaseApp;
-try {
+let firebaseApp = null;
+if (!getApps().length) {
   firebaseApp = initializeApp(FIREBASE_CONFIG);
-} catch (err) {
-  if (!/already exists/.test(err.message)) throw err;
+} else {
   firebaseApp = getApp();
 }
 const firestoreDb = getFirestore(firebaseApp);
