@@ -15515,6 +15515,31 @@ function AdminClientesGestaoPanel({ clienteUsers, setClienteUsers, clienteInfos,
   );
 }
 
+// ╔═══════════════════════════════════════════╗
+// ║ Field Component (shared, não recria)     ║
+// ╚═══════════════════════════════════════════╝
+const SharedField = React.memo(({form, setForm, label, k, type, placeholder}) => {
+  const handleChange = React.useCallback((e) => {
+    setForm(p => ({...p, [k]: e.target.value}));
+  }, [k, setForm]);
+  
+  return (
+    <div>
+      <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{label}</div>
+      <input 
+        type={type} 
+        value={form[k]||""} 
+        onChange={handleChange} 
+        placeholder={placeholder}
+        style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
+        onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
+        onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
+      />
+    </div>
+  );
+});
+
+
 function AdminShell({ user, onBack, addLog, chatUnread, activityLog, onUpdateUser, onLogout, chatChannels, setChatChannels, members, setMembers, onMarkChatRead, theme, setTheme, quickAccess, setQuickAccess, adminVendas, setAdminVendas, crmLeads: _crmLeadsA, contratos: _contratos, setContratos: _setContratos, colaboradores: _colaboradores, setColaboradores: _setColaboradores, financeiroDados: _financeiroDados, setFinanceiroDados: _setFinanceiroDados, okrs: _okrs, setOkrs: _setOkrs, avisos, setAvisos, notifications, onMarkAllNotifsRead, onClearAllNotifs, feedbacks, setFeedbacks, csData, clientes: _clientesAdmin, contratoIniciadoNotif, setContratoIniciadoNotif, categoriasDocs, setCategoriasDocs, filiais: _filiais, setFiliais: _setFiliais, clienteUsers, setClienteUsers, clienteInfos, setClienteInfos, clienteInsights, setClienteInsights, clienteConfig, setClienteConfig, demands: _demands, setDemands: _setDemands, pins: _pins, setPins: _setPins }) {
   const [showQuickAccess, setShowQuickAccess] = React.useState(false);
   const _ADTheme = useTheme();
@@ -17772,20 +17797,7 @@ function MyProfilePanel({ member, onSave, onClose }) {
     setTimeout(() => { setSaved(false); onClose(); }, 900);
   };
 
-  const Field = ({label, k, type, placeholder}) => (
-    <div>
-      <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>{label}</div>
-      <input 
-        type={type} 
-        value={form[k]||""} 
-        onChange={e=>setForm(p=>({...p,[k]:e.target.value}))} 
-        placeholder={placeholder}
-        style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"9px 13px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
-        onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
-        onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
-      />
-    </div>
-  );
+  const Field = ({label,k,type,placeholder}) => <SharedField form={form} setForm={setForm} label={label} k={k} type={type} placeholder={placeholder} />;
 
   return (
     <div style={{position:"fixed",inset:0,zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.75)",backdropFilter:"blur(10px)"}}>
@@ -20231,20 +20243,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
     setTimeout(()=>{ setPinSaved(false); setResetPinId(null); setNewPin(""); },1200);
   };
 
-  const Field = ({label,k,type,placeholder}) => (
-    <div>
-      <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{label}</div>
-      <input 
-        type={type} 
-        value={form[k]||""} 
-        onChange={e=>setForm(p=>({...p,[k]:e.target.value}))} 
-        placeholder={placeholder}
-        style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
-        onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
-        onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
-      />
-    </div>
-  );
+  const Field = ({label,k,type,placeholder}) => <SharedField form={form} setForm={setForm} label={label} k={k} type={type} placeholder={placeholder} />;
 
   const [adminTab, setAdminTab] = React.useState("usuarios");
   const [creatingPin, setCreatingPin] = React.useState(false);
@@ -20302,7 +20301,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
   };
 
   return (
-    <div style={{animation:"fadeUp 0.3s ease",padding:"0 0"}}>
+    <div style={{animation:"fadeUp 0.3s ease",padding:"0 0",maxHeight:"calc(100vh - 120px)",overflowY:"auto"}}>
       {/* Tab header */}
       <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20,flexWrap:"wrap"}}>
         <div style={{fontSize:18,fontWeight:700,color:"var(--ct)",fontFamily:POP,flex:1}}>⚙️ Administração</div>
