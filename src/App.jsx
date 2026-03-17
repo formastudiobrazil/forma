@@ -15515,30 +15515,13 @@ function AdminClientesGestaoPanel({ clienteUsers, setClienteUsers, clienteInfos,
   );
 }
 
-// ╔═══════════════════════════════════════════╗
-// ║ Field Component (shared, não recria)     ║
-// ╚═══════════════════════════════════════════╝
-const SharedField = React.memo(({form, setForm, label, k, type, placeholder}) => {
-  const handleChange = React.useCallback((e) => {
-    setForm(p => ({...p, [k]: e.target.value}));
-  }, [k, setForm]);
-  
-  return (
-    <div>
-      <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{label}</div>
-      <input 
-        type={type} 
-        value={form[k]||""} 
-        onChange={handleChange} 
-        placeholder={placeholder}
-        style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
-        onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
-        onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
-      />
-    </div>
-  );
-});
-
+// Simple Input Field (não recria)
+const SimpleField = ({form, setForm, label, k, type, placeholder}) => (
+  <div>
+    <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{label}</div>
+    <input type={type||"text"} value={form[k]||""} onChange={e=>setForm(p=>({...p,[k]:e.target.value}))} placeholder={placeholder} style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}} onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`} onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`} />
+  </div>
+);
 
 function AdminShell({ user, onBack, addLog, chatUnread, activityLog, onUpdateUser, onLogout, chatChannels, setChatChannels, members, setMembers, onMarkChatRead, theme, setTheme, quickAccess, setQuickAccess, adminVendas, setAdminVendas, crmLeads: _crmLeadsA, contratos: _contratos, setContratos: _setContratos, colaboradores: _colaboradores, setColaboradores: _setColaboradores, financeiroDados: _financeiroDados, setFinanceiroDados: _setFinanceiroDados, okrs: _okrs, setOkrs: _setOkrs, avisos, setAvisos, notifications, onMarkAllNotifsRead, onClearAllNotifs, feedbacks, setFeedbacks, csData, clientes: _clientesAdmin, contratoIniciadoNotif, setContratoIniciadoNotif, categoriasDocs, setCategoriasDocs, filiais: _filiais, setFiliais: _setFiliais, clienteUsers, setClienteUsers, clienteInfos, setClienteInfos, clienteInsights, setClienteInsights, clienteConfig, setClienteConfig, demands: _demands, setDemands: _setDemands, pins: _pins, setPins: _setPins }) {
   const [showQuickAccess, setShowQuickAccess] = React.useState(false);
@@ -16553,252 +16536,28 @@ function AppInner() {
   const todayDayId = () => { const d=["dom","seg","ter","qua","qui","sex","sab"][new Date().getDay()]; return DAYS.find(x=>x.id===d)?d:"seg"; };
   const [activeDay,setActiveDay]   = useState(todayDayId);
   const [calendar, calendarCRUD, calendarLoading] = useFirebaseCollection("calendar", INIT_CALENDAR);
-  const setCalendar = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(calendar || []);
-        if(Array.isArray(updated) && calendarCRUD) {
-          updated.forEach(function(item) {
-            if(calendarCRUD.update) calendarCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setCalendar:', err);
-      }
-    }
-  };
   const [calendarHistory, setCalendarHistory] = useState([]); // [{weekStart, data (no files)}]
   const [futurePosts, setFuturePosts] = useState({}); // {weekKey: {seg:[],ter:[],...}}
   const [showHistorico, setShowHistorico] = useState(false);
   const [showProxSemanas, setShowProxSemanas] = useState(false);
   const [news, newsCRUD, newsLoading] = useFirebaseCollection("news", INIT_NEWS);
-  const setNews = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(news || []);
-        if(Array.isArray(updated) && newsCRUD) {
-          updated.forEach(function(item) {
-            if(newsCRUD.update) newsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setNews:', err);
-      }
-    }
-  };
   const [demands, demandsCRUD, demandsLoading] = useFirebaseCollection("demands", INIT_DEMANDS);
-  const setDemands = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(demands || []);
-        if(Array.isArray(updated) && demandsCRUD) {
-          updated.forEach(function(item) {
-            if(demandsCRUD.update) demandsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setDemands:', err);
-      }
-    }
-  };
   const [ads, adsCRUD, adsLoading] = useFirebaseCollection("ads", INIT_ADS);
-  const setAds = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(ads || []);
-        if(Array.isArray(updated) && adsCRUD) {
-          updated.forEach(function(item) {
-            if(adsCRUD.update) adsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setAds:', err);
-      }
-    }
-  };
   const [meetings, meetingsCRUD, meetingsLoading] = useFirebaseCollection("meetings", INIT_MEETINGS);
-  const setMeetings = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(meetings || []);
-        if(Array.isArray(updated) && meetingsCRUD) {
-          updated.forEach(function(item) {
-            if(meetingsCRUD.update) meetingsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setMeetings:', err);
-      }
-    }
-  };
   const [captacoesAV, captacoesAVCRUD, captacoesAVLoading] = useFirebaseCollection("captacoes_av", INIT_CAPTACOES_AV);
-  const setCaptacoesAV = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(captacoesAV || []);
-        if(Array.isArray(updated) && captacoesAVCRUD) {
-          updated.forEach(function(item) {
-            if(captacoesAVCRUD.update) captacoesAVCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setCaptacoesAV:', err);
-      }
-    }
-  };
   const [inboundClientes, inboundClientesCRUD, inboundClientesLoading] = useFirebaseCollection("inbound_clientes", INIT_INBOUND_CLIENTES);
-  const setInboundClientes = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(inboundClientes || []);
-        if(Array.isArray(updated) && inboundClientesCRUD) {
-          updated.forEach(function(item) {
-            if(inboundClientesCRUD.update) inboundClientesCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setInboundClientes:', err);
-      }
-    }
-  };
   const [sdrLeads, sdrLeadsCRUD, sdrLeadsLoading] = useFirebaseCollection("sdr_leads", INIT_SDR_LEADS);
-  const setSdrLeads = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(sdrLeads || []);
-        if(Array.isArray(updated) && sdrLeadsCRUD) {
-          updated.forEach(function(item) {
-            if(sdrLeadsCRUD.update) sdrLeadsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setSdrLeads:', err);
-      }
-    }
-  };
   const [adminVendas, setAdminVendas]       = useState([]);
   const [avisos, setAvisos]                 = useState([]); // announcements created by admin
   const [documentacoes, documentacoesCRUD, documentacoesLoading] = useFirebaseCollection("documentacoes", INIT_DOCUMENTACOES);
-  const setDocumentacoes = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(documentacoes || []);
-        if(Array.isArray(updated) && documentacoesCRUD) {
-          updated.forEach(function(item) {
-            if(documentacoesCRUD.update) documentacoesCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setDocumentacoes:', err);
-      }
-    }
-  };
   const [categoriasDocs, categoriasDocsCRUD, categoriasDocsLoading] = useFirebaseCollection("categoriasdocs", INIT_CATEGORIAS_DOCS);
-  const setCategoriasDocs = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(categoriasDocs || []);
-        if(Array.isArray(updated) && categoriasDocsCRUD) {
-          updated.forEach(function(item) {
-            if(categoriasDocsCRUD.update) categoriasDocsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setCategoriasDocs:', err);
-      }
-    }
-  };
   // ── Shared state (persists across area switches) ───────────────
   const [crmLeads, crmLeadsCRUD, crmLeadsLoading] = useFirebaseCollection("crm_leads", INIT_CRM_LEADS);
-  const setCrmLeads = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(crmLeads || []);
-        if(Array.isArray(updated) && crmLeadsCRUD) {
-          updated.forEach(function(item) {
-            if(crmLeadsCRUD.update) crmLeadsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setCrmLeads:', err);
-      }
-    }
-  };
   const [crmMetas, crmMetasCRUD, crmMetasLoading] = useFirebaseCollection("metas", INIT_METAS);
-  const setCrmMetas = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(crmMetas || []);
-        if(Array.isArray(updated) && crmMetasCRUD) {
-          updated.forEach(function(item) {
-            if(crmMetasCRUD.update) crmMetasCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setCrmMetas:', err);
-      }
-    }
-  };
   const [contratos, contratosCRUD, contratosLoading] = useFirebaseCollection("contratos", INIT_CONTRATOS);
-  const setContratos = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(contratos || []);
-        if(Array.isArray(updated) && contratosCRUD) {
-          updated.forEach(function(item) {
-            if(contratosCRUD.update) contratosCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setContratos:', err);
-      }
-    }
-  };
   const [colaboradores, colaboradoresCRUD, colaboradoresLoading] = useFirebaseCollection("colaboradores", INIT_COLABORADORES);
-  const setColaboradores = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(colaboradores || []);
-        if(Array.isArray(updated) && colaboradoresCRUD) {
-          updated.forEach(function(item) {
-            if(colaboradoresCRUD.update) colaboradoresCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setColaboradores:', err);
-      }
-    }
-  };
   const [financeiroDados, financeiroDadosCRUD, financeiroDadosLoading] = useFirebaseCollection("financeiro", INIT_FINANCEIRO);
-  const setFinanceiroDados = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(financeiroDados || []);
-        if(Array.isArray(updated) && financeiroDadosCRUD) {
-          updated.forEach(function(item) {
-            if(financeiroDadosCRUD.update) financeiroDadosCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setFinanceiroDados:', err);
-      }
-    }
-  };
   const [okrs, okrsCRUD, okrsLoading] = useFirebaseCollection("okrs", INIT_OKRS);
-  const setOkrs = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(okrs || []);
-        if(Array.isArray(updated) && okrsCRUD) {
-          updated.forEach(function(item) {
-            if(okrsCRUD.update) okrsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setOkrs:', err);
-      }
-    }
-  };
   const [feedbacks, setFeedbacks]           = useState(function(){return getFeedbacks();}); // persisted in localStorage
   // ITEM 19: Notificações persistidas no localStorage
   const [notifications, setNotifications] = React.useState(function(){
@@ -16814,126 +16573,14 @@ function AppInner() {
   }, []);
   const [agendaReunioes, setAgendaReunioes] = useState([]);
   const [customBoards, customBoardsCRUD, customBoardsLoading] = useFirebaseCollection("customboards", INIT_CUSTOM_BOARDS);
-  const setCustomBoards = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(customBoards || []);
-        if(Array.isArray(updated) && customBoardsCRUD) {
-          updated.forEach(function(item) {
-            if(customBoardsCRUD.update) customBoardsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setCustomBoards:', err);
-      }
-    }
-  };
   const [members, membersCRUD, membersLoading] = useFirebaseCollection("members", INIT_MEMBERS);
-  const setMembers = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(members || []);
-        if(Array.isArray(updated) && membersCRUD) {
-          updated.forEach(function(item) {
-            if(membersCRUD.update) membersCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setMembers:', err);
-      }
-    }
-  };
   const [filiais, filiaisCRUD, filiaisLoading] = useFirebaseCollection("filiais", INIT_FILIAIS);
-  const setFiliais = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(filiais || []);
-        if(Array.isArray(updated) && filiaisCRUD) {
-          updated.forEach(function(item) {
-            if(filiaisCRUD.update) filiaisCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setFiliais:', err);
-      }
-    }
-  };
   const [customDatas,setCustomDatas] = useState({});
   const [statuses, statusesCRUD, statusesLoading] = useFirebaseCollection("statuses", INIT_STATUSES);
-  const setStatuses = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(statuses || []);
-        if(Array.isArray(updated) && statusesCRUD) {
-          updated.forEach(function(item) {
-            if(statusesCRUD.update) statusesCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setStatuses:', err);
-      }
-    }
-  };
   const [tipos, tiposCRUD, tiposLoading] = useFirebaseCollection("tipos", INIT_TIPOS);
-  const setTipos = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(tipos || []);
-        if(Array.isArray(updated) && tiposCRUD) {
-          updated.forEach(function(item) {
-            if(tiposCRUD.update) tiposCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setTipos:', err);
-      }
-    }
-  };
   const [tiposEntrega, tiposEntregaCRUD, tiposEntregaLoading] = useFirebaseCollection("tiposentrega", INIT_TIPOS_ENTREGA);
-  const setTiposEntrega = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(tiposEntrega || []);
-        if(Array.isArray(updated) && tiposEntregaCRUD) {
-          updated.forEach(function(item) {
-            if(tiposEntregaCRUD.update) tiposEntregaCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setTiposEntrega:', err);
-      }
-    }
-  };
   const [monthEmojis, monthEmojisCRUD, monthEmojisLoading] = useFirebaseCollection("monthemojis", INIT_MONTH_EMOJIS);
-  const setMonthEmojis = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(monthEmojis || []);
-        if(Array.isArray(updated) && monthEmojisCRUD) {
-          updated.forEach(function(item) {
-            if(monthEmojisCRUD.update) monthEmojisCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setMonthEmojis:', err);
-      }
-    }
-  };
   const [navConfig, navConfigCRUD, navConfigLoading] = useFirebaseCollection("navconfig", INIT_NAV_CONFIG);
-  const setNavConfig = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(navConfig || []);
-        if(Array.isArray(updated) && navConfigCRUD) {
-          updated.forEach(function(item) {
-            if(navConfigCRUD.update) navConfigCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setNavConfig:', err);
-      }
-    }
-  };
   const [csData, setCsData]             = useState({});  // {clienteId: {saude, interacoes:[], followUps:[], churnRisk, obs}}
   const [crmStages,setCrmStages]     = useState(null); // null = use defaults
   const [crmOrigens,setCrmOrigens]   = useState(null); // null = use defaults
@@ -16942,117 +16589,19 @@ function AppInner() {
   const DEFAULT_CLIENTE_TAGS = [{id:"ativo",label:"Ativo",cor:"#22C55E"},{id:"premium",label:"Premium",cor:"#F59E0B"},{id:"b2b",label:"B2B",cor:"#3B82F6"},{id:"antigo",label:"Antigo",cor:"#8B5CF6"},{id:"pausado",label:"Pausado",cor:"#6B7280"},{id:"novo",label:"Novo",cor:"#EC4899"}];
   const [clienteTags,setClienteTags] = useState(DEFAULT_CLIENTE_TAGS);
   const [chatChannels, chatChannelsCRUD, chatChannelsLoading] = useFirebaseCollection("chat_channels", INIT_CHAT_CHANNELS);
-  const setChatChannels = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(chatChannels || []);
-        if(Array.isArray(updated) && chatChannelsCRUD) {
-          updated.forEach(function(item) {
-            if(chatChannelsCRUD.update) chatChannelsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setChatChannels:', err);
-      }
-    }
-  };
   const [lastSeenMsgCount, setLastSeenMsgCount] = useState(0);
   const totalChatMsgs = chatChannels.reduce((s,ch)=>s+ch.messages.length,0);
   const chatUnread = Math.max(0, totalChatMsgs - lastSeenMsgCount);
   // ── PORTAL DO CLIENTE ───────
   const [clienteUsers, clienteUsersCRUD, clienteUsersLoading] = useFirebaseCollection("clienteusers", INIT_CLIENTE_USERS);
-  const setClienteUsers = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(clienteUsers || []);
-        if(Array.isArray(updated) && clienteUsersCRUD) {
-          updated.forEach(function(item) {
-            if(clienteUsersCRUD.update) clienteUsersCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setClienteUsers:', err);
-      }
-    }
-  };
   const [clienteInfos, clienteInfosCRUD, clienteInfosLoading] = useFirebaseCollection("clienteinfos", INIT_CLIENTE_INFOS);
-  const setClienteInfos = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(clienteInfos || []);
-        if(Array.isArray(updated) && clienteInfosCRUD) {
-          updated.forEach(function(item) {
-            if(clienteInfosCRUD.update) clienteInfosCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setClienteInfos:', err);
-      }
-    }
-  };
   const [clienteInsights, clienteInsightsCRUD, clienteInsightsLoading] = useFirebaseCollection("clienteinsights", INIT_CLIENTE_INSIGHTS);
-  const setClienteInsights = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(clienteInsights || []);
-        if(Array.isArray(updated) && clienteInsightsCRUD) {
-          updated.forEach(function(item) {
-            if(clienteInsightsCRUD.update) clienteInsightsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setClienteInsights:', err);
-      }
-    }
-  };
   const [clienteConfig, clienteConfigCRUD, clienteConfigLoading] = useFirebaseCollection("clienteconfig", INIT_CLIENTE_CONFIG);
-  const setClienteConfig = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(clienteConfig || []);
-        if(Array.isArray(updated) && clienteConfigCRUD) {
-          updated.forEach(function(item) {
-            if(clienteConfigCRUD.update) clienteConfigCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setClienteConfig:', err);
-      }
-    }
-  };
   const [clienteLoginType, setClienteLoginType] = useState(null); // null | "cliente" | "colaborador"
   const [clienteAuthUser, setClienteAuthUser] = useState(null); // {id, email, nome, contasAtreladas}
   const [clienteSelectedAccount, setClienteSelectedAccount] = useState(null); // "cli1" | "cli2" | etc
   const [planejamento, planejamentoCRUD, planejamentoLoading] = useFirebaseCollection("planejamento", INIT_PLANEJAMENTO);
-  const setPlanejamento = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(planejamento || []);
-        if(Array.isArray(updated) && planejamentoCRUD) {
-          updated.forEach(function(item) {
-            if(planejamentoCRUD.update) planejamentoCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setPlanejamento:', err);
-      }
-    }
-  };
   const [clientes, clientesCRUD, clientesLoading] = useFirebaseCollection("clientes", INIT_CLIENTES);
-  const setClientes = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(clientes || []);
-        if(Array.isArray(updated) && clientesCRUD) {
-          updated.forEach(function(item) {
-            if(clientesCRUD.update) clientesCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setClientes:', err);
-      }
-    }
-  };
 
   // ── Reset planejamento on January 1st each year ──
   React.useEffect(function() {
@@ -17071,68 +16620,12 @@ function AppInner() {
   const [dragNavIdx, setDragNavIdx]     = useState(null);
   const [dragOverIdx, setDragOverIdx]   = useState(null);
   const [activityLog, activityLogCRUD, activityLogLoading] = useFirebaseCollection("activity", INIT_ACTIVITY);
-  const setActivityLog = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(activityLog || []);
-        if(Array.isArray(updated) && activityLogCRUD) {
-          updated.forEach(function(item) {
-            if(activityLogCRUD.update) activityLogCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setActivityLog:', err);
-      }
-    }
-  };
   const [qualityRatings, setQualityRatings] = useState({}); // {clienteId: [{nota,obs,year,month,ts,autor}]}
   const [cpsInitClient, setCpsInitClient] = useState(null);
   const [clientScoresHistory, setClientScoresHistory] = useState({}); // {clienteId: [{score,label,period}]}
   const [privateBoards, privateBoardsCRUD, privateBoardsLoading] = useFirebaseCollection("privateboards", INIT_PRIVATE_BOARDS);
-  const setPrivateBoards = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(privateBoards || []);
-        if(Array.isArray(updated) && privateBoardsCRUD) {
-          updated.forEach(function(item) {
-            if(privateBoardsCRUD.update) privateBoardsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setPrivateBoards:', err);
-      }
-    }
-  };
   const [clienteDados, clienteDadosCRUD, clienteDadosLoading] = useFirebaseCollection("clientedados", INIT_CLIENTE_DADOS);
-  const setClienteDados = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(clienteDados || []);
-        if(Array.isArray(updated) && clienteDadosCRUD) {
-          updated.forEach(function(item) {
-            if(clienteDadosCRUD.update) clienteDadosCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setClienteDados:', err);
-      }
-    }
-  };
   const [pins, pinsCRUD, pinsLoading] = useFirebaseCollection("pins", INIT_PINS);
-  const setPins = function(updater) {
-    if(typeof updater === 'function') {
-      try {
-        var updated = updater(pins || []);
-        if(Array.isArray(updated) && pinsCRUD) {
-          updated.forEach(function(item) {
-            if(pinsCRUD.update) pinsCRUD.update(item.id || item.key, item);
-          });
-        }
-      } catch(err) {
-        console.error('Erro em setPins:', err);
-      }
-    }
-  };
   const [incidentes, setIncidentes]       = useState([]);
   const [cronData, setCronData]           = useState({});
   const [theme, setTheme]               = useState("dark"); // dark | night | light
@@ -17797,7 +17290,6 @@ function MyProfilePanel({ member, onSave, onClose }) {
     setTimeout(() => { setSaved(false); onClose(); }, 900);
   };
 
-  const Field = ({label,k,type,placeholder}) => <SharedField form={form} setForm={setForm} label={label} k={k} type={type} placeholder={placeholder} />;
 
   return (
     <div style={{position:"fixed",inset:0,zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.75)",backdropFilter:"blur(10px)"}}>
@@ -17818,11 +17310,11 @@ function MyProfilePanel({ member, onSave, onClose }) {
 
         <div style={{display:"flex",flexDirection:"column",gap:14,marginBottom:20}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            <Field label="Nome completo" k="name"/>
-            <Field label="Cargo" k="role"/>
+            <SimpleField form={form} setForm={setForm} label="Nome completo" k="name"/>
+            <SimpleField form={form} setForm={setForm} label="Cargo" k="role"/>
           </div>
-          <Field label="E-mail" k="email" type="email"/>
-          <Field label="Data de entrada" k="joinDate" type="date"/>
+          <SimpleField form={form} setForm={setForm} label="E-mail" k="email" type="email"/>
+          <SimpleField form={form} setForm={setForm} label="Data de entrada" k="joinDate" type="date"/>
           <div>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>Sobre mim</div>
             <textarea value={form.bio||""} onChange={e=>setForm(p=>({...p,bio:e.target.value}))} rows={3} placeholder="Uma breve descrição sobre você..."
@@ -20243,7 +19735,6 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
     setTimeout(()=>{ setPinSaved(false); setResetPinId(null); setNewPin(""); },1200);
   };
 
-  const Field = ({label,k,type,placeholder}) => <SharedField form={form} setForm={setForm} label={label} k={k} type={type} placeholder={placeholder} />;
 
   const [adminTab, setAdminTab] = React.useState("usuarios");
   const [creatingPin, setCreatingPin] = React.useState(false);
@@ -20301,7 +19792,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
   };
 
   return (
-    <div style={{animation:"fadeUp 0.3s ease",padding:"0 0",maxHeight:"calc(100vh - 120px)",overflowY:"auto"}}>
+    <div style={{animation:"fadeUp 0.3s ease",padding:"0 0"}}>
       {/* Tab header */}
       <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20,flexWrap:"wrap"}}>
         <div style={{fontSize:18,fontWeight:700,color:"var(--ct)",fontFamily:POP,flex:1}}>⚙️ Administração</div>
@@ -20335,7 +19826,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
       {adminTab==="usuarios"&&(<>
       {/* Create/edit form */}
       {creating && (
-        <GlassBox style={{borderRadius:20,padding:"22px 24px",marginBottom:24,border:`1px solid rgba(255,106,0,0.25)`,maxHeight:"70vh",overflowY:"auto"}}>
+        <GlassBox style={{borderRadius:20,padding:"22px 24px",marginBottom:24,border:`1px solid rgba(255,106,0,0.25)`}}>
           <div style={{fontSize:15,fontWeight:700,color:"var(--ct)",fontFamily:POP,marginBottom:18}}>{editingId?"Editar Usuário":"Criar Novo Usuário"}</div>
 
           {/* Photo */}
@@ -20357,13 +19848,13 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
           </div>
 
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
-            <Field label="Nome completo" k="name"/>
-            <Field label="Cargo" k="role" placeholder="Social Media, Design..."/>
-            <Field label="E-mail" k="email" type="email"/>
-            <Field label="Iniciais (ex: AB)" k="initials" placeholder="Auto"/>
-            <Field label="Data de entrada" k="joinDate" type="date"/>
-            <Field label="Data de nascimento" k="birthDate" type="date"/>
-            <Field label="Senha" k="pass" type="password" placeholder="Mínimo 4 caracteres"/>
+            <SimpleField form={form} setForm={setForm} label="Nome completo" k="name"/>
+            <SimpleField form={form} setForm={setForm} label="Cargo" k="role" placeholder="Social Media, Design..."/>
+            <SimpleField form={form} setForm={setForm} label="E-mail" k="email" type="email"/>
+            <SimpleField form={form} setForm={setForm} label="Iniciais (ex: AB)" k="initials" placeholder="Auto"/>
+            <SimpleField form={form} setForm={setForm} label="Data de entrada" k="joinDate" type="date"/>
+            <SimpleField form={form} setForm={setForm} label="Data de nascimento" k="birthDate" type="date"/>
+            <SimpleField form={form} setForm={setForm} label="Senha" k="pass" type="password" placeholder="Mínimo 4 caracteres"/>
           </div>
 
           <div style={{marginBottom:12}}>
@@ -21241,6 +20732,6 @@ function EspeciaisView({ clientes, addLog }) {
   );
 }
 
-export default function App() {
+function App() {
   return <ErrorBoundary><AppInner/></ErrorBoundary>;
 }
