@@ -118,12 +118,12 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCxRjTUm8npYXjrVOaVGuzUo_PzSpXQEPw",
+  authDomain: "formaos-bafad.firebaseapp.com",
+  projectId: "formaos-bafad",
+  storageBucket: "formaos-bafad.firebasestorage.app",
+  messagingSenderId: "219418656334",
+  appId: "1:219418656334:web:432ac272547d9e85950d1f"
 };
 
 let firebaseApp;
