@@ -16528,42 +16528,27 @@ function AppInner() {
   const todayDayId = () => { const d=["dom","seg","ter","qua","qui","sex","sab"][new Date().getDay()]; return DAYS.find(x=>x.id===d)?d:"seg"; };
   const [activeDay,setActiveDay]   = useState(todayDayId);
   const [calendar, calendarCRUD, calendarLoading] = useFirebaseCollection("calendar", INIT_CALENDAR);
-  // Criar setCalendar que funciona com Firebase
   const setCalendar = function(updater) {
     if(typeof updater === 'function') {
       try {
-        var updated = updater(calendar || {});
+        var updated = updater(calendar || []);
         // Sincronizar com Firebase
-        Object.keys(updated).forEach(function(day) {
-          var oldItems = (calendar[day] || []).map(function(item) { return item.id; });
-          var newItems = (updated[day] || []).map(function(item) { return item.id; });
-          
-          // Adicionar/atualizar items
-          (updated[day] || []).forEach(function(item) {
-            if(oldItems.indexOf(item.id) > -1 && calendarCRUD.update) {
-              calendarCRUD.update(item.id, item);
-            } else if(!oldItems.includes(item.id) && calendarCRUD.add) {
-              calendarCRUD.add(item);
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(calendarCRUD && calendarCRUD.update) {
+              calendarCRUD.update(item.id || item.key, item);
             }
           });
-          
-          // Remover items deletados
-          oldItems.forEach(function(id) {
-            if(newItems.indexOf(id) === -1 && calendarCRUD.delete) {
-              calendarCRUD.delete(id);
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(calendarCRUD && calendarCRUD.update) {
+              calendarCRUD.update(key, updated[key]);
             }
           });
-        });
+        }
       } catch(err) {
         console.error('Erro em setCalendar:', err);
       }
-    } else if(updater && typeof updater === 'object') {
-      // Se passar um objeto direto
-      Object.keys(updater).forEach(function(day) {
-        (updater[day] || []).forEach(function(item) {
-          if(calendarCRUD.update) calendarCRUD.update(item.id, item);
-        });
-      });
     }
   };
   const [calendarHistory, setCalendarHistory] = useState([]); // [{weekStart, data (no files)}]
@@ -16571,23 +16556,368 @@ function AppInner() {
   const [showHistorico, setShowHistorico] = useState(false);
   const [showProxSemanas, setShowProxSemanas] = useState(false);
   const [news, newsCRUD, newsLoading] = useFirebaseCollection("news", INIT_NEWS);
+  const setNews = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(news || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(newsCRUD && newsCRUD.update) {
+              newsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(newsCRUD && newsCRUD.update) {
+              newsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setNews:', err);
+      }
+    }
+  };
   const [demands, demandsCRUD, demandsLoading] = useFirebaseCollection("demands", INIT_DEMANDS);
+  const setDemands = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(demands || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(demandsCRUD && demandsCRUD.update) {
+              demandsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(demandsCRUD && demandsCRUD.update) {
+              demandsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setDemands:', err);
+      }
+    }
+  };
   const [ads, adsCRUD, adsLoading] = useFirebaseCollection("ads", INIT_ADS);
+  const setAds = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(ads || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(adsCRUD && adsCRUD.update) {
+              adsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(adsCRUD && adsCRUD.update) {
+              adsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setAds:', err);
+      }
+    }
+  };
   const [meetings, meetingsCRUD, meetingsLoading] = useFirebaseCollection("meetings", INIT_MEETINGS);
+  const setMeetings = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(meetings || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(meetingsCRUD && meetingsCRUD.update) {
+              meetingsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(meetingsCRUD && meetingsCRUD.update) {
+              meetingsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setMeetings:', err);
+      }
+    }
+  };
   const [captacoesAV, captacoesAVCRUD, captacoesAVLoading] = useFirebaseCollection("captacoes_av", INIT_CAPTACOES_AV);
+  const setCaptacoesAV = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(captacoesAV || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(captacoesAVCRUD && captacoesAVCRUD.update) {
+              captacoesAVCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(captacoesAVCRUD && captacoesAVCRUD.update) {
+              captacoesAVCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setCaptacoesAV:', err);
+      }
+    }
+  };
   const [inboundClientes, inboundClientesCRUD, inboundClientesLoading] = useFirebaseCollection("inbound_clientes", INIT_INBOUND_CLIENTES);
+  const setInboundClientes = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(inboundClientes || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(inboundClientesCRUD && inboundClientesCRUD.update) {
+              inboundClientesCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(inboundClientesCRUD && inboundClientesCRUD.update) {
+              inboundClientesCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setInboundClientes:', err);
+      }
+    }
+  };
   const [sdrLeads, sdrLeadsCRUD, sdrLeadsLoading] = useFirebaseCollection("sdr_leads", INIT_SDR_LEADS);
+  const setSdrLeads = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(sdrLeads || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(sdrLeadsCRUD && sdrLeadsCRUD.update) {
+              sdrLeadsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(sdrLeadsCRUD && sdrLeadsCRUD.update) {
+              sdrLeadsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setSdrLeads:', err);
+      }
+    }
+  };
   const [adminVendas, setAdminVendas]       = useState([]);
   const [avisos, setAvisos]                 = useState([]); // announcements created by admin
   const [documentacoes, documentacoesCRUD, documentacoesLoading] = useFirebaseCollection("documentacoes", INIT_DOCUMENTACOES);
+  const setDocumentacoes = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(documentacoes || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(documentacoesCRUD && documentacoesCRUD.update) {
+              documentacoesCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(documentacoesCRUD && documentacoesCRUD.update) {
+              documentacoesCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setDocumentacoes:', err);
+      }
+    }
+  };
   const [categoriasDocs, categoriasDocsCRUD, categoriasDocsLoading] = useFirebaseCollection("categoriasdocs", INIT_CATEGORIAS_DOCS);
+  const setCategoriasDocs = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(categoriasDocs || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(categoriasDocsCRUD && categoriasDocsCRUD.update) {
+              categoriasDocsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(categoriasDocsCRUD && categoriasDocsCRUD.update) {
+              categoriasDocsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setCategoriasDocs:', err);
+      }
+    }
+  };
   // ── Shared state (persists across area switches) ───────────────
   const [crmLeads, crmLeadsCRUD, crmLeadsLoading] = useFirebaseCollection("crm_leads", INIT_CRM_LEADS);
+  const setCrmLeads = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(crmLeads || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(crmLeadsCRUD && crmLeadsCRUD.update) {
+              crmLeadsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(crmLeadsCRUD && crmLeadsCRUD.update) {
+              crmLeadsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setCrmLeads:', err);
+      }
+    }
+  };
   const [crmMetas, crmMetasCRUD, crmMetasLoading] = useFirebaseCollection("metas", INIT_METAS);
+  const setCrmMetas = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(crmMetas || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(crmMetasCRUD && crmMetasCRUD.update) {
+              crmMetasCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(crmMetasCRUD && crmMetasCRUD.update) {
+              crmMetasCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setCrmMetas:', err);
+      }
+    }
+  };
   const [contratos, contratosCRUD, contratosLoading] = useFirebaseCollection("contratos", INIT_CONTRATOS);
+  const setContratos = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(contratos || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(contratosCRUD && contratosCRUD.update) {
+              contratosCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(contratosCRUD && contratosCRUD.update) {
+              contratosCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setContratos:', err);
+      }
+    }
+  };
   const [colaboradores, colaboradoresCRUD, colaboradoresLoading] = useFirebaseCollection("colaboradores", INIT_COLABORADORES);
+  const setColaboradores = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(colaboradores || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(colaboradoresCRUD && colaboradoresCRUD.update) {
+              colaboradoresCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(colaboradoresCRUD && colaboradoresCRUD.update) {
+              colaboradoresCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setColaboradores:', err);
+      }
+    }
+  };
   const [financeiroDados, financeiroDadosCRUD, financeiroDadosLoading] = useFirebaseCollection("financeiro", INIT_FINANCEIRO);
+  const setFinanceiroDados = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(financeiroDados || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(financeiroDadosCRUD && financeiroDadosCRUD.update) {
+              financeiroDadosCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(financeiroDadosCRUD && financeiroDadosCRUD.update) {
+              financeiroDadosCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setFinanceiroDados:', err);
+      }
+    }
+  };
   const [okrs, okrsCRUD, okrsLoading] = useFirebaseCollection("okrs", INIT_OKRS);
+  const setOkrs = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(okrs || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(okrsCRUD && okrsCRUD.update) {
+              okrsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(okrsCRUD && okrsCRUD.update) {
+              okrsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setOkrs:', err);
+      }
+    }
+  };
   const [feedbacks, setFeedbacks]           = useState(function(){return getFeedbacks();}); // persisted in localStorage
   // ITEM 19: Notificações persistidas no localStorage
   const [notifications, setNotifications] = React.useState(function(){
@@ -16603,14 +16933,198 @@ function AppInner() {
   }, []);
   const [agendaReunioes, setAgendaReunioes] = useState([]);
   const [customBoards, customBoardsCRUD, customBoardsLoading] = useFirebaseCollection("customboards", INIT_CUSTOM_BOARDS);
+  const setCustomBoards = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(customBoards || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(customBoardsCRUD && customBoardsCRUD.update) {
+              customBoardsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(customBoardsCRUD && customBoardsCRUD.update) {
+              customBoardsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setCustomBoards:', err);
+      }
+    }
+  };
   const [members, membersCRUD, membersLoading] = useFirebaseCollection("members", INIT_MEMBERS);
+  const setMembers = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(members || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(membersCRUD && membersCRUD.update) {
+              membersCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(membersCRUD && membersCRUD.update) {
+              membersCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setMembers:', err);
+      }
+    }
+  };
   const [filiais, filiaisCRUD, filiaisLoading] = useFirebaseCollection("filiais", INIT_FILIAIS);
+  const setFiliais = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(filiais || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(filiaisCRUD && filiaisCRUD.update) {
+              filiaisCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(filiaisCRUD && filiaisCRUD.update) {
+              filiaisCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setFiliais:', err);
+      }
+    }
+  };
   const [customDatas,setCustomDatas] = useState({});
   const [statuses, statusesCRUD, statusesLoading] = useFirebaseCollection("statuses", INIT_STATUSES);
+  const setStatuses = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(statuses || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(statusesCRUD && statusesCRUD.update) {
+              statusesCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(statusesCRUD && statusesCRUD.update) {
+              statusesCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setStatuses:', err);
+      }
+    }
+  };
   const [tipos, tiposCRUD, tiposLoading] = useFirebaseCollection("tipos", INIT_TIPOS);
+  const setTipos = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(tipos || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(tiposCRUD && tiposCRUD.update) {
+              tiposCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(tiposCRUD && tiposCRUD.update) {
+              tiposCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setTipos:', err);
+      }
+    }
+  };
   const [tiposEntrega, tiposEntregaCRUD, tiposEntregaLoading] = useFirebaseCollection("tiposentrega", INIT_TIPOS_ENTREGA);
+  const setTiposEntrega = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(tiposEntrega || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(tiposEntregaCRUD && tiposEntregaCRUD.update) {
+              tiposEntregaCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(tiposEntregaCRUD && tiposEntregaCRUD.update) {
+              tiposEntregaCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setTiposEntrega:', err);
+      }
+    }
+  };
   const [monthEmojis, monthEmojisCRUD, monthEmojisLoading] = useFirebaseCollection("monthemojis", INIT_MONTH_EMOJIS);
+  const setMonthEmojis = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(monthEmojis || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(monthEmojisCRUD && monthEmojisCRUD.update) {
+              monthEmojisCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(monthEmojisCRUD && monthEmojisCRUD.update) {
+              monthEmojisCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setMonthEmojis:', err);
+      }
+    }
+  };
   const [navConfig, navConfigCRUD, navConfigLoading] = useFirebaseCollection("navconfig", INIT_NAV_CONFIG);
+  const setNavConfig = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(navConfig || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(navConfigCRUD && navConfigCRUD.update) {
+              navConfigCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(navConfigCRUD && navConfigCRUD.update) {
+              navConfigCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setNavConfig:', err);
+      }
+    }
+  };
   const [csData, setCsData]             = useState({});  // {clienteId: {saude, interacoes:[], followUps:[], churnRisk, obs}}
   const [crmStages,setCrmStages]     = useState(null); // null = use defaults
   const [crmOrigens,setCrmOrigens]   = useState(null); // null = use defaults
@@ -16619,19 +17133,180 @@ function AppInner() {
   const DEFAULT_CLIENTE_TAGS = [{id:"ativo",label:"Ativo",cor:"#22C55E"},{id:"premium",label:"Premium",cor:"#F59E0B"},{id:"b2b",label:"B2B",cor:"#3B82F6"},{id:"antigo",label:"Antigo",cor:"#8B5CF6"},{id:"pausado",label:"Pausado",cor:"#6B7280"},{id:"novo",label:"Novo",cor:"#EC4899"}];
   const [clienteTags,setClienteTags] = useState(DEFAULT_CLIENTE_TAGS);
   const [chatChannels, chatChannelsCRUD, chatChannelsLoading] = useFirebaseCollection("chat_channels", INIT_CHAT_CHANNELS);
+  const setChatChannels = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(chatChannels || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(chatChannelsCRUD && chatChannelsCRUD.update) {
+              chatChannelsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(chatChannelsCRUD && chatChannelsCRUD.update) {
+              chatChannelsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setChatChannels:', err);
+      }
+    }
+  };
   const [lastSeenMsgCount, setLastSeenMsgCount] = useState(0);
   const totalChatMsgs = chatChannels.reduce((s,ch)=>s+ch.messages.length,0);
   const chatUnread = Math.max(0, totalChatMsgs - lastSeenMsgCount);
   // ── PORTAL DO CLIENTE ───────
   const [clienteUsers, clienteUsersCRUD, clienteUsersLoading] = useFirebaseCollection("clienteusers", INIT_CLIENTE_USERS);
+  const setClienteUsers = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(clienteUsers || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(clienteUsersCRUD && clienteUsersCRUD.update) {
+              clienteUsersCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(clienteUsersCRUD && clienteUsersCRUD.update) {
+              clienteUsersCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setClienteUsers:', err);
+      }
+    }
+  };
   const [clienteInfos, clienteInfosCRUD, clienteInfosLoading] = useFirebaseCollection("clienteinfos", INIT_CLIENTE_INFOS);
+  const setClienteInfos = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(clienteInfos || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(clienteInfosCRUD && clienteInfosCRUD.update) {
+              clienteInfosCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(clienteInfosCRUD && clienteInfosCRUD.update) {
+              clienteInfosCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setClienteInfos:', err);
+      }
+    }
+  };
   const [clienteInsights, clienteInsightsCRUD, clienteInsightsLoading] = useFirebaseCollection("clienteinsights", INIT_CLIENTE_INSIGHTS);
+  const setClienteInsights = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(clienteInsights || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(clienteInsightsCRUD && clienteInsightsCRUD.update) {
+              clienteInsightsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(clienteInsightsCRUD && clienteInsightsCRUD.update) {
+              clienteInsightsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setClienteInsights:', err);
+      }
+    }
+  };
   const [clienteConfig, clienteConfigCRUD, clienteConfigLoading] = useFirebaseCollection("clienteconfig", INIT_CLIENTE_CONFIG);
+  const setClienteConfig = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(clienteConfig || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(clienteConfigCRUD && clienteConfigCRUD.update) {
+              clienteConfigCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(clienteConfigCRUD && clienteConfigCRUD.update) {
+              clienteConfigCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setClienteConfig:', err);
+      }
+    }
+  };
   const [clienteLoginType, setClienteLoginType] = useState(null); // null | "cliente" | "colaborador"
   const [clienteAuthUser, setClienteAuthUser] = useState(null); // {id, email, nome, contasAtreladas}
   const [clienteSelectedAccount, setClienteSelectedAccount] = useState(null); // "cli1" | "cli2" | etc
   const [planejamento, planejamentoCRUD, planejamentoLoading] = useFirebaseCollection("planejamento", INIT_PLANEJAMENTO);
+  const setPlanejamento = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(planejamento || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(planejamentoCRUD && planejamentoCRUD.update) {
+              planejamentoCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(planejamentoCRUD && planejamentoCRUD.update) {
+              planejamentoCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setPlanejamento:', err);
+      }
+    }
+  };
   const [clientes, clientesCRUD, clientesLoading] = useFirebaseCollection("clientes", INIT_CLIENTES);
+  const setClientes = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(clientes || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(clientesCRUD && clientesCRUD.update) {
+              clientesCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(clientesCRUD && clientesCRUD.update) {
+              clientesCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setClientes:', err);
+      }
+    }
+  };
 
   // ── Reset planejamento on January 1st each year ──
   React.useEffect(function() {
@@ -16650,12 +17325,104 @@ function AppInner() {
   const [dragNavIdx, setDragNavIdx]     = useState(null);
   const [dragOverIdx, setDragOverIdx]   = useState(null);
   const [activityLog, activityLogCRUD, activityLogLoading] = useFirebaseCollection("activity", INIT_ACTIVITY);
+  const setActivityLog = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(activityLog || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(activityLogCRUD && activityLogCRUD.update) {
+              activityLogCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(activityLogCRUD && activityLogCRUD.update) {
+              activityLogCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setActivityLog:', err);
+      }
+    }
+  };
   const [qualityRatings, setQualityRatings] = useState({}); // {clienteId: [{nota,obs,year,month,ts,autor}]}
   const [cpsInitClient, setCpsInitClient] = useState(null);
   const [clientScoresHistory, setClientScoresHistory] = useState({}); // {clienteId: [{score,label,period}]}
   const [privateBoards, privateBoardsCRUD, privateBoardsLoading] = useFirebaseCollection("privateboards", INIT_PRIVATE_BOARDS);
+  const setPrivateBoards = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(privateBoards || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(privateBoardsCRUD && privateBoardsCRUD.update) {
+              privateBoardsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(privateBoardsCRUD && privateBoardsCRUD.update) {
+              privateBoardsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setPrivateBoards:', err);
+      }
+    }
+  };
   const [clienteDados, clienteDadosCRUD, clienteDadosLoading] = useFirebaseCollection("clientedados", INIT_CLIENTE_DADOS);
+  const setClienteDados = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(clienteDados || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(clienteDadosCRUD && clienteDadosCRUD.update) {
+              clienteDadosCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(clienteDadosCRUD && clienteDadosCRUD.update) {
+              clienteDadosCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setClienteDados:', err);
+      }
+    }
+  };
   const [pins, pinsCRUD, pinsLoading] = useFirebaseCollection("pins", INIT_PINS);
+  const setPins = function(updater) {
+    if(typeof updater === 'function') {
+      try {
+        var updated = updater(pins || []);
+        // Sincronizar com Firebase
+        if(Array.isArray(updated)) {
+          updated.forEach(function(item) {
+            if(pinsCRUD && pinsCRUD.update) {
+              pinsCRUD.update(item.id || item.key, item);
+            }
+          });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(function(key) {
+            if(pinsCRUD && pinsCRUD.update) {
+              pinsCRUD.update(key, updated[key]);
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro em setPins:', err);
+      }
+    }
+  };
   const [incidentes, setIncidentes]       = useState([]);
   const [cronData, setCronData]           = useState({});
   const [theme, setTheme]               = useState("dark"); // dark | night | light
