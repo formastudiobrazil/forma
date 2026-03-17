@@ -16619,7 +16619,7 @@ function AppInner() {
   const [accessLog, setAccessLog] = React.useState(function(){
     try{ var s=localStorage.getItem("fs_accessLog"); return s?JSON.parse(s):[]; }catch(e){ return []; }
   });
-  function recordAccess(tipo, userName){ 
+ async function recordAccess(tipo, userName){ 
     var entry = {id:uid(), tipo:tipo, user:userName, ts:Date.now(), ip:"local"};
     setAccessLog(function(p){ 
       var next=[entry,...p].slice(0,100); 
