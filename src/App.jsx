@@ -17772,21 +17772,26 @@ function MyProfilePanel({ member, onSave, onClose }) {
     setTimeout(() => { setSaved(false); onClose(); }, 900);
   };
 
-  const Field = React.memo(({label, k, type, placeholder}) => {
-    const handleChange = React.useCallback((e) => {
-      setForm(p=>({...p,[k]:e.target.value}));
-    }, [k]);
+  const Field = ({label, k, type, placeholder}) => {
+    const inputRef = React.useRef(null);
     return (
       <div>
         <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>{label}</div>
-        <input type={type} value={form[k]||""} onChange={handleChange} placeholder={placeholder}
+        <input 
+          ref={inputRef}
+          type={type} 
+          defaultValue={form[k]||""} 
+          placeholder={placeholder}
+          onChange={e=>{
+            setForm(p=>({...p,[k]:e.target.value}));
+          }}
           style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"9px 13px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
           onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
-          onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
+          onBlur={e=>{e.target.style.border=`1px solid rgba(255,255,255,0.10)`;setForm(p=>({...p,[k]:e.target.value}));}}
         />
       </div>
     );
-  });
+  };
 
   return (
     <div style={{position:"fixed",inset:0,zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.75)",backdropFilter:"blur(10px)"}}>
@@ -20233,16 +20238,21 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
   };
 
   const Field = React.memo(({label,k,type,placeholder}) => {
-    const handleChange = React.useCallback((e) => {
-      setForm(p=>({...p,[k]:e.target.value}));
-    }, [k]);
+    const inputRef = React.useRef(null);
     return (
       <div>
         <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{label}</div>
-        <input type={type} value={form[k]||""} onChange={handleChange} placeholder={placeholder}
+        <input 
+          ref={inputRef}
+          type={type} 
+          defaultValue={form[k]||""} 
+          placeholder={placeholder}
+          onChange={e=>{
+            setForm(p=>({...p,[k]:e.target.value}));
+          }}
           style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
           onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
-          onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
+          onBlur={e=>{e.target.style.border=`1px solid rgba(255,255,255,0.10)`;setForm(p=>({...p,[k]:e.target.value}));}}
         />
       </div>
     );
@@ -20338,7 +20348,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
       {adminTab==="usuarios"&&(<>
       {/* Create/edit form */}
       {creating && (
-        <GlassBox style={{borderRadius:20,padding:"22px 24px",marginBottom:24,border:`1px solid rgba(255,106,0,0.25)`}}>
+        <GlassBox style={{borderRadius:20,padding:"22px 24px",marginBottom:24,border:`1px solid rgba(255,106,0,0.25)`,maxHeight:"70vh",overflowY:"auto"}}>
           <div style={{fontSize:15,fontWeight:700,color:"var(--ct)",fontFamily:POP,marginBottom:18}}>{editingId?"Editar Usuário":"Criar Novo Usuário"}</div>
 
           {/* Photo */}
