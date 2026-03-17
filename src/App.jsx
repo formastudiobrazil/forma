@@ -15515,7 +15515,9 @@ function AdminClientesGestaoPanel({ clienteUsers, setClienteUsers, clienteInfos,
   );
 }
 
-// Simple Input Field (não recria)
+// ╔════════════════════════════════════════════╗
+// ║ SimpleField - Input global (não recria)  ║
+// ╚════════════════════════════════════════════╝
 const SimpleField = ({form, setForm, label, k, type, placeholder}) => (
   <div>
     <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{label}</div>
@@ -17290,6 +17292,7 @@ function MyProfilePanel({ member, onSave, onClose }) {
     setTimeout(() => { setSaved(false); onClose(); }, 900);
   };
 
+  const Field = ({label, k, type, placeholder}) => <SimpleField form={form} setForm={setForm} label={label} k={k} type={type} placeholder={placeholder} />;
 
   return (
     <div style={{position:"fixed",inset:0,zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.75)",backdropFilter:"blur(10px)"}}>
@@ -17310,11 +17313,11 @@ function MyProfilePanel({ member, onSave, onClose }) {
 
         <div style={{display:"flex",flexDirection:"column",gap:14,marginBottom:20}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            <SimpleField form={form} setForm={setForm} label="Nome completo" k="name"/>
-            <SimpleField form={form} setForm={setForm} label="Cargo" k="role"/>
+            <Field label="Nome completo" k="name"/>
+            <Field label="Cargo" k="role"/>
           </div>
-          <SimpleField form={form} setForm={setForm} label="E-mail" k="email" type="email"/>
-          <SimpleField form={form} setForm={setForm} label="Data de entrada" k="joinDate" type="date"/>
+          <Field label="E-mail" k="email" type="email"/>
+          <Field label="Data de entrada" k="joinDate" type="date"/>
           <div>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>Sobre mim</div>
             <textarea value={form.bio||""} onChange={e=>setForm(p=>({...p,bio:e.target.value}))} rows={3} placeholder="Uma breve descrição sobre você..."
@@ -19735,6 +19738,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
     setTimeout(()=>{ setPinSaved(false); setResetPinId(null); setNewPin(""); },1200);
   };
 
+  const Field = ({label,k,type,placeholder}) => <SimpleField form={form} setForm={setForm} label={label} k={k} type={type} placeholder={placeholder} />;
 
   const [adminTab, setAdminTab] = React.useState("usuarios");
   const [creatingPin, setCreatingPin] = React.useState(false);
@@ -19848,13 +19852,13 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
           </div>
 
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
-            <SimpleField form={form} setForm={setForm} label="Nome completo" k="name"/>
-            <SimpleField form={form} setForm={setForm} label="Cargo" k="role" placeholder="Social Media, Design..."/>
-            <SimpleField form={form} setForm={setForm} label="E-mail" k="email" type="email"/>
-            <SimpleField form={form} setForm={setForm} label="Iniciais (ex: AB)" k="initials" placeholder="Auto"/>
-            <SimpleField form={form} setForm={setForm} label="Data de entrada" k="joinDate" type="date"/>
-            <SimpleField form={form} setForm={setForm} label="Data de nascimento" k="birthDate" type="date"/>
-            <SimpleField form={form} setForm={setForm} label="Senha" k="pass" type="password" placeholder="Mínimo 4 caracteres"/>
+            <Field label="Nome completo" k="name"/>
+            <Field label="Cargo" k="role" placeholder="Social Media, Design..."/>
+            <Field label="E-mail" k="email" type="email"/>
+            <Field label="Iniciais (ex: AB)" k="initials" placeholder="Auto"/>
+            <Field label="Data de entrada" k="joinDate" type="date"/>
+            <Field label="Data de nascimento" k="birthDate" type="date"/>
+            <Field label="Senha" k="pass" type="password" placeholder="Mínimo 4 caracteres"/>
           </div>
 
           <div style={{marginBottom:12}}>
@@ -20732,6 +20736,6 @@ function EspeciaisView({ clientes, addLog }) {
   );
 }
 
-function App() {
+export default function App() {
   return <ErrorBoundary><AppInner/></ErrorBoundary>;
 }
