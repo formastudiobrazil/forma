@@ -16519,25 +16519,6 @@ function NotifBell({ notifications, userId, onMarkAllRead, onClearAll }) {
   );
 }
 
-
-// ╔════════════════════════════════════════════════════════════════╗
-// ║ SimpleInput - Não recria, não perde foco (Global Component)   ║
-// ╚════════════════════════════════════════════════════════════════╝
-const SimpleInput = ({ value, onChange, placeholder, label, type = "text" }) => (
-  <div style={{marginBottom: 12}}>
-    {label && <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,marginBottom:5,textTransform:"uppercase"}}>{label}</div>}
-    <input
-      type={type}
-      value={value || ""}
-      onChange={onChange}
-      placeholder={placeholder}
-      style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}
-      onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
-      onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
-    />
-  </div>
-);
-
 function AppInner() {
   const [user,setUser]             = useState(null);
   const [area,setArea]             = useState(null); // "criacao" | "comercial"
@@ -16546,14 +16527,12 @@ function AppInner() {
   const todayDayId = () => { const d=["dom","seg","ter","qua","qui","sex","sab"][new Date().getDay()]; return DAYS.find(x=>x.id===d)?d:"seg"; };
   const [activeDay,setActiveDay]   = useState(todayDayId);
   const [calendar, calendarCRUD, calendarLoading] = useFirebaseCollection("calendar", INIT_CALENDAR);
-  const setCalendar = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(calendar || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && calendarCRUD && calendarCRUD.update) {
-            calendarCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setCalendar = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(calendar);
+      if(Array.isArray(newVal) && calendarCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) calendarCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
@@ -16563,92 +16542,78 @@ function AppInner() {
   const [showHistorico, setShowHistorico] = useState(false);
   const [showProxSemanas, setShowProxSemanas] = useState(false);
   const [news, newsCRUD, newsLoading] = useFirebaseCollection("news", INIT_NEWS);
-  const setNews = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(news || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && newsCRUD && newsCRUD.update) {
-            newsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setNews = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(news);
+      if(Array.isArray(newVal) && newsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) newsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [demands, demandsCRUD, demandsLoading] = useFirebaseCollection("demands", INIT_DEMANDS);
-  const setDemands = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(demands || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && demandsCRUD && demandsCRUD.update) {
-            demandsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setDemands = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(demands);
+      if(Array.isArray(newVal) && demandsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) demandsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [ads, adsCRUD, adsLoading] = useFirebaseCollection("ads", INIT_ADS);
-  const setAds = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(ads || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && adsCRUD && adsCRUD.update) {
-            adsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setAds = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(ads);
+      if(Array.isArray(newVal) && adsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) adsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [meetings, meetingsCRUD, meetingsLoading] = useFirebaseCollection("meetings", INIT_MEETINGS);
-  const setMeetings = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(meetings || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && meetingsCRUD && meetingsCRUD.update) {
-            meetingsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setMeetings = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(meetings);
+      if(Array.isArray(newVal) && meetingsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) meetingsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [captacoesAV, captacoesAVCRUD, captacoesAVLoading] = useFirebaseCollection("captacoes_av", INIT_CAPTACOES_AV);
-  const setCaptacoesAV = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(captacoesAV || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && captacoesAVCRUD && captacoesAVCRUD.update) {
-            captacoesAVCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setCaptacoesAV = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(captacoesAV);
+      if(Array.isArray(newVal) && captacoesAVCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) captacoesAVCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [inboundClientes, inboundClientesCRUD, inboundClientesLoading] = useFirebaseCollection("inbound_clientes", INIT_INBOUND_CLIENTES);
-  const setInboundClientes = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(inboundClientes || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && inboundClientesCRUD && inboundClientesCRUD.update) {
-            inboundClientesCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setInboundClientes = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(inboundClientes);
+      if(Array.isArray(newVal) && inboundClientesCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) inboundClientesCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [sdrLeads, sdrLeadsCRUD, sdrLeadsLoading] = useFirebaseCollection("sdr_leads", INIT_SDR_LEADS);
-  const setSdrLeads = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(sdrLeads || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && sdrLeadsCRUD && sdrLeadsCRUD.update) {
-            sdrLeadsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setSdrLeads = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(sdrLeads);
+      if(Array.isArray(newVal) && sdrLeadsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) sdrLeadsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
@@ -16656,106 +16621,90 @@ function AppInner() {
   const [adminVendas, setAdminVendas]       = useState([]);
   const [avisos, setAvisos]                 = useState([]); // announcements created by admin
   const [documentacoes, documentacoesCRUD, documentacoesLoading] = useFirebaseCollection("documentacoes", INIT_DOCUMENTACOES);
-  const setDocumentacoes = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(documentacoes || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && documentacoesCRUD && documentacoesCRUD.update) {
-            documentacoesCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setDocumentacoes = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(documentacoes);
+      if(Array.isArray(newVal) && documentacoesCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) documentacoesCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [categoriasDocs, categoriasDocsCRUD, categoriasDocsLoading] = useFirebaseCollection("categoriasdocs", INIT_CATEGORIAS_DOCS);
-  const setCategoriasDocs = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(categoriasDocs || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && categoriasDocsCRUD && categoriasDocsCRUD.update) {
-            categoriasDocsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setCategoriasDocs = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(categoriasDocs);
+      if(Array.isArray(newVal) && categoriasDocsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) categoriasDocsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   // ── Shared state (persists across area switches) ───────────────
   const [crmLeads, crmLeadsCRUD, crmLeadsLoading] = useFirebaseCollection("crm_leads", INIT_CRM_LEADS);
-  const setCrmLeads = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(crmLeads || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && crmLeadsCRUD && crmLeadsCRUD.update) {
-            crmLeadsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setCrmLeads = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(crmLeads);
+      if(Array.isArray(newVal) && crmLeadsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) crmLeadsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [crmMetas, crmMetasCRUD, crmMetasLoading] = useFirebaseCollection("metas", INIT_METAS);
-  const setCrmMetas = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(crmMetas || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && crmMetasCRUD && crmMetasCRUD.update) {
-            crmMetasCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setCrmMetas = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(crmMetas);
+      if(Array.isArray(newVal) && crmMetasCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) crmMetasCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [contratos, contratosCRUD, contratosLoading] = useFirebaseCollection("contratos", INIT_CONTRATOS);
-  const setContratos = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(contratos || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && contratosCRUD && contratosCRUD.update) {
-            contratosCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setContratos = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(contratos);
+      if(Array.isArray(newVal) && contratosCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) contratosCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [colaboradores, colaboradoresCRUD, colaboradoresLoading] = useFirebaseCollection("colaboradores", INIT_COLABORADORES);
-  const setColaboradores = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(colaboradores || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && colaboradoresCRUD && colaboradoresCRUD.update) {
-            colaboradoresCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setColaboradores = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(colaboradores);
+      if(Array.isArray(newVal) && colaboradoresCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) colaboradoresCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [financeiroDados, financeiroDadosCRUD, financeiroDadosLoading] = useFirebaseCollection("financeiro", INIT_FINANCEIRO);
-  const setFinanceiroDados = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(financeiroDados || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && financeiroDadosCRUD && financeiroDadosCRUD.update) {
-            financeiroDadosCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setFinanceiroDados = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(financeiroDados);
+      if(Array.isArray(newVal) && financeiroDadosCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) financeiroDadosCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [okrs, okrsCRUD, okrsLoading] = useFirebaseCollection("okrs", INIT_OKRS);
-  const setOkrs = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(okrs || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && okrsCRUD && okrsCRUD.update) {
-            okrsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setOkrs = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(okrs);
+      if(Array.isArray(newVal) && okrsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) okrsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
@@ -16774,106 +16723,90 @@ function AppInner() {
   }, []);
   const [agendaReunioes, setAgendaReunioes] = useState([]);
   const [customBoards, customBoardsCRUD, customBoardsLoading] = useFirebaseCollection("customboards", INIT_CUSTOM_BOARDS);
-  const setCustomBoards = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(customBoards || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && customBoardsCRUD && customBoardsCRUD.update) {
-            customBoardsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setCustomBoards = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(customBoards);
+      if(Array.isArray(newVal) && customBoardsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) customBoardsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [members, membersCRUD, membersLoading] = useFirebaseCollection("members", INIT_MEMBERS);
-  const setMembers = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(members || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && membersCRUD && membersCRUD.update) {
-            membersCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setMembers = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(members);
+      if(Array.isArray(newVal) && membersCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) membersCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [filiais, filiaisCRUD, filiaisLoading] = useFirebaseCollection("filiais", INIT_FILIAIS);
-  const setFiliais = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(filiais || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && filiaisCRUD && filiaisCRUD.update) {
-            filiaisCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setFiliais = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(filiais);
+      if(Array.isArray(newVal) && filiaisCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) filiaisCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [customDatas,setCustomDatas] = useState({});
   const [statuses, statusesCRUD, statusesLoading] = useFirebaseCollection("statuses", INIT_STATUSES);
-  const setStatuses = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(statuses || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && statusesCRUD && statusesCRUD.update) {
-            statusesCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setStatuses = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(statuses);
+      if(Array.isArray(newVal) && statusesCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) statusesCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [tipos, tiposCRUD, tiposLoading] = useFirebaseCollection("tipos", INIT_TIPOS);
-  const setTipos = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(tipos || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && tiposCRUD && tiposCRUD.update) {
-            tiposCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setTipos = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(tipos);
+      if(Array.isArray(newVal) && tiposCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) tiposCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [tiposEntrega, tiposEntregaCRUD, tiposEntregaLoading] = useFirebaseCollection("tiposentrega", INIT_TIPOS_ENTREGA);
-  const setTiposEntrega = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(tiposEntrega || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && tiposEntregaCRUD && tiposEntregaCRUD.update) {
-            tiposEntregaCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setTiposEntrega = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(tiposEntrega);
+      if(Array.isArray(newVal) && tiposEntregaCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) tiposEntregaCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [monthEmojis, monthEmojisCRUD, monthEmojisLoading] = useFirebaseCollection("monthemojis", INIT_MONTH_EMOJIS);
-  const setMonthEmojis = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(monthEmojis || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && monthEmojisCRUD && monthEmojisCRUD.update) {
-            monthEmojisCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setMonthEmojis = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(monthEmojis);
+      if(Array.isArray(newVal) && monthEmojisCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) monthEmojisCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [navConfig, navConfigCRUD, navConfigLoading] = useFirebaseCollection("navconfig", INIT_NAV_CONFIG);
-  const setNavConfig = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(navConfig || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && navConfigCRUD && navConfigCRUD.update) {
-            navConfigCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setNavConfig = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(navConfig);
+      if(Array.isArray(newVal) && navConfigCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) navConfigCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
@@ -16886,14 +16819,12 @@ function AppInner() {
   const DEFAULT_CLIENTE_TAGS = [{id:"ativo",label:"Ativo",cor:"#22C55E"},{id:"premium",label:"Premium",cor:"#F59E0B"},{id:"b2b",label:"B2B",cor:"#3B82F6"},{id:"antigo",label:"Antigo",cor:"#8B5CF6"},{id:"pausado",label:"Pausado",cor:"#6B7280"},{id:"novo",label:"Novo",cor:"#EC4899"}];
   const [clienteTags,setClienteTags] = useState(DEFAULT_CLIENTE_TAGS);
   const [chatChannels, chatChannelsCRUD, chatChannelsLoading] = useFirebaseCollection("chat_channels", INIT_CHAT_CHANNELS);
-  const setChatChannels = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(chatChannels || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && chatChannelsCRUD && chatChannelsCRUD.update) {
-            chatChannelsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setChatChannels = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(chatChannels);
+      if(Array.isArray(newVal) && chatChannelsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) chatChannelsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
@@ -16903,53 +16834,45 @@ function AppInner() {
   const chatUnread = Math.max(0, totalChatMsgs - lastSeenMsgCount);
   // ── PORTAL DO CLIENTE ───────
   const [clienteUsers, clienteUsersCRUD, clienteUsersLoading] = useFirebaseCollection("clienteusers", INIT_CLIENTE_USERS);
-  const setClienteUsers = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(clienteUsers || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && clienteUsersCRUD && clienteUsersCRUD.update) {
-            clienteUsersCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setClienteUsers = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(clienteUsers);
+      if(Array.isArray(newVal) && clienteUsersCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) clienteUsersCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [clienteInfos, clienteInfosCRUD, clienteInfosLoading] = useFirebaseCollection("clienteinfos", INIT_CLIENTE_INFOS);
-  const setClienteInfos = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(clienteInfos || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && clienteInfosCRUD && clienteInfosCRUD.update) {
-            clienteInfosCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setClienteInfos = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(clienteInfos);
+      if(Array.isArray(newVal) && clienteInfosCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) clienteInfosCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [clienteInsights, clienteInsightsCRUD, clienteInsightsLoading] = useFirebaseCollection("clienteinsights", INIT_CLIENTE_INSIGHTS);
-  const setClienteInsights = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(clienteInsights || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && clienteInsightsCRUD && clienteInsightsCRUD.update) {
-            clienteInsightsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setClienteInsights = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(clienteInsights);
+      if(Array.isArray(newVal) && clienteInsightsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) clienteInsightsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [clienteConfig, clienteConfigCRUD, clienteConfigLoading] = useFirebaseCollection("clienteconfig", INIT_CLIENTE_CONFIG);
-  const setClienteConfig = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(clienteConfig || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && clienteConfigCRUD && clienteConfigCRUD.update) {
-            clienteConfigCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setClienteConfig = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(clienteConfig);
+      if(Array.isArray(newVal) && clienteConfigCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) clienteConfigCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
@@ -16958,27 +16881,23 @@ function AppInner() {
   const [clienteAuthUser, setClienteAuthUser] = useState(null); // {id, email, nome, contasAtreladas}
   const [clienteSelectedAccount, setClienteSelectedAccount] = useState(null); // "cli1" | "cli2" | etc
   const [planejamento, planejamentoCRUD, planejamentoLoading] = useFirebaseCollection("planejamento", INIT_PLANEJAMENTO);
-  const setPlanejamento = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(planejamento || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && planejamentoCRUD && planejamentoCRUD.update) {
-            planejamentoCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setPlanejamento = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(planejamento);
+      if(Array.isArray(newVal) && planejamentoCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) planejamentoCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [clientes, clientesCRUD, clientesLoading] = useFirebaseCollection("clientes", INIT_CLIENTES);
-  const setClientes = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(clientes || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && clientesCRUD && clientesCRUD.update) {
-            clientesCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setClientes = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(clientes);
+      if(Array.isArray(newVal) && clientesCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) clientesCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
@@ -16999,14 +16918,12 @@ function AppInner() {
   const [dragNavIdx, setDragNavIdx]     = useState(null);
   const [dragOverIdx, setDragOverIdx]   = useState(null);
   const [activityLog, activityLogCRUD, activityLogLoading] = useFirebaseCollection("activity", INIT_ACTIVITY);
-  const setActivityLog = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(activityLog || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && activityLogCRUD && activityLogCRUD.update) {
-            activityLogCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setActivityLog = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(activityLog);
+      if(Array.isArray(newVal) && activityLogCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) activityLogCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
@@ -17015,40 +16932,34 @@ function AppInner() {
   const [cpsInitClient, setCpsInitClient] = useState(null);
   const [clientScoresHistory, setClientScoresHistory] = useState({}); // {clienteId: [{score,label,period}]}
   const [privateBoards, privateBoardsCRUD, privateBoardsLoading] = useFirebaseCollection("privateboards", INIT_PRIVATE_BOARDS);
-  const setPrivateBoards = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(privateBoards || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && privateBoardsCRUD && privateBoardsCRUD.update) {
-            privateBoardsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setPrivateBoards = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(privateBoards);
+      if(Array.isArray(newVal) && privateBoardsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) privateBoardsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [clienteDados, clienteDadosCRUD, clienteDadosLoading] = useFirebaseCollection("clientedados", INIT_CLIENTE_DADOS);
-  const setClienteDados = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(clienteDados || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && clienteDadosCRUD && clienteDadosCRUD.update) {
-            clienteDadosCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setClienteDados = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(clienteDados);
+      if(Array.isArray(newVal) && clienteDadosCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) clienteDadosCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
   };
   const [pins, pinsCRUD, pinsLoading] = useFirebaseCollection("pins", INIT_PINS);
-  const setPins = function(updater) {
-    if(typeof updater === 'function') {
-      var updated = updater(pins || []);
-      if(Array.isArray(updated)) {
-        updated.forEach(item => {
-          if(item && item.id && pinsCRUD && pinsCRUD.update) {
-            pinsCRUD.update(item.id, item).catch(e => console.error('Firebase save:', e));
-          }
+  const setPins = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(pins);
+      if(Array.isArray(newVal) && pinsCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) pinsCRUD.update(x.id, x).catch(e => console.error(e));
         });
       }
     }
@@ -17715,7 +17626,16 @@ function MyProfilePanel({ member, onSave, onClose }) {
     setTimeout(() => { setSaved(false); onClose(); }, 900);
   };
 
-  
+  const Field = ({label, k, type, placeholder}) => (
+    <div>
+      <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>{label}</div>
+      <input type={type} value={form[k]||""} onChange={e=>setForm(p=>({...p,[k]:e.target.value}))} placeholder={placeholder}
+        style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"9px 13px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
+        onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
+        onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
+      />
+    </div>
+  );
 
   return (
     <div style={{position:"fixed",inset:0,zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.75)",backdropFilter:"blur(10px)"}}>
@@ -17736,11 +17656,11 @@ function MyProfilePanel({ member, onSave, onClose }) {
 
         <div style={{display:"flex",flexDirection:"column",gap:14,marginBottom:20}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            <SimpleInput label="Nome completo" value={form.name} onChange={e=>setForm(p=>({...p,[name]:e.target.value}))} type="" placeholder=""/>
-            <SimpleInput label="Cargo" value={form.role} onChange={e=>setForm(p=>({...p,[role]:e.target.value}))} type="" placeholder=""/>
+            <Field label="Nome completo" k="name"/>
+            <Field label="Cargo" k="role"/>
           </div>
-          <SimpleInput label="E-mail" value={form.email} onChange={e=>setForm(p=>({...p,[email]:e.target.value}))} type="email" placeholder=""/>
-          <SimpleInput label="Data de entrada" value={form.joinDate} onChange={e=>setForm(p=>({...p,[joinDate]:e.target.value}))} type="date" placeholder=""/>
+          <Field label="E-mail" k="email" type="email"/>
+          <Field label="Data de entrada" k="joinDate" type="date"/>
           <div>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>Sobre mim</div>
             <textarea value={form.bio||""} onChange={e=>setForm(p=>({...p,bio:e.target.value}))} rows={3} placeholder="Uma breve descrição sobre você..."
@@ -20161,7 +20081,16 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
     setTimeout(()=>{ setPinSaved(false); setResetPinId(null); setNewPin(""); },1200);
   };
 
-  
+  const Field = ({label,k,type,placeholder}) => (
+    <div>
+      <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{label}</div>
+      <input type={type} value={form[k]||""} onChange={e=>setForm(p=>({...p,[k]:e.target.value}))} placeholder={placeholder}
+        style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box",transition:"border 0.2s"}}
+        onFocus={e=>e.target.style.border=`1px solid rgba(255,106,0,0.50)`}
+        onBlur={e=>e.target.style.border=`1px solid rgba(255,255,255,0.10)`}
+      />
+    </div>
+  );
 
   const [adminTab, setAdminTab] = React.useState("usuarios");
   const [creatingPin, setCreatingPin] = React.useState(false);
@@ -20275,13 +20204,13 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
           </div>
 
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
-            <SimpleInput label="Nome completo" value={form.name} onChange={e=>setForm(p=>({...p,[name]:e.target.value}))} type="" placeholder=""/>
-            <SimpleInput label="Cargo" value={form.role} onChange={e=>setForm(p=>({...p,[role]:e.target.value}))} type="" placeholder="Social Media, Design..."/>
-            <SimpleInput label="E-mail" value={form.email} onChange={e=>setForm(p=>({...p,[email]:e.target.value}))} type="email" placeholder=""/>
-            <SimpleInput label="Iniciais (ex: AB)" value={form.initials} onChange={e=>setForm(p=>({...p,[initials]:e.target.value}))} type="" placeholder="Auto"/>
-            <SimpleInput label="Data de entrada" value={form.joinDate} onChange={e=>setForm(p=>({...p,[joinDate]:e.target.value}))} type="date" placeholder=""/>
-            <SimpleInput label="Data de nascimento" value={form.birthDate} onChange={e=>setForm(p=>({...p,[birthDate]:e.target.value}))} type="date" placeholder=""/>
-            <SimpleInput label="Senha" value={form.pass} onChange={e=>setForm(p=>({...p,[pass]:e.target.value}))} type="password" placeholder="Mínimo 4 caracteres"/>
+            <Field label="Nome completo" k="name"/>
+            <Field label="Cargo" k="role" placeholder="Social Media, Design..."/>
+            <Field label="E-mail" k="email" type="email"/>
+            <Field label="Iniciais (ex: AB)" k="initials" placeholder="Auto"/>
+            <Field label="Data de entrada" k="joinDate" type="date"/>
+            <Field label="Data de nascimento" k="birthDate" type="date"/>
+            <Field label="Senha" k="pass" type="password" placeholder="Mínimo 4 caracteres"/>
           </div>
 
           <div style={{marginBottom:12}}>
