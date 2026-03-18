@@ -16531,17 +16531,10 @@ function AppInner() {
   const setCalendar = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(calendar || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && calendarCRUD && calendarCRUD.update) {
-            calendarCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(calendarCRUD && calendarCRUD.update) {
-            calendarCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && calendarCRUD && calendarCRUD.update) {
+            calendarCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16555,17 +16548,10 @@ function AppInner() {
   const setNews = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(news || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && newsCRUD && newsCRUD.update) {
-            newsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(newsCRUD && newsCRUD.update) {
-            newsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && newsCRUD && newsCRUD.update) {
+            newsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16575,17 +16561,10 @@ function AppInner() {
   const setDemands = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(demands || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && demandsCRUD && demandsCRUD.update) {
-            demandsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(demandsCRUD && demandsCRUD.update) {
-            demandsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && demandsCRUD && demandsCRUD.update) {
+            demandsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16595,17 +16574,10 @@ function AppInner() {
   const setAds = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(ads || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && adsCRUD && adsCRUD.update) {
-            adsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(adsCRUD && adsCRUD.update) {
-            adsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && adsCRUD && adsCRUD.update) {
+            adsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16615,17 +16587,10 @@ function AppInner() {
   const setMeetings = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(meetings || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && meetingsCRUD && meetingsCRUD.update) {
-            meetingsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(meetingsCRUD && meetingsCRUD.update) {
-            meetingsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && meetingsCRUD && meetingsCRUD.update) {
+            meetingsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16635,17 +16600,10 @@ function AppInner() {
   const setCaptacoesAV = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(captacoesAV || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && captacoesAVCRUD && captacoesAVCRUD.update) {
-            captacoesAVCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(captacoesAVCRUD && captacoesAVCRUD.update) {
-            captacoesAVCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && captacoesAVCRUD && captacoesAVCRUD.update) {
+            captacoesAVCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16655,17 +16613,10 @@ function AppInner() {
   const setInboundClientes = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(inboundClientes || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && inboundClientesCRUD && inboundClientesCRUD.update) {
-            inboundClientesCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(inboundClientesCRUD && inboundClientesCRUD.update) {
-            inboundClientesCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && inboundClientesCRUD && inboundClientesCRUD.update) {
+            inboundClientesCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16675,17 +16626,10 @@ function AppInner() {
   const setSdrLeads = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(sdrLeads || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && sdrLeadsCRUD && sdrLeadsCRUD.update) {
-            sdrLeadsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(sdrLeadsCRUD && sdrLeadsCRUD.update) {
-            sdrLeadsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && sdrLeadsCRUD && sdrLeadsCRUD.update) {
+            sdrLeadsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16697,17 +16641,10 @@ function AppInner() {
   const setDocumentacoes = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(documentacoes || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && documentacoesCRUD && documentacoesCRUD.update) {
-            documentacoesCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(documentacoesCRUD && documentacoesCRUD.update) {
-            documentacoesCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && documentacoesCRUD && documentacoesCRUD.update) {
+            documentacoesCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16717,17 +16654,10 @@ function AppInner() {
   const setCategoriasDocs = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(categoriasDocs || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && categoriasDocsCRUD && categoriasDocsCRUD.update) {
-            categoriasDocsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(categoriasDocsCRUD && categoriasDocsCRUD.update) {
-            categoriasDocsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && categoriasDocsCRUD && categoriasDocsCRUD.update) {
+            categoriasDocsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16738,17 +16668,10 @@ function AppInner() {
   const setCrmLeads = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(crmLeads || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && crmLeadsCRUD && crmLeadsCRUD.update) {
-            crmLeadsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(crmLeadsCRUD && crmLeadsCRUD.update) {
-            crmLeadsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && crmLeadsCRUD && crmLeadsCRUD.update) {
+            crmLeadsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16758,17 +16681,10 @@ function AppInner() {
   const setCrmMetas = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(crmMetas || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && crmMetasCRUD && crmMetasCRUD.update) {
-            crmMetasCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(crmMetasCRUD && crmMetasCRUD.update) {
-            crmMetasCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && crmMetasCRUD && crmMetasCRUD.update) {
+            crmMetasCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16778,17 +16694,10 @@ function AppInner() {
   const setContratos = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(contratos || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && contratosCRUD && contratosCRUD.update) {
-            contratosCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(contratosCRUD && contratosCRUD.update) {
-            contratosCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && contratosCRUD && contratosCRUD.update) {
+            contratosCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16798,17 +16707,10 @@ function AppInner() {
   const setColaboradores = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(colaboradores || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && colaboradoresCRUD && colaboradoresCRUD.update) {
-            colaboradoresCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(colaboradoresCRUD && colaboradoresCRUD.update) {
-            colaboradoresCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && colaboradoresCRUD && colaboradoresCRUD.update) {
+            colaboradoresCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16818,17 +16720,10 @@ function AppInner() {
   const setFinanceiroDados = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(financeiroDados || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && financeiroDadosCRUD && financeiroDadosCRUD.update) {
-            financeiroDadosCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(financeiroDadosCRUD && financeiroDadosCRUD.update) {
-            financeiroDadosCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && financeiroDadosCRUD && financeiroDadosCRUD.update) {
+            financeiroDadosCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16838,17 +16733,10 @@ function AppInner() {
   const setOkrs = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(okrs || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && okrsCRUD && okrsCRUD.update) {
-            okrsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(okrsCRUD && okrsCRUD.update) {
-            okrsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && okrsCRUD && okrsCRUD.update) {
+            okrsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16872,17 +16760,10 @@ function AppInner() {
   const setCustomBoards = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(customBoards || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && customBoardsCRUD && customBoardsCRUD.update) {
-            customBoardsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(customBoardsCRUD && customBoardsCRUD.update) {
-            customBoardsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && customBoardsCRUD && customBoardsCRUD.update) {
+            customBoardsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16892,17 +16773,10 @@ function AppInner() {
   const setMembers = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(members || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && membersCRUD && membersCRUD.update) {
-            membersCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(membersCRUD && membersCRUD.update) {
-            membersCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && membersCRUD && membersCRUD.update) {
+            membersCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16912,17 +16786,10 @@ function AppInner() {
   const setFiliais = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(filiais || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && filiaisCRUD && filiaisCRUD.update) {
-            filiaisCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(filiaisCRUD && filiaisCRUD.update) {
-            filiaisCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && filiaisCRUD && filiaisCRUD.update) {
+            filiaisCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16933,17 +16800,10 @@ function AppInner() {
   const setStatuses = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(statuses || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && statusesCRUD && statusesCRUD.update) {
-            statusesCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(statusesCRUD && statusesCRUD.update) {
-            statusesCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && statusesCRUD && statusesCRUD.update) {
+            statusesCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16953,17 +16813,10 @@ function AppInner() {
   const setTipos = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(tipos || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && tiposCRUD && tiposCRUD.update) {
-            tiposCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(tiposCRUD && tiposCRUD.update) {
-            tiposCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && tiposCRUD && tiposCRUD.update) {
+            tiposCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16973,17 +16826,10 @@ function AppInner() {
   const setTiposEntrega = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(tiposEntrega || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && tiposEntregaCRUD && tiposEntregaCRUD.update) {
-            tiposEntregaCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(tiposEntregaCRUD && tiposEntregaCRUD.update) {
-            tiposEntregaCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && tiposEntregaCRUD && tiposEntregaCRUD.update) {
+            tiposEntregaCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -16993,17 +16839,10 @@ function AppInner() {
   const setMonthEmojis = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(monthEmojis || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && monthEmojisCRUD && monthEmojisCRUD.update) {
-            monthEmojisCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(monthEmojisCRUD && monthEmojisCRUD.update) {
-            monthEmojisCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && monthEmojisCRUD && monthEmojisCRUD.update) {
+            monthEmojisCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17013,17 +16852,10 @@ function AppInner() {
   const setNavConfig = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(navConfig || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && navConfigCRUD && navConfigCRUD.update) {
-            navConfigCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(navConfigCRUD && navConfigCRUD.update) {
-            navConfigCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && navConfigCRUD && navConfigCRUD.update) {
+            navConfigCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17040,17 +16872,10 @@ function AppInner() {
   const setChatChannels = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(chatChannels || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && chatChannelsCRUD && chatChannelsCRUD.update) {
-            chatChannelsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(chatChannelsCRUD && chatChannelsCRUD.update) {
-            chatChannelsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && chatChannelsCRUD && chatChannelsCRUD.update) {
+            chatChannelsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17064,17 +16889,10 @@ function AppInner() {
   const setClienteUsers = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(clienteUsers || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && clienteUsersCRUD && clienteUsersCRUD.update) {
-            clienteUsersCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(clienteUsersCRUD && clienteUsersCRUD.update) {
-            clienteUsersCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && clienteUsersCRUD && clienteUsersCRUD.update) {
+            clienteUsersCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17084,17 +16902,10 @@ function AppInner() {
   const setClienteInfos = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(clienteInfos || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && clienteInfosCRUD && clienteInfosCRUD.update) {
-            clienteInfosCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(clienteInfosCRUD && clienteInfosCRUD.update) {
-            clienteInfosCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && clienteInfosCRUD && clienteInfosCRUD.update) {
+            clienteInfosCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17104,17 +16915,10 @@ function AppInner() {
   const setClienteInsights = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(clienteInsights || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && clienteInsightsCRUD && clienteInsightsCRUD.update) {
-            clienteInsightsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(clienteInsightsCRUD && clienteInsightsCRUD.update) {
-            clienteInsightsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && clienteInsightsCRUD && clienteInsightsCRUD.update) {
+            clienteInsightsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17124,17 +16928,10 @@ function AppInner() {
   const setClienteConfig = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(clienteConfig || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && clienteConfigCRUD && clienteConfigCRUD.update) {
-            clienteConfigCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(clienteConfigCRUD && clienteConfigCRUD.update) {
-            clienteConfigCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && clienteConfigCRUD && clienteConfigCRUD.update) {
+            clienteConfigCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17147,17 +16944,10 @@ function AppInner() {
   const setPlanejamento = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(planejamento || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && planejamentoCRUD && planejamentoCRUD.update) {
-            planejamentoCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(planejamentoCRUD && planejamentoCRUD.update) {
-            planejamentoCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && planejamentoCRUD && planejamentoCRUD.update) {
+            planejamentoCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17167,17 +16957,10 @@ function AppInner() {
   const setClientes = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(clientes || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && clientesCRUD && clientesCRUD.update) {
-            clientesCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(clientesCRUD && clientesCRUD.update) {
-            clientesCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && clientesCRUD && clientesCRUD.update) {
+            clientesCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17204,17 +16987,10 @@ function AppInner() {
   const setActivityLog = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(activityLog || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && activityLogCRUD && activityLogCRUD.update) {
-            activityLogCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(activityLogCRUD && activityLogCRUD.update) {
-            activityLogCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && activityLogCRUD && activityLogCRUD.update) {
+            activityLogCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17227,17 +17003,10 @@ function AppInner() {
   const setPrivateBoards = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(privateBoards || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && privateBoardsCRUD && privateBoardsCRUD.update) {
-            privateBoardsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(privateBoardsCRUD && privateBoardsCRUD.update) {
-            privateBoardsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && privateBoardsCRUD && privateBoardsCRUD.update) {
+            privateBoardsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17247,17 +17016,10 @@ function AppInner() {
   const setClienteDados = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(clienteDados || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && clienteDadosCRUD && clienteDadosCRUD.update) {
-            clienteDadosCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(clienteDadosCRUD && clienteDadosCRUD.update) {
-            clienteDadosCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && clienteDadosCRUD && clienteDadosCRUD.update) {
+            clienteDadosCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17267,17 +17029,10 @@ function AppInner() {
   const setPins = function(updater) {
     if(typeof updater === 'function') {
       var updated = updater(pins || {});
-      // Fire-and-forget: dispara a promise sem aguardar
       if(Array.isArray(updated)) {
         updated.forEach(function(item) {
-          if(item.id && pinsCRUD && pinsCRUD.update) {
-            pinsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
-          }
-        });
-      } else if(typeof updated === 'object') {
-        Object.keys(updated).forEach(function(k) {
-          if(pinsCRUD && pinsCRUD.update) {
-            pinsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          if(item && item.id && pinsCRUD && pinsCRUD.update) {
+            pinsCRUD.update(item.id, item).catch(function(e) { console.error('Save error:', e); });
           }
         });
       }
@@ -17518,13 +17273,7 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
     <ThemeCtx.Provider value={theme}>
     {/* Theme-aware CSS variables */}
 
-    {area==="criacao" ? <div style={{display:"flex",minHeight:"100vh"}}>
-        <div style={{width:240,background:"var(--ccard)",borderRight:"1px solid var(--cbord)",padding:"16px 0"}}>
-          <div onClick={function(){setArea(null);}} style={{padding:"12px",margin:"0 8px",borderRadius:8,cursor:"pointer",color:"var(--ct3)"}}>← Voltar</div>
-          {navConfig && navConfig.map(function(item) { return <div key={item.id} style={{padding:"10px 12px",margin:"4px 8px",color:"var(--ct3)"}}>{item.icon} {item.label}</div>; })}
-        </div>
-        <div style={{flex:1,padding:"20px"}}>🎨 Criação</div>
-      </div> : area==="comercial" ? <CRMShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){recordAccess("logout",user.name);setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} sdrLeads={sdrLeads} setSdrLeads={setSdrLeads} agendaReunioes={agendaReunioes} setAgendaReunioes={setAgendaReunioes} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} setCrmLeads={setCrmLeads} crmMetas={crmMetas} setCrmMetas={setCrmMetas} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} documentacoes={documentacoes} setDocumentacoes={setDocumentacoes} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs}/> :
+    {area==="comercial" ? <CRMShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){recordAccess("logout",user.name);setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} sdrLeads={sdrLeads} setSdrLeads={setSdrLeads} agendaReunioes={agendaReunioes} setAgendaReunioes={setAgendaReunioes} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} setCrmLeads={setCrmLeads} crmMetas={crmMetas} setCrmMetas={setCrmMetas} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} documentacoes={documentacoes} setDocumentacoes={setDocumentacoes} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs}/> :
     area==="administrativo" ? <AdminShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} setMembers={setMembers} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} contratos={contratos} setContratos={setContratos} colaboradores={colaboradores} setColaboradores={setColaboradores} financeiroDados={financeiroDados} setFinanceiroDados={setFinanceiroDados} okrs={okrs} setOkrs={setOkrs} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} contratoIniciadoNotif={contratoIniciadoNotif} setContratoIniciadoNotif={setContratoIniciadoNotif} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs} filiais={filiais} setFiliais={setFiliais} clienteUsers={clienteUsers} setClienteUsers={setClienteUsers} clienteInfos={clienteInfos} setClienteInfos={setClienteInfos} clienteInsights={clienteInsights} setClienteInsights={setClienteInsights} clienteConfig={clienteConfig} setClienteConfig={setClienteConfig} demands={demands} setDemands={setDemands} pins={pins} setPins={setPins}/> :
     <div className={"forma-app "+(theme==="light"?"t-light":theme==="night"?"t-night":"t-dark")} style={{display:"flex",minHeight:"100vh",background:theme==="light"?"#EBEBEB":theme==="night"?"#181818":"#0D0A06",fontFamily:POP,color:theme==="light"?"#1a1a1a":"#fff",position:"relative"}}>
       <style>{`
