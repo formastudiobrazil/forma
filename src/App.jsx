@@ -16530,14 +16530,21 @@ function AppInner() {
   const [calendar, calendarCRUD, calendarLoading] = useFirebaseCollection("calendar", INIT_CALENDAR);
   const setCalendar = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(calendar || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && calendarCRUD && calendarCRUD.update) calendarCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(calendarCRUD && calendarCRUD.update) calendarCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setcalendar error:', err); }
+      var updated = updater(calendar || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && calendarCRUD && calendarCRUD.update) {
+            calendarCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(calendarCRUD && calendarCRUD.update) {
+            calendarCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [calendarHistory, setCalendarHistory] = useState([]); // [{weekStart, data (no files)}]
@@ -16547,92 +16554,141 @@ function AppInner() {
   const [news, newsCRUD, newsLoading] = useFirebaseCollection("news", INIT_NEWS);
   const setNews = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(news || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && newsCRUD && newsCRUD.update) newsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(newsCRUD && newsCRUD.update) newsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setnews error:', err); }
+      var updated = updater(news || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && newsCRUD && newsCRUD.update) {
+            newsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(newsCRUD && newsCRUD.update) {
+            newsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [demands, demandsCRUD, demandsLoading] = useFirebaseCollection("demands", INIT_DEMANDS);
   const setDemands = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(demands || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && demandsCRUD && demandsCRUD.update) demandsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(demandsCRUD && demandsCRUD.update) demandsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setdemands error:', err); }
+      var updated = updater(demands || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && demandsCRUD && demandsCRUD.update) {
+            demandsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(demandsCRUD && demandsCRUD.update) {
+            demandsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [ads, adsCRUD, adsLoading] = useFirebaseCollection("ads", INIT_ADS);
   const setAds = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(ads || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && adsCRUD && adsCRUD.update) adsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(adsCRUD && adsCRUD.update) adsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setads error:', err); }
+      var updated = updater(ads || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && adsCRUD && adsCRUD.update) {
+            adsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(adsCRUD && adsCRUD.update) {
+            adsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [meetings, meetingsCRUD, meetingsLoading] = useFirebaseCollection("meetings", INIT_MEETINGS);
   const setMeetings = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(meetings || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && meetingsCRUD && meetingsCRUD.update) meetingsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(meetingsCRUD && meetingsCRUD.update) meetingsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setmeetings error:', err); }
+      var updated = updater(meetings || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && meetingsCRUD && meetingsCRUD.update) {
+            meetingsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(meetingsCRUD && meetingsCRUD.update) {
+            meetingsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [captacoesAV, captacoesAVCRUD, captacoesAVLoading] = useFirebaseCollection("captacoes_av", INIT_CAPTACOES_AV);
   const setCaptacoesAV = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(captacoesAV || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && captacoesAVCRUD && captacoesAVCRUD.update) captacoesAVCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(captacoesAVCRUD && captacoesAVCRUD.update) captacoesAVCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setcaptacoesAV error:', err); }
+      var updated = updater(captacoesAV || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && captacoesAVCRUD && captacoesAVCRUD.update) {
+            captacoesAVCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(captacoesAVCRUD && captacoesAVCRUD.update) {
+            captacoesAVCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [inboundClientes, inboundClientesCRUD, inboundClientesLoading] = useFirebaseCollection("inbound_clientes", INIT_INBOUND_CLIENTES);
   const setInboundClientes = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(inboundClientes || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && inboundClientesCRUD && inboundClientesCRUD.update) inboundClientesCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(inboundClientesCRUD && inboundClientesCRUD.update) inboundClientesCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setinboundClientes error:', err); }
+      var updated = updater(inboundClientes || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && inboundClientesCRUD && inboundClientesCRUD.update) {
+            inboundClientesCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(inboundClientesCRUD && inboundClientesCRUD.update) {
+            inboundClientesCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [sdrLeads, sdrLeadsCRUD, sdrLeadsLoading] = useFirebaseCollection("sdr_leads", INIT_SDR_LEADS);
   const setSdrLeads = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(sdrLeads || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && sdrLeadsCRUD && sdrLeadsCRUD.update) sdrLeadsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(sdrLeadsCRUD && sdrLeadsCRUD.update) sdrLeadsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setsdrLeads error:', err); }
+      var updated = updater(sdrLeads || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && sdrLeadsCRUD && sdrLeadsCRUD.update) {
+            sdrLeadsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(sdrLeadsCRUD && sdrLeadsCRUD.update) {
+            sdrLeadsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [adminVendas, setAdminVendas]       = useState([]);
@@ -16640,106 +16696,162 @@ function AppInner() {
   const [documentacoes, documentacoesCRUD, documentacoesLoading] = useFirebaseCollection("documentacoes", INIT_DOCUMENTACOES);
   const setDocumentacoes = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(documentacoes || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && documentacoesCRUD && documentacoesCRUD.update) documentacoesCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(documentacoesCRUD && documentacoesCRUD.update) documentacoesCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setdocumentacoes error:', err); }
+      var updated = updater(documentacoes || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && documentacoesCRUD && documentacoesCRUD.update) {
+            documentacoesCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(documentacoesCRUD && documentacoesCRUD.update) {
+            documentacoesCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [categoriasDocs, categoriasDocsCRUD, categoriasDocsLoading] = useFirebaseCollection("categoriasdocs", INIT_CATEGORIAS_DOCS);
   const setCategoriasDocs = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(categoriasDocs || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && categoriasDocsCRUD && categoriasDocsCRUD.update) categoriasDocsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(categoriasDocsCRUD && categoriasDocsCRUD.update) categoriasDocsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setcategoriasDocs error:', err); }
+      var updated = updater(categoriasDocs || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && categoriasDocsCRUD && categoriasDocsCRUD.update) {
+            categoriasDocsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(categoriasDocsCRUD && categoriasDocsCRUD.update) {
+            categoriasDocsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   // ── Shared state (persists across area switches) ───────────────
   const [crmLeads, crmLeadsCRUD, crmLeadsLoading] = useFirebaseCollection("crm_leads", INIT_CRM_LEADS);
   const setCrmLeads = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(crmLeads || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && crmLeadsCRUD && crmLeadsCRUD.update) crmLeadsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(crmLeadsCRUD && crmLeadsCRUD.update) crmLeadsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setcrmLeads error:', err); }
+      var updated = updater(crmLeads || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && crmLeadsCRUD && crmLeadsCRUD.update) {
+            crmLeadsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(crmLeadsCRUD && crmLeadsCRUD.update) {
+            crmLeadsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [crmMetas, crmMetasCRUD, crmMetasLoading] = useFirebaseCollection("metas", INIT_METAS);
   const setCrmMetas = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(crmMetas || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && crmMetasCRUD && crmMetasCRUD.update) crmMetasCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(crmMetasCRUD && crmMetasCRUD.update) crmMetasCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setcrmMetas error:', err); }
+      var updated = updater(crmMetas || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && crmMetasCRUD && crmMetasCRUD.update) {
+            crmMetasCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(crmMetasCRUD && crmMetasCRUD.update) {
+            crmMetasCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [contratos, contratosCRUD, contratosLoading] = useFirebaseCollection("contratos", INIT_CONTRATOS);
   const setContratos = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(contratos || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && contratosCRUD && contratosCRUD.update) contratosCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(contratosCRUD && contratosCRUD.update) contratosCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setcontratos error:', err); }
+      var updated = updater(contratos || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && contratosCRUD && contratosCRUD.update) {
+            contratosCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(contratosCRUD && contratosCRUD.update) {
+            contratosCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [colaboradores, colaboradoresCRUD, colaboradoresLoading] = useFirebaseCollection("colaboradores", INIT_COLABORADORES);
   const setColaboradores = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(colaboradores || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && colaboradoresCRUD && colaboradoresCRUD.update) colaboradoresCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(colaboradoresCRUD && colaboradoresCRUD.update) colaboradoresCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setcolaboradores error:', err); }
+      var updated = updater(colaboradores || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && colaboradoresCRUD && colaboradoresCRUD.update) {
+            colaboradoresCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(colaboradoresCRUD && colaboradoresCRUD.update) {
+            colaboradoresCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [financeiroDados, financeiroDadosCRUD, financeiroDadosLoading] = useFirebaseCollection("financeiro", INIT_FINANCEIRO);
   const setFinanceiroDados = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(financeiroDados || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && financeiroDadosCRUD && financeiroDadosCRUD.update) financeiroDadosCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(financeiroDadosCRUD && financeiroDadosCRUD.update) financeiroDadosCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setfinanceiroDados error:', err); }
+      var updated = updater(financeiroDados || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && financeiroDadosCRUD && financeiroDadosCRUD.update) {
+            financeiroDadosCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(financeiroDadosCRUD && financeiroDadosCRUD.update) {
+            financeiroDadosCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [okrs, okrsCRUD, okrsLoading] = useFirebaseCollection("okrs", INIT_OKRS);
   const setOkrs = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(okrs || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && okrsCRUD && okrsCRUD.update) okrsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(okrsCRUD && okrsCRUD.update) okrsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setokrs error:', err); }
+      var updated = updater(okrs || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && okrsCRUD && okrsCRUD.update) {
+            okrsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(okrsCRUD && okrsCRUD.update) {
+            okrsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [feedbacks, setFeedbacks]           = useState(function(){return getFeedbacks();}); // persisted in localStorage
@@ -16759,106 +16871,162 @@ function AppInner() {
   const [customBoards, customBoardsCRUD, customBoardsLoading] = useFirebaseCollection("customboards", INIT_CUSTOM_BOARDS);
   const setCustomBoards = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(customBoards || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && customBoardsCRUD && customBoardsCRUD.update) customBoardsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(customBoardsCRUD && customBoardsCRUD.update) customBoardsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setcustomBoards error:', err); }
+      var updated = updater(customBoards || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && customBoardsCRUD && customBoardsCRUD.update) {
+            customBoardsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(customBoardsCRUD && customBoardsCRUD.update) {
+            customBoardsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [members, membersCRUD, membersLoading] = useFirebaseCollection("members", INIT_MEMBERS);
   const setMembers = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(members || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && membersCRUD && membersCRUD.update) membersCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(membersCRUD && membersCRUD.update) membersCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setmembers error:', err); }
+      var updated = updater(members || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && membersCRUD && membersCRUD.update) {
+            membersCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(membersCRUD && membersCRUD.update) {
+            membersCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [filiais, filiaisCRUD, filiaisLoading] = useFirebaseCollection("filiais", INIT_FILIAIS);
   const setFiliais = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(filiais || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && filiaisCRUD && filiaisCRUD.update) filiaisCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(filiaisCRUD && filiaisCRUD.update) filiaisCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setfiliais error:', err); }
+      var updated = updater(filiais || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && filiaisCRUD && filiaisCRUD.update) {
+            filiaisCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(filiaisCRUD && filiaisCRUD.update) {
+            filiaisCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [customDatas,setCustomDatas] = useState({});
   const [statuses, statusesCRUD, statusesLoading] = useFirebaseCollection("statuses", INIT_STATUSES);
   const setStatuses = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(statuses || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && statusesCRUD && statusesCRUD.update) statusesCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(statusesCRUD && statusesCRUD.update) statusesCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setstatuses error:', err); }
+      var updated = updater(statuses || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && statusesCRUD && statusesCRUD.update) {
+            statusesCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(statusesCRUD && statusesCRUD.update) {
+            statusesCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [tipos, tiposCRUD, tiposLoading] = useFirebaseCollection("tipos", INIT_TIPOS);
   const setTipos = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(tipos || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && tiposCRUD && tiposCRUD.update) tiposCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(tiposCRUD && tiposCRUD.update) tiposCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('settipos error:', err); }
+      var updated = updater(tipos || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && tiposCRUD && tiposCRUD.update) {
+            tiposCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(tiposCRUD && tiposCRUD.update) {
+            tiposCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [tiposEntrega, tiposEntregaCRUD, tiposEntregaLoading] = useFirebaseCollection("tiposentrega", INIT_TIPOS_ENTREGA);
   const setTiposEntrega = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(tiposEntrega || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && tiposEntregaCRUD && tiposEntregaCRUD.update) tiposEntregaCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(tiposEntregaCRUD && tiposEntregaCRUD.update) tiposEntregaCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('settiposEntrega error:', err); }
+      var updated = updater(tiposEntrega || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && tiposEntregaCRUD && tiposEntregaCRUD.update) {
+            tiposEntregaCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(tiposEntregaCRUD && tiposEntregaCRUD.update) {
+            tiposEntregaCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [monthEmojis, monthEmojisCRUD, monthEmojisLoading] = useFirebaseCollection("monthemojis", INIT_MONTH_EMOJIS);
   const setMonthEmojis = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(monthEmojis || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && monthEmojisCRUD && monthEmojisCRUD.update) monthEmojisCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(monthEmojisCRUD && monthEmojisCRUD.update) monthEmojisCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setmonthEmojis error:', err); }
+      var updated = updater(monthEmojis || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && monthEmojisCRUD && monthEmojisCRUD.update) {
+            monthEmojisCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(monthEmojisCRUD && monthEmojisCRUD.update) {
+            monthEmojisCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [navConfig, navConfigCRUD, navConfigLoading] = useFirebaseCollection("navconfig", INIT_NAV_CONFIG);
   const setNavConfig = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(navConfig || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && navConfigCRUD && navConfigCRUD.update) navConfigCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(navConfigCRUD && navConfigCRUD.update) navConfigCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setnavConfig error:', err); }
+      var updated = updater(navConfig || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && navConfigCRUD && navConfigCRUD.update) {
+            navConfigCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(navConfigCRUD && navConfigCRUD.update) {
+            navConfigCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [csData, setCsData]             = useState({});  // {clienteId: {saude, interacoes:[], followUps:[], churnRisk, obs}}
@@ -16871,14 +17039,21 @@ function AppInner() {
   const [chatChannels, chatChannelsCRUD, chatChannelsLoading] = useFirebaseCollection("chat_channels", INIT_CHAT_CHANNELS);
   const setChatChannels = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(chatChannels || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && chatChannelsCRUD && chatChannelsCRUD.update) chatChannelsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(chatChannelsCRUD && chatChannelsCRUD.update) chatChannelsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setchatChannels error:', err); }
+      var updated = updater(chatChannels || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && chatChannelsCRUD && chatChannelsCRUD.update) {
+            chatChannelsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(chatChannelsCRUD && chatChannelsCRUD.update) {
+            chatChannelsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [lastSeenMsgCount, setLastSeenMsgCount] = useState(0);
@@ -16888,53 +17063,81 @@ function AppInner() {
   const [clienteUsers, clienteUsersCRUD, clienteUsersLoading] = useFirebaseCollection("clienteusers", INIT_CLIENTE_USERS);
   const setClienteUsers = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(clienteUsers || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && clienteUsersCRUD && clienteUsersCRUD.update) clienteUsersCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(clienteUsersCRUD && clienteUsersCRUD.update) clienteUsersCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setclienteUsers error:', err); }
+      var updated = updater(clienteUsers || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && clienteUsersCRUD && clienteUsersCRUD.update) {
+            clienteUsersCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(clienteUsersCRUD && clienteUsersCRUD.update) {
+            clienteUsersCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [clienteInfos, clienteInfosCRUD, clienteInfosLoading] = useFirebaseCollection("clienteinfos", INIT_CLIENTE_INFOS);
   const setClienteInfos = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(clienteInfos || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && clienteInfosCRUD && clienteInfosCRUD.update) clienteInfosCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(clienteInfosCRUD && clienteInfosCRUD.update) clienteInfosCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setclienteInfos error:', err); }
+      var updated = updater(clienteInfos || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && clienteInfosCRUD && clienteInfosCRUD.update) {
+            clienteInfosCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(clienteInfosCRUD && clienteInfosCRUD.update) {
+            clienteInfosCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [clienteInsights, clienteInsightsCRUD, clienteInsightsLoading] = useFirebaseCollection("clienteinsights", INIT_CLIENTE_INSIGHTS);
   const setClienteInsights = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(clienteInsights || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && clienteInsightsCRUD && clienteInsightsCRUD.update) clienteInsightsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(clienteInsightsCRUD && clienteInsightsCRUD.update) clienteInsightsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setclienteInsights error:', err); }
+      var updated = updater(clienteInsights || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && clienteInsightsCRUD && clienteInsightsCRUD.update) {
+            clienteInsightsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(clienteInsightsCRUD && clienteInsightsCRUD.update) {
+            clienteInsightsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [clienteConfig, clienteConfigCRUD, clienteConfigLoading] = useFirebaseCollection("clienteconfig", INIT_CLIENTE_CONFIG);
   const setClienteConfig = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(clienteConfig || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && clienteConfigCRUD && clienteConfigCRUD.update) clienteConfigCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(clienteConfigCRUD && clienteConfigCRUD.update) clienteConfigCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setclienteConfig error:', err); }
+      var updated = updater(clienteConfig || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && clienteConfigCRUD && clienteConfigCRUD.update) {
+            clienteConfigCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(clienteConfigCRUD && clienteConfigCRUD.update) {
+            clienteConfigCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [clienteLoginType, setClienteLoginType] = useState(null); // null | "cliente" | "colaborador"
@@ -16943,27 +17146,41 @@ function AppInner() {
   const [planejamento, planejamentoCRUD, planejamentoLoading] = useFirebaseCollection("planejamento", INIT_PLANEJAMENTO);
   const setPlanejamento = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(planejamento || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && planejamentoCRUD && planejamentoCRUD.update) planejamentoCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(planejamentoCRUD && planejamentoCRUD.update) planejamentoCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setplanejamento error:', err); }
+      var updated = updater(planejamento || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && planejamentoCRUD && planejamentoCRUD.update) {
+            planejamentoCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(planejamentoCRUD && planejamentoCRUD.update) {
+            planejamentoCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [clientes, clientesCRUD, clientesLoading] = useFirebaseCollection("clientes", INIT_CLIENTES);
   const setClientes = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(clientes || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && clientesCRUD && clientesCRUD.update) clientesCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(clientesCRUD && clientesCRUD.update) clientesCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setclientes error:', err); }
+      var updated = updater(clientes || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && clientesCRUD && clientesCRUD.update) {
+            clientesCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(clientesCRUD && clientesCRUD.update) {
+            clientesCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
 
@@ -16986,14 +17203,21 @@ function AppInner() {
   const [activityLog, activityLogCRUD, activityLogLoading] = useFirebaseCollection("activity", INIT_ACTIVITY);
   const setActivityLog = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(activityLog || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && activityLogCRUD && activityLogCRUD.update) activityLogCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(activityLogCRUD && activityLogCRUD.update) activityLogCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setactivityLog error:', err); }
+      var updated = updater(activityLog || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && activityLogCRUD && activityLogCRUD.update) {
+            activityLogCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(activityLogCRUD && activityLogCRUD.update) {
+            activityLogCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [qualityRatings, setQualityRatings] = useState({}); // {clienteId: [{nota,obs,year,month,ts,autor}]}
@@ -17002,40 +17226,61 @@ function AppInner() {
   const [privateBoards, privateBoardsCRUD, privateBoardsLoading] = useFirebaseCollection("privateboards", INIT_PRIVATE_BOARDS);
   const setPrivateBoards = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(privateBoards || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && privateBoardsCRUD && privateBoardsCRUD.update) privateBoardsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(privateBoardsCRUD && privateBoardsCRUD.update) privateBoardsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setprivateBoards error:', err); }
+      var updated = updater(privateBoards || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && privateBoardsCRUD && privateBoardsCRUD.update) {
+            privateBoardsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(privateBoardsCRUD && privateBoardsCRUD.update) {
+            privateBoardsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [clienteDados, clienteDadosCRUD, clienteDadosLoading] = useFirebaseCollection("clientedados", INIT_CLIENTE_DADOS);
   const setClienteDados = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(clienteDados || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && clienteDadosCRUD && clienteDadosCRUD.update) clienteDadosCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(clienteDadosCRUD && clienteDadosCRUD.update) clienteDadosCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setclienteDados error:', err); }
+      var updated = updater(clienteDados || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && clienteDadosCRUD && clienteDadosCRUD.update) {
+            clienteDadosCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(clienteDadosCRUD && clienteDadosCRUD.update) {
+            clienteDadosCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [pins, pinsCRUD, pinsLoading] = useFirebaseCollection("pins", INIT_PINS);
   const setPins = function(updater) {
     if(typeof updater === 'function') {
-      try {
-        var updated = updater(pins || {});
-        if(Array.isArray(updated)) {
-          updated.forEach(item => { if(item.id && pinsCRUD && pinsCRUD.update) pinsCRUD.update(item.id, item); });
-        } else if(typeof updated === 'object') {
-          Object.keys(updated).forEach(k => { if(pinsCRUD && pinsCRUD.update) pinsCRUD.update(k, updated[k]); });
-        }
-      } catch(err) { console.error('setpins error:', err); }
+      var updated = updater(pins || {});
+      // Fire-and-forget: dispara a promise sem aguardar
+      if(Array.isArray(updated)) {
+        updated.forEach(function(item) {
+          if(item.id && pinsCRUD && pinsCRUD.update) {
+            pinsCRUD.update(item.id, item).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      } else if(typeof updated === 'object') {
+        Object.keys(updated).forEach(function(k) {
+          if(pinsCRUD && pinsCRUD.update) {
+            pinsCRUD.update(k, updated[k]).catch(function(err) { console.error('Firebase save error:', err); });
+          }
+        });
+      }
     }
   };
   const [incidentes, setIncidentes]       = useState([]);
@@ -17273,7 +17518,13 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
     <ThemeCtx.Provider value={theme}>
     {/* Theme-aware CSS variables */}
 
-    {area==="comercial" ? <CRMShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){recordAccess("logout",user.name);setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} sdrLeads={sdrLeads} setSdrLeads={setSdrLeads} agendaReunioes={agendaReunioes} setAgendaReunioes={setAgendaReunioes} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} setCrmLeads={setCrmLeads} crmMetas={crmMetas} setCrmMetas={setCrmMetas} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} documentacoes={documentacoes} setDocumentacoes={setDocumentacoes} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs}/> :
+    {area==="criacao" ? <div style={{display:"flex",minHeight:"100vh"}}>
+        <div style={{width:240,background:"var(--ccard)",borderRight:"1px solid var(--cbord)",padding:"16px 0"}}>
+          <div onClick={function(){setArea(null);}} style={{padding:"12px",margin:"0 8px",borderRadius:8,cursor:"pointer",color:"var(--ct3)"}}>← Voltar</div>
+          {navConfig && navConfig.map(function(item) { return <div key={item.id} style={{padding:"10px 12px",margin:"4px 8px",color:"var(--ct3)"}}>{item.icon} {item.label}</div>; })}
+        </div>
+        <div style={{flex:1,padding:"20px"}}>🎨 Criação</div>
+      </div> : area==="comercial" ? <CRMShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){recordAccess("logout",user.name);setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} sdrLeads={sdrLeads} setSdrLeads={setSdrLeads} agendaReunioes={agendaReunioes} setAgendaReunioes={setAgendaReunioes} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} setCrmLeads={setCrmLeads} crmMetas={crmMetas} setCrmMetas={setCrmMetas} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} documentacoes={documentacoes} setDocumentacoes={setDocumentacoes} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs}/> :
     area==="administrativo" ? <AdminShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} setMembers={setMembers} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} contratos={contratos} setContratos={setContratos} colaboradores={colaboradores} setColaboradores={setColaboradores} financeiroDados={financeiroDados} setFinanceiroDados={setFinanceiroDados} okrs={okrs} setOkrs={setOkrs} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} contratoIniciadoNotif={contratoIniciadoNotif} setContratoIniciadoNotif={setContratoIniciadoNotif} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs} filiais={filiais} setFiliais={setFiliais} clienteUsers={clienteUsers} setClienteUsers={setClienteUsers} clienteInfos={clienteInfos} setClienteInfos={setClienteInfos} clienteInsights={clienteInsights} setClienteInsights={setClienteInsights} clienteConfig={clienteConfig} setClienteConfig={setClienteConfig} demands={demands} setDemands={setDemands} pins={pins} setPins={setPins}/> :
     <div className={"forma-app "+(theme==="light"?"t-light":theme==="night"?"t-night":"t-dark")} style={{display:"flex",minHeight:"100vh",background:theme==="light"?"#EBEBEB":theme==="night"?"#181818":"#0D0A06",fontFamily:POP,color:theme==="light"?"#1a1a1a":"#fff",position:"relative"}}>
       <style>{`
