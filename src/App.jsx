@@ -16528,23 +16528,16 @@ function AppInner() {
   const todayDayId = () => { const d=["dom","seg","ter","qua","qui","sex","sab"][new Date().getDay()]; return DAYS.find(x=>x.id===d)?d:"seg"; };
   const [activeDay,setActiveDay]   = useState(todayDayId);
   const [calendar, calendarCRUD, calendarLoading] = useFirebaseCollection("calendar", INIT_CALENDAR);
-  // 🔥 FIREBASE SYNC: Salva imediatamente em Firestore quando modifica
   const setCalendar = function(updater) {
     if(typeof updater === 'function') {
       try {
         var updated = updater(calendar || {});
-        // Sincronizar com Firebase IMEDIATAMENTE
-        Object.keys(updated).forEach(day => {
-          var dayItems = updated[day] || [];
-          dayItems.forEach(item => {
-            if(item.id && calendarCRUD && calendarCRUD.update) {
-              calendarCRUD.update(item.id, item);
-            } else if(!item.id && calendarCRUD && calendarCRUD.add) {
-              calendarCRUD.add(item);
-            }
-          });
-        });
-      } catch(err) { console.error('setCalendar error:', err); }
+        if(Array.isArray(updated)) {
+          updated.forEach(item => { if(item.id && calendarCRUD && calendarCRUD.update) calendarCRUD.update(item.id, item); });
+        } else if(typeof updated === 'object') {
+          Object.keys(updated).forEach(k => { if(calendarCRUD && calendarCRUD.update) calendarCRUD.update(k, updated[k]); });
+        }
+      } catch(err) { console.error('setcalendar error:', err); }
     }
   };
   const [calendarHistory, setCalendarHistory] = useState([]); // [{weekStart, data (no files)}]
