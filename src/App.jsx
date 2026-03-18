@@ -16534,7 +16534,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) calendarCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [calendarHistory, setCalendarHistory] = useState([]); // [{weekStart, data (no files)}]
@@ -16549,7 +16549,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) newsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [demands, demandsCRUD, demandsLoading] = useFirebaseCollection("demands", INIT_DEMANDS);
@@ -16560,7 +16560,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) demandsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [ads, adsCRUD, adsLoading] = useFirebaseCollection("ads", INIT_ADS);
@@ -16571,7 +16571,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) adsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [meetings, meetingsCRUD, meetingsLoading] = useFirebaseCollection("meetings", INIT_MEETINGS);
@@ -16582,7 +16582,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) meetingsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [captacoesAV, captacoesAVCRUD, captacoesAVLoading] = useFirebaseCollection("captacoes_av", INIT_CAPTACOES_AV);
@@ -16593,7 +16593,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) captacoesAVCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [inboundClientes, inboundClientesCRUD, inboundClientesLoading] = useFirebaseCollection("inbound_clientes", INIT_INBOUND_CLIENTES);
@@ -16604,7 +16604,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) inboundClientesCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [sdrLeads, sdrLeadsCRUD, sdrLeadsLoading] = useFirebaseCollection("sdr_leads", INIT_SDR_LEADS);
@@ -16615,7 +16615,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) sdrLeadsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [adminVendas, setAdminVendas]       = useState([]);
@@ -16628,7 +16628,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) documentacoesCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [categoriasDocs, categoriasDocsCRUD, categoriasDocsLoading] = useFirebaseCollection("categoriasdocs", INIT_CATEGORIAS_DOCS);
@@ -16639,7 +16639,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) categoriasDocsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   // ── Shared state (persists across area switches) ───────────────
@@ -16651,7 +16651,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) crmLeadsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [crmMetas, crmMetasCRUD, crmMetasLoading] = useFirebaseCollection("metas", INIT_METAS);
@@ -16662,7 +16662,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) crmMetasCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [contratos, contratosCRUD, contratosLoading] = useFirebaseCollection("contratos", INIT_CONTRATOS);
@@ -16673,7 +16673,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) contratosCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [colaboradores, colaboradoresCRUD, colaboradoresLoading] = useFirebaseCollection("colaboradores", INIT_COLABORADORES);
@@ -16684,7 +16684,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) colaboradoresCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [financeiroDados, financeiroDadosCRUD, financeiroDadosLoading] = useFirebaseCollection("financeiro", INIT_FINANCEIRO);
@@ -16695,7 +16695,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) financeiroDadosCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [okrs, okrsCRUD, okrsLoading] = useFirebaseCollection("okrs", INIT_OKRS);
@@ -16706,7 +16706,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) okrsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [feedbacks, setFeedbacks]           = useState(function(){return getFeedbacks();}); 
@@ -16730,7 +16730,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) customBoardsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [members, membersCRUD, membersLoading] = useFirebaseCollection("members", INIT_MEMBERS);
@@ -16741,7 +16741,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) membersCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [filiais, filiaisCRUD, filiaisLoading] = useFirebaseCollection("filiais", INIT_FILIAIS);
@@ -16752,7 +16752,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) filiaisCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [customDatas,setCustomDatas] = useState({});
@@ -16764,7 +16764,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) statusesCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [tipos, tiposCRUD, tiposLoading] = useFirebaseCollection("tipos", INIT_TIPOS);
@@ -16775,7 +16775,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) tiposCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [tiposEntrega, tiposEntregaCRUD, tiposEntregaLoading] = useFirebaseCollection("tiposentrega", INIT_TIPOS_ENTREGA);
@@ -16786,7 +16786,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) tiposEntregaCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [monthEmojis, monthEmojisCRUD, monthEmojisLoading] = useFirebaseCollection("monthemojis", INIT_MONTH_EMOJIS);
@@ -16797,7 +16797,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) monthEmojisCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [navConfig, navConfigCRUD, navConfigLoading] = useFirebaseCollection("navconfig", INIT_NAV_CONFIG);
@@ -16808,7 +16808,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) navConfigCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [csData, setCsData]             = useState({});  // {clienteId: {saude, interacoes:[], followUps:[], churnRisk, obs}}
@@ -16826,7 +16826,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) chatChannelsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [lastSeenMsgCount, setLastSeenMsgCount] = useState(0);
@@ -16841,7 +16841,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) clienteUsersCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [clienteInfos, clienteInfosCRUD, clienteInfosLoading] = useFirebaseCollection("clienteinfos", INIT_CLIENTE_INFOS);
@@ -16852,7 +16852,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) clienteInfosCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [clienteInsights, clienteInsightsCRUD, clienteInsightsLoading] = useFirebaseCollection("clienteinsights", INIT_CLIENTE_INSIGHTS);
@@ -16863,7 +16863,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) clienteInsightsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [clienteConfig, clienteConfigCRUD, clienteConfigLoading] = useFirebaseCollection("clienteconfig", INIT_CLIENTE_CONFIG);
@@ -16874,7 +16874,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) clienteConfigCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [clienteLoginType, setClienteLoginType] = useState(null); // null | "cliente" | "colaborador"
@@ -16888,7 +16888,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) planejamentoCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [clientes, clientesCRUD, clientesLoading] = useFirebaseCollection("clientes", INIT_CLIENTES);
@@ -16899,7 +16899,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) clientesCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
 
@@ -16925,7 +16925,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) activityLogCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [qualityRatings, setQualityRatings] = useState({}); // {clienteId: [{nota,obs,year,month,ts,autor}]}
@@ -16939,7 +16939,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) privateBoardsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [clienteDados, clienteDadosCRUD, clienteDadosLoading] = useFirebaseCollection("clientedados", INIT_CLIENTE_DADOS);
@@ -16950,7 +16950,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) clienteDadosCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [pins, pinsCRUD, pinsLoading] = useFirebaseCollection("pins", INIT_PINS);
@@ -16961,7 +16961,7 @@ function AppInner() {
         newVal.forEach(x => {
           if(x && x.id) pinsCRUD.update(x.id, x).catch(e => console.error(e));
         });
-      }
+      };
     }
   };
   const [incidentes, setIncidentes]       = useState([]);
