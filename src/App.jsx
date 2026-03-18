@@ -125,6 +125,9 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
+const app = initializeApp(FIREBASE_CONFIG);
+const firestoreDb = getFirestore(app);
+const auth = getAuth(app);
 
 let firebaseApp;
 try {
@@ -16527,191 +16530,29 @@ function AppInner() {
   const todayDayId = () => { const d=["dom","seg","ter","qua","qui","sex","sab"][new Date().getDay()]; return DAYS.find(x=>x.id===d)?d:"seg"; };
   const [activeDay,setActiveDay]   = useState(todayDayId);
   const [calendar, calendarCRUD, calendarLoading] = useFirebaseCollection("calendar", INIT_CALENDAR);
-  const setCalendar = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(calendar);
-      if(Array.isArray(newVal) && calendarCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) calendarCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [calendarHistory, setCalendarHistory] = useState([]); // [{weekStart, data (no files)}]
   const [futurePosts, setFuturePosts] = useState({}); // {weekKey: {seg:[],ter:[],...}}
   const [showHistorico, setShowHistorico] = useState(false);
   const [showProxSemanas, setShowProxSemanas] = useState(false);
   const [news, newsCRUD, newsLoading] = useFirebaseCollection("news", INIT_NEWS);
-  const setNews = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(news);
-      if(Array.isArray(newVal) && newsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) newsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [demands, demandsCRUD, demandsLoading] = useFirebaseCollection("demands", INIT_DEMANDS);
-  const setDemands = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(demands);
-      if(Array.isArray(newVal) && demandsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) demandsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [ads, adsCRUD, adsLoading] = useFirebaseCollection("ads", INIT_ADS);
-  const setAds = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(ads);
-      if(Array.isArray(newVal) && adsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) adsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [meetings, meetingsCRUD, meetingsLoading] = useFirebaseCollection("meetings", INIT_MEETINGS);
-  const setMeetings = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(meetings);
-      if(Array.isArray(newVal) && meetingsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) meetingsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [captacoesAV, captacoesAVCRUD, captacoesAVLoading] = useFirebaseCollection("captacoes_av", INIT_CAPTACOES_AV);
-  const setCaptacoesAV = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(captacoesAV);
-      if(Array.isArray(newVal) && captacoesAVCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) captacoesAVCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [inboundClientes, inboundClientesCRUD, inboundClientesLoading] = useFirebaseCollection("inbound_clientes", INIT_INBOUND_CLIENTES);
-  const setInboundClientes = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(inboundClientes);
-      if(Array.isArray(newVal) && inboundClientesCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) inboundClientesCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [sdrLeads, sdrLeadsCRUD, sdrLeadsLoading] = useFirebaseCollection("sdr_leads", INIT_SDR_LEADS);
-  const setSdrLeads = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(sdrLeads);
-      if(Array.isArray(newVal) && sdrLeadsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) sdrLeadsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [adminVendas, setAdminVendas]       = useState([]);
   const [avisos, setAvisos]                 = useState([]); // announcements created by admin
   const [documentacoes, documentacoesCRUD, documentacoesLoading] = useFirebaseCollection("documentacoes", INIT_DOCUMENTACOES);
-  const setDocumentacoes = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(documentacoes);
-      if(Array.isArray(newVal) && documentacoesCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) documentacoesCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [categoriasDocs, categoriasDocsCRUD, categoriasDocsLoading] = useFirebaseCollection("categoriasdocs", INIT_CATEGORIAS_DOCS);
-  const setCategoriasDocs = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(categoriasDocs);
-      if(Array.isArray(newVal) && categoriasDocsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) categoriasDocsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   // ── Shared state (persists across area switches) ───────────────
   const [crmLeads, crmLeadsCRUD, crmLeadsLoading] = useFirebaseCollection("crm_leads", INIT_CRM_LEADS);
-  const setCrmLeads = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(crmLeads);
-      if(Array.isArray(newVal) && crmLeadsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) crmLeadsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [crmMetas, crmMetasCRUD, crmMetasLoading] = useFirebaseCollection("metas", INIT_METAS);
-  const setCrmMetas = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(crmMetas);
-      if(Array.isArray(newVal) && crmMetasCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) crmMetasCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [contratos, contratosCRUD, contratosLoading] = useFirebaseCollection("contratos", INIT_CONTRATOS);
-  const setContratos = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(contratos);
-      if(Array.isArray(newVal) && contratosCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) contratosCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [colaboradores, colaboradoresCRUD, colaboradoresLoading] = useFirebaseCollection("colaboradores", INIT_COLABORADORES);
-  const setColaboradores = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(colaboradores);
-      if(Array.isArray(newVal) && colaboradoresCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) colaboradoresCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [financeiroDados, financeiroDadosCRUD, financeiroDadosLoading] = useFirebaseCollection("financeiro", INIT_FINANCEIRO);
-  const setFinanceiroDados = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(financeiroDados);
-      if(Array.isArray(newVal) && financeiroDadosCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) financeiroDadosCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [okrs, okrsCRUD, okrsLoading] = useFirebaseCollection("okrs", INIT_OKRS);
-  const setOkrs = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(okrs);
-      if(Array.isArray(newVal) && okrsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) okrsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
-  const [feedbacks, setFeedbacks]           = useState(function(){return getFeedbacks();}); 
-  
-  const [notifications, setNotifications] = React.useState(function(){
+    const [notifications, setNotifications] = React.useState(function(){
   });
   // Bridge: sync window._feedbacks → state
   React.useEffect(function(){
@@ -16723,94 +16564,14 @@ function AppInner() {
   }, []);
   const [agendaReunioes, setAgendaReunioes] = useState([]);
   const [customBoards, customBoardsCRUD, customBoardsLoading] = useFirebaseCollection("customboards", INIT_CUSTOM_BOARDS);
-  const setCustomBoards = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(customBoards);
-      if(Array.isArray(newVal) && customBoardsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) customBoardsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [members, membersCRUD, membersLoading] = useFirebaseCollection("members", INIT_MEMBERS);
-  const setMembers = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(members);
-      if(Array.isArray(newVal) && membersCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) membersCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [filiais, filiaisCRUD, filiaisLoading] = useFirebaseCollection("filiais", INIT_FILIAIS);
-  const setFiliais = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(filiais);
-      if(Array.isArray(newVal) && filiaisCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) filiaisCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [customDatas,setCustomDatas] = useState({});
   const [statuses, statusesCRUD, statusesLoading] = useFirebaseCollection("statuses", INIT_STATUSES);
-  const setStatuses = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(statuses);
-      if(Array.isArray(newVal) && statusesCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) statusesCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [tipos, tiposCRUD, tiposLoading] = useFirebaseCollection("tipos", INIT_TIPOS);
-  const setTipos = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(tipos);
-      if(Array.isArray(newVal) && tiposCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) tiposCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [tiposEntrega, tiposEntregaCRUD, tiposEntregaLoading] = useFirebaseCollection("tiposentrega", INIT_TIPOS_ENTREGA);
-  const setTiposEntrega = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(tiposEntrega);
-      if(Array.isArray(newVal) && tiposEntregaCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) tiposEntregaCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [monthEmojis, monthEmojisCRUD, monthEmojisLoading] = useFirebaseCollection("monthemojis", INIT_MONTH_EMOJIS);
-  const setMonthEmojis = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(monthEmojis);
-      if(Array.isArray(newVal) && monthEmojisCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) monthEmojisCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [navConfig, navConfigCRUD, navConfigLoading] = useFirebaseCollection("navconfig", INIT_NAV_CONFIG);
-  const setNavConfig = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(navConfig);
-      if(Array.isArray(newVal) && navConfigCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) navConfigCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [csData, setCsData]             = useState({});  // {clienteId: {saude, interacoes:[], followUps:[], churnRisk, obs}}
   const [crmStages,setCrmStages]     = useState(null); // null = use defaults
   const [crmOrigens,setCrmOrigens]   = useState(null); // null = use defaults
@@ -16819,89 +16580,19 @@ function AppInner() {
   const DEFAULT_CLIENTE_TAGS = [{id:"ativo",label:"Ativo",cor:"#22C55E"},{id:"premium",label:"Premium",cor:"#F59E0B"},{id:"b2b",label:"B2B",cor:"#3B82F6"},{id:"antigo",label:"Antigo",cor:"#8B5CF6"},{id:"pausado",label:"Pausado",cor:"#6B7280"},{id:"novo",label:"Novo",cor:"#EC4899"}];
   const [clienteTags,setClienteTags] = useState(DEFAULT_CLIENTE_TAGS);
   const [chatChannels, chatChannelsCRUD, chatChannelsLoading] = useFirebaseCollection("chat_channels", INIT_CHAT_CHANNELS);
-  const setChatChannels = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(chatChannels);
-      if(Array.isArray(newVal) && chatChannelsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) chatChannelsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [lastSeenMsgCount, setLastSeenMsgCount] = useState(0);
   const totalChatMsgs = chatChannels.reduce((s,ch)=>s+ch.messages.length,0);
   const chatUnread = Math.max(0, totalChatMsgs - lastSeenMsgCount);
   // ── PORTAL DO CLIENTE ───────
   const [clienteUsers, clienteUsersCRUD, clienteUsersLoading] = useFirebaseCollection("clienteusers", INIT_CLIENTE_USERS);
-  const setClienteUsers = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(clienteUsers);
-      if(Array.isArray(newVal) && clienteUsersCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) clienteUsersCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [clienteInfos, clienteInfosCRUD, clienteInfosLoading] = useFirebaseCollection("clienteinfos", INIT_CLIENTE_INFOS);
-  const setClienteInfos = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(clienteInfos);
-      if(Array.isArray(newVal) && clienteInfosCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) clienteInfosCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [clienteInsights, clienteInsightsCRUD, clienteInsightsLoading] = useFirebaseCollection("clienteinsights", INIT_CLIENTE_INSIGHTS);
-  const setClienteInsights = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(clienteInsights);
-      if(Array.isArray(newVal) && clienteInsightsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) clienteInsightsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [clienteConfig, clienteConfigCRUD, clienteConfigLoading] = useFirebaseCollection("clienteconfig", INIT_CLIENTE_CONFIG);
-  const setClienteConfig = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(clienteConfig);
-      if(Array.isArray(newVal) && clienteConfigCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) clienteConfigCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [clienteLoginType, setClienteLoginType] = useState(null); // null | "cliente" | "colaborador"
   const [clienteAuthUser, setClienteAuthUser] = useState(null); // {id, email, nome, contasAtreladas}
   const [clienteSelectedAccount, setClienteSelectedAccount] = useState(null); // "cli1" | "cli2" | etc
   const [planejamento, planejamentoCRUD, planejamentoLoading] = useFirebaseCollection("planejamento", INIT_PLANEJAMENTO);
-  const setPlanejamento = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(planejamento);
-      if(Array.isArray(newVal) && planejamentoCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) planejamentoCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [clientes, clientesCRUD, clientesLoading] = useFirebaseCollection("clientes", INIT_CLIENTES);
-  const setClientes = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(clientes);
-      if(Array.isArray(newVal) && clientesCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) clientesCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
 
   // ── Reset planejamento on January 1st each year ──
   React.useEffect(function() {
@@ -16918,52 +16609,12 @@ function AppInner() {
   const [dragNavIdx, setDragNavIdx]     = useState(null);
   const [dragOverIdx, setDragOverIdx]   = useState(null);
   const [activityLog, activityLogCRUD, activityLogLoading] = useFirebaseCollection("activity", INIT_ACTIVITY);
-  const setActivityLog = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(activityLog);
-      if(Array.isArray(newVal) && activityLogCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) activityLogCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [qualityRatings, setQualityRatings] = useState({}); // {clienteId: [{nota,obs,year,month,ts,autor}]}
   const [cpsInitClient, setCpsInitClient] = useState(null);
   const [clientScoresHistory, setClientScoresHistory] = useState({}); // {clienteId: [{score,label,period}]}
   const [privateBoards, privateBoardsCRUD, privateBoardsLoading] = useFirebaseCollection("privateboards", INIT_PRIVATE_BOARDS);
-  const setPrivateBoards = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(privateBoards);
-      if(Array.isArray(newVal) && privateBoardsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) privateBoardsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [clienteDados, clienteDadosCRUD, clienteDadosLoading] = useFirebaseCollection("clientedados", INIT_CLIENTE_DADOS);
-  const setClienteDados = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(clienteDados);
-      if(Array.isArray(newVal) && clienteDadosCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) clienteDadosCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [pins, pinsCRUD, pinsLoading] = useFirebaseCollection("pins", INIT_PINS);
-  const setPins = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(pins);
-      if(Array.isArray(newVal) && pinsCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) pinsCRUD.update(x.id, x).catch(e => console.error(e));
-        });
-      };
-    }
-  };
   const [incidentes, setIncidentes]       = useState([]);
   const [cronData, setCronData]           = useState({});
   const [theme, setTheme]               = useState("dark"); // dark | night | light
