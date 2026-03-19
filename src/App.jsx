@@ -249,32 +249,6 @@ function useFirebaseCollection(collectionName, initialState = []) {
 
     // 🟢 Soft delete em vez de deletar
     softDelete: async (id) => {
-
-// ============================================
-// FIREBASE SETUP
-// ============================================
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "firebase/firestore";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCxRjTUm8npYXjrVOaVGuzUo_PzSpXQEPw",
-  authDomain: "formaos-bafad.firebaseapp.com",
-  projectId: "formaos-bafad",
-  storageBucket: "formaos-bafad.appspot.com",
-  messagingSenderId: "631256789012",
-  appId: "1:631256789012:web:abc123def456"
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
-export const db = getFirestore(firebaseApp);
-
-// ============================================
-// GLOBAL CONTEXT
-// ============================================
-const AppContext = React.createContext(null);
-export const AppProvider = ({ children }) => <AppContext.Provider value={{}}>{children}</AppContext.Provider>;
-export const useApp = () => React.useContext(AppContext) || {};
-
       try {
         await retryWithBackoff(() =>
           updateDoc(doc(firestoreDb, collectionName, id), {
