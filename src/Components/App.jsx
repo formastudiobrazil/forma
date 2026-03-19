@@ -6,7 +6,6 @@ import { Dashboard } from './Dashboard'
 
 function AppRouter() {
   const { user, area, loading } = useApp()
-
   if (loading.members) {
     return (
       <div style={{
