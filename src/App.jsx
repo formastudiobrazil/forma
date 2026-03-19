@@ -7512,7 +7512,7 @@ function CronogramasView({ clientes, addLog, demands }) {
         
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:14}}>
           {clientes.map(function(c){
-            var totalPosts = Object.values(cronData).reduce(function(acc,m){return acc+Object.values(m).reduce(function(a,d){return a+d.length;},0);},0);
+            var totalPosts = (cronData&&typeof cronData === 'object') ? Object.values(cronData).reduce(function(acc,m){return acc+Object.values(m||{}).reduce(function(a,d){return a+(Array.isArray(d)?d.length:0);},0);},0) : 0;
             return (
               <div key={c.id} onClick={function(){setActiveClient(c.id);setActiveMonth(curMonth);}} style={{padding:"20px",borderRadius:18,cursor:"pointer",background:"var(--ccard)",border:"2px solid var(--cbord)",transition:"all 0.2s"}}
                 onMouseEnter={function(e){e.currentTarget.style.borderColor=(c.cor||OR)+"60";e.currentTarget.style.transform="translateY(-3px)";}}
@@ -17327,7 +17327,7 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
                 onMouseEnter={function(e){e.currentTarget.style.background="rgba(34,197,94,0.18)";}}
                 onMouseLeave={function(e){e.currentTarget.style.background="rgba(34,197,94,0.10)";}}>
                 🗓️ Próximas semanas
-                {Object.values(futurePosts).reduce(function(s,wk){return s+Object.values(wk).flat().length;},0)>0&&<span style={{padding:"1px 5px",borderRadius:10,background:"rgba(34,197,94,0.20)",fontSize:10,fontWeight:700,color:"#4ADE80"}}>{Object.values(futurePosts).reduce(function(s,wk){return s+Object.values(wk).flat().length;},0)}</span>}
+                {(function(){var cnt=(futurePosts&&typeof futurePosts==='object')?Object.values(futurePosts).reduce(function(s,wk){return s+Object.values(wk||{}).flat().length;},0):0;return cnt>0&&<span style={{padding:"1px 5px",borderRadius:10,background:"rgba(34,197,94,0.20)",fontSize:10,fontWeight:700,color:"#4ADE80"}}>{cnt}</span>;})()}
               </div>
             </div>
           )}
