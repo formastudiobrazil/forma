@@ -17044,13 +17044,48 @@ function AppInner() {
     <ThemeCtx.Provider value={theme}>
     {/* Theme-aware CSS variables */}
 
-    {area==="criacao" ? <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",background:"#0D0A06",color:"#fff",flexDirection:"column",gap:20}}>
-      <div style={{fontSize:24}}>🎨</div>
-      <div style={{fontSize:18}}>Área de Criação</div>
-      <div style={{color:"#999",fontSize:14}}>Em breve - utilize Comercial ou Administrativo por enquanto</div>
-      <button onClick={function(){setArea(null);}} style={{padding:"10px 20px",background:"#FF6A00",color:"#fff",border:"none",borderRadius:8,cursor:"pointer"}}>Voltar</button>
-    </div> :
-    {area==="comercial" ? <CRMShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){recordAccess("logout",user.name);setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} sdrLeads={sdrLeads} setSdrLeads={setSdrLeads} agendaReunioes={agendaReunioes} setAgendaReunioes={setAgendaReunioes} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} setCrmLeads={setCrmLeads} crmMetas={crmMetas} setCrmMetas={setCrmMetas} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} documentacoes={documentacoes} setDocumentacoes={setDocumentacoes} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs}/> :
+    area==="criacao" ? (
+    <div style={{display:"flex",height:"100vh",background:"#0D0A06",color:"#fff",fontFamily:POP,position:"relative"}}>
+      {/* Sidebar Criação */}
+      <div style={{width:200,background:"#0D0A06",borderRight:"1px solid rgba(255,255,255,0.08)",display:"flex",flexDirection:"column",padding:"14px",gap:10,overflowY:"auto"}}>
+        <div onClick={function(){setArea(null);}} style={{cursor:"pointer",fontSize:20,marginBottom:10,padding:"8px"}}>←</div>
+        <div style={{fontSize:14,fontWeight:700,color:"#FF6A00",marginBottom:10,padding:"0 8px"}}>🎨 Criação</div>
+        {(navConfig||[]).map(function(nav){
+          var act=view===nav.id;
+          return <div key={nav.id} onClick={function(){setView(nav.id);}} style={{padding:"8px 12px",borderRadius:6,background:act?"#FF6A00":"#1a1a1a",color:"#fff",cursor:"pointer",fontSize:12,fontWeight:600,transition:"all 0.2s",textAlign:"center"}}>
+            {nav.icon} {nav.label}
+          </div>;
+        })}
+        <div style={{flex:1}}/>
+        <button onClick={function(){recordAccess("logout",user.name);setUser(null);}} style={{padding:"8px 12px",background:"#FF6A00",color:"#fff",border:"none",borderRadius:6,cursor:"pointer",fontWeight:600,fontSize:12,width:"100%"}}>Sair</button>
+      </div>
+      
+      {/* Content Criação */}
+      <div style={{flex:1,overflow:"auto",display:"flex",flexDirection:"column"}}>
+        {view==="dashboard" && <Dashboard user={user} calendar={calendar} demands={demands} news={news} captacoesAV={captacoesAV} onAddNews={n=>setNews(p=>[n,...p])} planejamento={planejamento} clientes={clientes} atrasadoAlert={atrasadoAlert} setAtrasadoAlert={setAtrasadoAlert} members={members||[]} reunioes={meetings} qualityRatings={qualityRatings} clientScoresHistory={clientScoresHistory} onGotoView={setView} onSetCpsInit={setCpsInitClient} activityLog={activityLog} avisos={avisos} ads={ads}/>}
+        {view==="checklist" && <ChecklistView clientes={clientes||[]} setClientes={setClientes2} demands={demands} calendar={calendar} calendarHistory={calendarHistory} addLog={addLog}/>}
+        {view==="chat" && <ChatView channels={chatChannels} setChannels={setChatChannels} user={user} members={members||[]} addNotification={addNotification} addLog={addLog}/>}
+        {view==="calendar" && <div style={{padding:"20px"}}><CalendarView calendar={calendar} setCalendar={setCalendar} activeDay={activeDay} onNotify={handleNotify} clientes={clientes} addLog={addLog} demands={demands}/></div>}
+        {view==="cronogramas" && <CronogramasView clientes={clientes} addLog={addLog} demands={demands}/>}
+        {view==="captacoes" && <CaptacaoAVView captacoes={captacoesAV} setCaptacoes={setCaptacoesAV} user={user} members={members||[]} addNotification={addNotification} addLog={addLog}/>}
+        {view==="inbound" && <InboundView clientes={inboundClientes} setClientes={setInboundClientes} addLog={addLog} clientesBase={clientes}/>}
+        {view==="demandas" && <DemandasView demands={demands} setDemands={setDemands} user={user} clientes={clientes} addNotification={addNotification} members={members||[]} addLog={addLog}/>}
+        {view==="anuncios" && <AnunciosView ads={ads} setAds={setAds} clientes={clientes} addLog={addLog}/>}
+        {view==="reunioes" && <ReunioesView meetings={meetings} setMeetings={setMeetings} user={user} members={members||[]} addNotification={addNotification} addLog={addLog} clientes={clientes}/>}
+        {view==="datas" && <DatasView customDatas={customDatas} setCustomDatas={setCustomDatas} addLog={addLog}/>}
+        {view==="planejamento" && <PlanejamentoView planejamento={planejamento} setPlanejamento={setPlanejamento} clientes={clientes} user={user} addLog={addLog} ads={ads}/>}
+        {view==="cps" && <CPSView clientes={clientes} calendar={calendar} calendarHistory={calendarHistory} demands={demands} planejamento={planejamento} qualityRatings={qualityRatings} setQualityRatings={setQualityRatings} clientScoresHistory={clientScoresHistory} setClientScoresHistory={setClientScoresHistory} user={user} initialClient={cpsInitClient} addLog={addLog}/>}
+        {view==="clientes" && <ClientesView clientes={clientes} setClientes={setClientes2} user={user} addLog={addLog} tiposEntrega={tiposEntrega}/>}
+        {view==="equipe" && <MembersView members={members||[]} currentUser={user} onUpdateMember={updateMember} onCelebrate={function(){}} theme={theme} setTheme={setTheme} addLog={addLog} filiais={filiais}/>}
+        {view==="privado" && <PrivateBoardsView boards={customBoards} setBoards={setCustomBoards} user={user} addLog={addLog}/>}
+        {view==="incidentes" && <IncidentesView incidentes={incidentes} setIncidentes={setIncidentes} user={user} addLog={addLog}/>}
+        {view==="planner" && <PlannerView user={user}/>}
+        {view==="cs" && <CustomerSuccessView clientes={clientes} csData={csData} setCsData={setCsData} user={user} members={members||[]} addLog={addLog}/>}
+        {view==="especiais" && <EspeciaisView clientes={clientes} addLog={addLog}/>}
+      </div>
+    </div>
+  ) :
+  {area==="comercial" ? <CRMShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){recordAccess("logout",user.name);setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} sdrLeads={sdrLeads} setSdrLeads={setSdrLeads} agendaReunioes={agendaReunioes} setAgendaReunioes={setAgendaReunioes} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} setCrmLeads={setCrmLeads} crmMetas={crmMetas} setCrmMetas={setCrmMetas} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} documentacoes={documentacoes} setDocumentacoes={setDocumentacoes} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs}/> :
     area==="administrativo" ? <AdminShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} setMembers={setMembers} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} contratos={contratos} setContratos={setContratos} colaboradores={colaboradores} setColaboradores={setColaboradores} financeiroDados={financeiroDados} setFinanceiroDados={setFinanceiroDados} okrs={okrs} setOkrs={setOkrs} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} contratoIniciadoNotif={contratoIniciadoNotif} setContratoIniciadoNotif={setContratoIniciadoNotif} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs} filiais={filiais} setFiliais={setFiliais} clienteUsers={clienteUsers} setClienteUsers={setClienteUsers} clienteInfos={clienteInfos} setClienteInfos={setClienteInfos} clienteInsights={clienteInsights} setClienteInsights={setClienteInsights} clienteConfig={clienteConfig} setClienteConfig={setClienteConfig} demands={demands} setDemands={setDemands} pins={pins} setPins={setPins}/> :
     <div className={"forma-app "+(theme==="light"?"t-light":theme==="night"?"t-night":"t-dark")} style={{display:"flex",minHeight:"100vh",background:theme==="light"?"#EBEBEB":theme==="night"?"#181818":"#0D0A06",fontFamily:POP,color:theme==="light"?"#1a1a1a":"#fff",position:"relative"}}>
       <style>{`
