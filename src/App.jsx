@@ -117,15 +117,15 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from
 // 🔥 FIREBASE CONFIG - PREENCHA COM SEUS DADOS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ✅ Credenciais Firebase - formaos-bafad (ATIVAS)
-// Acesse: https://console.firebase.google.com → Configurações do Projeto
+// ⚠️ IMPORTANTE: Substitua esses valores pelas credenciais do seu projeto Firebase
+// Acesse: https://console.firebase.google.com → Configurações do Projeto → Chave da Web
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCxRjTUm8npYXjrVOaVGuzUo_PzSpXQEPw",
-  authDomain: "formaos-bafad.firebaseapp.com",
-  projectId: "formaos-bafad",
-  storageBucket: "formaos-bafad.firebasestorage.app",
-  messagingSenderId: "219418656334",
-  appId: "1:219418656334:web:432ac272547d9e85950d1f"
+  apiKey: "YOUR_API_KEY", // ὄ8 Substitua aqui
+  authDomain: "your-project.firebaseapp.com", // ὄ8 Substitua aqui
+  projectId: "your-project-id", // ὄ8 Substitua aqui
+  storageBucket: "your-project.appspot.com", // ὄ8 Substitua aqui
+  messagingSenderId: "YOUR_SENDER_ID", // ὄ8 Substitua aqui
+  appId: "YOUR_APP_ID" // ὄ8 Substitua aqui
 };
 
 let firebaseApp;
@@ -16664,34 +16664,28 @@ function AppInner() {
       };
     }
   };
-  const [adminVendas, adminVendasCRUD, adminVendasLoading] = useFirebaseCollection("admin_vendas", []);
+  const [adminVendas, _setAdminVendas]       = useState([]);
   const setAdminVendas = function(fn) {
     if(typeof fn === 'function') {
-      var newVal = fn(adminVendas);
-      if(Array.isArray(newVal) && adminVendasCRUD) {
-        // Sincronizar com Firebase
-        newVal.forEach(x => {
-          if(x && x.id) adminVendasCRUD.update(x.id, x).catch(e => console.error('[FB] Erro adminVendas:', e));
-        });
-      }
-    } else if(adminVendasCRUD) {
-      adminVendasCRUD.add(fn).catch(e => console.error('[FB] Erro adicionar adminVendas:', e));
+      _setAdminVendas(function(prev) {
+        var newVal = fn(prev);
+        return Array.isArray(newVal) ? newVal : prev;
+      });
+    } else {
+      _setAdminVendas(fn);
     }
   };
-  const [avisos, avisosCRUD, avisosLoading] = useFirebaseCollection("avisos", []);
+  const [avisos, _setAvisos] = useState([]);
   const setAvisos = function(fn) {
     if(typeof fn === 'function') {
-      var newVal = fn(avisos);
-      if(Array.isArray(newVal) && avisosCRUD) {
-        // Sincronizar com Firebase
-        newVal.forEach(x => {
-          if(x && x.id) avisosCRUD.update(x.id, x).catch(e => console.error('[FB] Erro avisos:', e));
-        });
-      }
-    } else if(avisosCRUD) {
-      avisosCRUD.add(fn).catch(e => console.error('[FB] Erro adicionar avisos:', e));
+      _setAvisos(function(prev) {
+        var newVal = fn(prev);
+        return Array.isArray(newVal) ? newVal : prev;
+      });
+    } else {
+      _setAvisos(fn);
     }
-  };
+  }; // announcements created by admin
   const [documentacoes, documentacoesCRUD, documentacoesLoading] = useFirebaseCollection("documentacoes", INIT_DOCUMENTACOES);
   const setDocumentacoes = function(fn) {
     if(typeof fn === 'function') {
@@ -16781,57 +16775,18 @@ function AppInner() {
       };
     }
   };
-  const [feedbacks, feedbacksCRUD, feedbacksLoading] = useFirebaseCollection("feedbacks", []);
-  const setFeedbacks = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(feedbacks);
-      if(Array.isArray(newVal) && feedbacksCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) feedbacksCRUD.update(x.id, x).catch(e => console.error('[FB] Erro feedbacks:', e));
-        });
-      }
-    } else if(feedbacksCRUD) {
-      feedbacksCRUD.add(fn).catch(e => console.error('[FB] Erro adicionar feedbacks:', e));
-    }
-  }; 
+  const [feedbacks, setFeedbacks]           = useState(function(){return getFeedbacks();}); 
   
-  const [notifications, notificationsCRUD, notificationsLoading] = useFirebaseCollection("notifications", []);
-  const setNotifications = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(notifications);
-      if(Array.isArray(newVal) && notificationsCRUD) {
-        // Sincronizar com Firebase
-        newVal.forEach(x => {
-          if(x && x.id) notificationsCRUD.update(x.id, x).catch(e => console.error('[FB] Erro notifications:', e));
-        });
-      }
-    } else if(notificationsCRUD) {
-      notificationsCRUD.add(fn).catch(e => console.error('[FB] Erro adicionar notifications:', e));
-    }
-  };
+  const [notifications, setNotifications] = React.useState([]); // CORREÇÃO: Era function(){} que retorna undefined
   // Bridge: sync window._feedbacks → state
   React.useEffect(function(){
     window._fbOnSave = function(fb){ setFeedbacks(function(p){ return p.concat([fb]); }); };
     window._addNotification = function(toId, fromId, fromName, type, msg){
-      if(notificationsCRUD) {
-        notificationsCRUD.add({id:"n_"+Date.now(),toId:toId,fromId:fromId,fromName:fromName,type:type,message:msg,read:false,createdAt:new Date().toISOString()}).catch(e => console.error('[FB]', e));
-      }
+      setNotifications(function(p){ return [{id:"n_"+Date.now(),to:toId,from:fromId,fromName:fromName,type:type,message:msg,read:false,createdAt:new Date().toISOString()}].concat(p); });
     };
     return function(){ window._fbOnSave = null; window._addNotification = null; };
-  }, [notificationsCRUD]);
-  const [agendaReunioes, agendaReunioesCRUD, agendaReunioesLoading] = useFirebaseCollection("agenda_reunioes", []);
-  const setAgendaReunioes = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(agendaReunioes);
-      if(Array.isArray(newVal) && agendaReunioesCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) agendaReunioesCRUD.update(x.id, x).catch(e => console.error('[FB] Erro agendaReunioes:', e));
-        });
-      }
-    } else if(agendaReunioesCRUD) {
-      agendaReunioesCRUD.add(fn).catch(e => console.error('[FB] Erro adicionar agendaReunioes:', e));
-    }
-  };
+  }, []);
+  const [agendaReunioes, setAgendaReunioes] = useState([]);
   const [customBoards, customBoardsCRUD, customBoardsLoading] = useFirebaseCollection("customboards", INIT_CUSTOM_BOARDS);
   const setCustomBoards = function(fn) {
     if(typeof fn === 'function') {
@@ -17101,24 +17056,11 @@ await accessLogCRUD.add(next);}catch(e){}
   }
   const [showPerfil, setShowPerfil]       = useState(false);
   const [contratoIniciadoNotif, setContratoIniciadoNotif] = useState(null);
-  const INIT_QUICK_ACCESS = [
+  const [quickAccess, setQuickAccess]     = useState([
     {id:"qa1",emoji:"📧",nome:"Webmail",link:"https://mail.google.com",cor:"#3B82F6"},
     {id:"qa2",emoji:"📁",nome:"Google Drive",link:"https://drive.google.com",cor:"#22C55E"},
     {id:"qa3",emoji:"📊",nome:"Analytics",link:"https://analytics.google.com",cor:"#F59E0B"},
-  ];
-  const [quickAccess, quickAccessCRUD, quickAccessLoading] = useFirebaseCollection("quickaccess", INIT_QUICK_ACCESS);
-  const setQuickAccess = function(fn) {
-    if(typeof fn === 'function') {
-      var newVal = fn(quickAccess);
-      if(Array.isArray(newVal) && quickAccessCRUD) {
-        newVal.forEach(x => {
-          if(x && x.id) quickAccessCRUD.update(x.id, x).catch(e => console.error('[FB] Erro quickAccess:', e));
-        });
-      }
-    } else if(quickAccessCRUD) {
-      quickAccessCRUD.add(fn).catch(e => console.error('[FB] Erro adicionar quickAccess:', e));
-    }
-  };
+  ]);
   const [showQuickAccess, setShowQuickAccess] = useState(false);
 
   React.useEffect(async () => {
