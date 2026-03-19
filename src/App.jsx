@@ -317,6 +317,71 @@ function useFirebaseCollection(collectionName, initialState = []) {
   return [data, autoSync, loading, { syncStatus, online, crud }];
 }
 
+const INIT_STATUSES = [
+  { id:"aguardando",  label:"Aguardando",  color:"#6B7280" },
+  { id:"alteracao",   label:"Alteração",   color:"#D4A017" },
+  { id:"producao",    label:"Produção",    color:"#F87171" },
+  { id:"postado",     label:"Postado",     color:"#22C55E" },
+  { id:"pronto",      label:"Pronto",      color:"#84873A" },
+  { id:"enviado",     label:"Enviado",     color:"#4A90D9" },
+  { id:"apv_interna", label:"APV Interna", color:"#EC4899" },
+  { id:"atrasado",    label:"Atrasado",    color:"#F97316" },
+  { id:"apv_cliente", label:"APV Cliente", color:"#8B5CF6" },
+  { id:"naosai",      label:"Não Sai",     color:"#FB923C" },
+  { id:"aprovado",    label:"Aprovado",    color:"#1E3A5F" },
+  { id:"suspenso",    label:"Suspenso",    color:"#78583A" },
+];
+const INIT_TIPOS = [
+  { id:"post_feed",   label:"Post Feed",   color:"#3B82F6" },
+  { id:"reels",       label:"Reels",       color:"#A855F7" },
+  { id:"storie",      label:"Storie",      color:"#1EC98C" },
+  { id:"feed_storie", label:"Feed+Storie", color:"#F59E0B" },
+  { id:"carrossel",   label:"Carrossel",   color:"#E91E8C" },
+  { id:"tiktok",      label:"TikTok",      color:"#06B6D4" },
+  { id:"anuncios",    label:"Anúncios",    color:"#F97316" },
+  { id:"trafego_pago",label:"Tráfego",     color:"#8B5CF6" },
+];
+const INIT_TIPOS_ENTREGA = [
+  { id:"feed_instagram",  label:"Feed Instagram",   color:"#3B82F6" },
+  { id:"stories",         label:"Stories",          color:"#1EC98C" },
+  { id:"reels",           label:"Reels",            color:"#A855F7" },
+  { id:"anuncios",        label:"Anúncios",         color:"#F97316" },
+  { id:"trafego_pago",    label:"Tráfego Pago",     color:"#8B5CF6" },
+  { id:"email_marketing", label:"Email Marketing",  color:"#06B6D4" },
+  { id:"blog",            label:"Blog/Conteúdo",    color:"#22C55E" },
+  { id:"design",          label:"Design/Artes",     color:"#E91E8C" },
+  { id:"consultoria",     label:"Consultoria",      color:"#F59E0B" },
+];
+const INIT_MONTH_EMOJIS = ["🌞","💘","🍀","🌸","🌺","☀️","⛱️","🎒","🌾","🎃","🌿","🎄"];
+const INIT_NAV_CONFIG = [
+  {id:"checklist",  label:"Checklist",      icon:"✅"},
+  {id:"dashboard",  label:"Dashboard",      icon:"⬛"},
+  {id:"chat",       label:"Chat",           icon:"💬"},
+  {id:"calendar",   label:"Agenda de Posts",icon:"📅"},
+  {id:"cronogramas",label:"Cronogramas",    icon:"📅"},
+  {id:"captacoes",  label:"Captações AV",   icon:"🎬"},
+  {id:"inbound",    label:"Inbound",        icon:"📈"},
+  {id:"demandas",   label:"Demandas",       icon:"📥"},
+  {id:"anuncios",   label:"Anúncios",       icon:"📊"},
+  {id:"reunioes",   label:"Reuniões",       icon:"🗓"},
+  {id:"datas",      label:"Datas",          icon:"🎉"},
+  {id:"planejamento",label:"Planejamento",  icon:"🗺"},
+  {id:"cps",        label:"Client Score",   icon:"📊"},
+  {id:"clientes",   label:"Clientes",       icon:"🏢"},
+  {id:"equipe",     label:"Equipe",         icon:"👥"},
+  {id:"privado",    label:"Privado",        icon:"🔐"},
+  {id:"incidentes", label:"Incidentes",     icon:"⚠️"},
+  {id:"planner",    label:"Meu Planner",    icon:"📋"},
+  {id:"cs",         label:"Customer Success", icon:"💎"},
+  {id:"especiais",   label:"Especiais",        icon:"⭐"},
+];
+const PLAN_TIPOS = ["Campanha","Data Comemorativa","Conteúdo","Objetivo","Lançamento","Evento","Promoção","Outro"];
+const PLAN_TIPO_COLOR = {
+  "Campanha":OR,"Data Comemorativa":"#E91E8C","Conteúdo":"#3B82F6",
+  "Objetivo":"#22C55E","Lançamento":"#F59E0B","Evento":"#8B5CF6",
+  "Promoção":"#EF4444","Outro":"#6B7280"
+};
+
 // ─── Brand ────────────────────────────────────────────────────────
 const OR = "#FF6A00";
 const OR2 = "#FF8C00";
@@ -327,19 +392,7 @@ const POP = "'Poppins','Segoe UI',sans-serif";
 // ─── Logo ─────────────────────────────────────────────────────────
 
 // ─── Team ─────────────────────────────────────────────────────────
-const TEAM = [
-  { id:"fabio",  name:"Fábio Mendes",    initials:"FM", color:"#FF6A00", role:"Gestor",         pass:"$2b$10$jvYsYD.aqQGV8JdIuImqJemVR4n4bVXTDBBvYk1R0VKUqQmFbXK7y", isManager:true,  hierarquia:"administrador", areasPermitidas:["criacao","comercial","administrativo"] },
-  { id:"gabi",   name:"Gabriela Souza",  initials:"GS", color:"#A855F7", role:"Gestora",        pass:"$2b$10$jvYsYD.aqQGV8JdIuImqJemVR4n4bVXTDBBvYk1R0VKUqQmFbXK7y", isManager:true,  hierarquia:"administrador", areasPermitidas:["criacao","comercial","administrativo"] },
-  { id:"ana",    name:"Ana Beatriz",     initials:"AB", color:"#3B82F6", role:"Social Media",   pass:"$2b$10$jvYsYD.aqQGV8JdIuImqJemVR4n4bVXTDBBvYk1R0VKUqQmFbXK7y", isManager:false, hierarquia:"colaborador",   areasPermitidas:["criacao"] },
-  { id:"bruna",  name:"Bruna Costa",     initials:"BC", color:"#1EC98C", role:"Design",         pass:"$2b$10$jvYsYD.aqQGV8JdIuImqJemVR4n4bVXTDBBvYk1R0VKUqQmFbXK7y", isManager:false, hierarquia:"colaborador",   areasPermitidas:["criacao"] },
-  { id:"carlos", name:"Carlos Eduardo",  initials:"CE", color:"#F59E0B", role:"Tráfego Pago",   pass:"$2b$10$jvYsYD.aqQGV8JdIuImqJemVR4n4bVXTDBBvYk1R0VKUqQmFbXK7y", isManager:false, hierarquia:"gestor",        areasPermitidas:["criacao","comercial"] },
-  { id:"diego",  name:"Diego Martins",   initials:"DM", color:"#EF4444", role:"Audiovisual",    pass:"$2b$10$jvYsYD.aqQGV8JdIuImqJemVR4n4bVXTDBBvYk1R0VKUqQmFbXK7y", isManager:false, hierarquia:"colaborador",   areasPermitidas:["criacao"] },
-  { id:"erica",  name:"Érica Lima",      initials:"EL", color:"#E91E8C", role:"Social Media",   pass:"$2b$10$jvYsYD.aqQGV8JdIuImqJemVR4n4bVXTDBBvYk1R0VKUqQmFbXK7y", isManager:false, hierarquia:"colaborador",   areasPermitidas:["criacao"] },
-]; // NOTE: Passwords are managed in members state via Admin panel - TEAM passes are not used for login
-// ─── SECURITY: Bcrypt Password Hashes ──────────────────────────────────────
-// These are bcrypt hashes ($2a$ or $2b$) generated from default passwords
 // To generate new hashes, use: npx bcryptjs-cli hash "password" 10
-// For security: 
 //  - TEAM members use: formastudio@123
 //  - Clients use: cliente@123
 // Store hashes in 'pass' field (TEAM) and 'senha' field (CLIENTES_LOGIN)
@@ -377,309 +430,7 @@ const BIRTH_DATES = {
   carlos:"1994-05-08", diego:"1992-09-15", erica:"1996-06-22",
 };
 // ─── Filiais (Branches) ──────────────────────────────────────────
-const INIT_FILIAIS = [
-  { id:"fil_santiago", nome:"Santiago", sigla:"STG", cor:"#FF6A00", ativo:true,
-    razaoSocial:"FormaStudio Santiago LTDA", cnpj:"12.345.678/0001-90", 
-    email:"santiago@formastudio.com", telefone:"(51) 99999-8888",
-    endereco:"Rua Exemplo, 123", numero:"123", complemento:"Sala 101",
-    cep:"90000-000", cidade:"Santiago", estado:"RS",
-    gerente:"fabio", dataAbertura:"2020-01-15", obs:"Filial principal" },
-  { id:"fil_poa", nome:"Porto Alegre", sigla:"POA", cor:"#A855F7", ativo:true,
-    razaoSocial:"FormaStudio Porto Alegre LTDA", cnpj:"87.654.321/0001-09",
-    email:"poa@formastudio.com", telefone:"(51) 99999-7777",
-    endereco:"Avenida Brasil, 500", numero:"500", complemento:"Bloco A",
-    cep:"90020-000", cidade:"Porto Alegre", estado:"RS",
-    gerente:"gabi", dataAbertura:"2021-06-10", obs:"Escritório comercial" },
-];
 
-const INIT_MEMBERS = TEAM.map((m,idx) => ({
-  ...m,
-  email:    `${m.id}@formastudio.com.br`,
-  joinDate: m.isManager ? "2022-03-01" : "2023-01-15",
-  birthDate: BIRTH_DATES[m.id] || "",
-  bio:      "",
-  photo:    null,
-  pass:     m.pass && m.pass !== "*" ? m.pass : "forma2024",
-  hierarquia:      m.hierarquia || "colaborador",
-  areasPermitidas: m.areasPermitidas || ["criacao"],
-  filialId: idx % 2 === 0 ? "fil_santiago" : "fil_poa",  // Distribuir entre filiais
-  // Permissões granulares por quadro em cada área
-  permissoesPorArea: {
-    criacao: {
-      checklist: true, dashboard: true, chat: true, calendar: true, cronogramas: true,
-      captacoes: true, demandas: true, planejamento: true, privado: true
-    },
-    comercial: {
-      inbound: true, clientes: true, cps: true, equipe: true
-    },
-    administrativo: {
-      anuncios: true, reunioes: true, datas: true, cs: true, especiais: true
-    }
-  }
-}));
-
-const INIT_STATUSES = [
-  { id:"aguardando",  label:"Aguardando",  color:"#6B7280" },
-  { id:"alteracao",   label:"Alteração",   color:"#D4A017" },
-  { id:"producao",    label:"Produção",    color:"#F87171" },
-  { id:"postado",     label:"Postado",     color:"#22C55E" },
-  { id:"pronto",      label:"Pronto",      color:"#84873A" },
-  { id:"enviado",     label:"Enviado",     color:"#4A90D9" },
-  { id:"apv_interna", label:"APV Interna", color:"#EC4899" },
-  { id:"atrasado",    label:"Atrasado",    color:"#F97316" },
-  { id:"apv_cliente", label:"APV Cliente", color:"#8B5CF6" },
-  { id:"naosai",      label:"Não Sai",     color:"#FB923C" },
-  { id:"aprovado",    label:"Aprovado",    color:"#1E3A5F" },
-  { id:"suspenso",    label:"Suspenso",    color:"#78583A" },
-];
-const statusBg  = c => c + "CC"; // solid-ish with slight transparency
-const statusText = ()  => "#fff";
-// Runtime helper — overridden by ConfigCtx when statuses are stateful
-let STATUSES = INIT_STATUSES;
-
-const INIT_TIPOS = [
-  { id:"post_feed",   label:"Post Feed",   color:"#3B82F6" },
-  { id:"reels",       label:"Reels",       color:"#A855F7" },
-  { id:"storie",      label:"Storie",      color:"#1EC98C" },
-  { id:"feed_storie", label:"Feed+Storie", color:"#F59E0B" },
-  { id:"carrossel",   label:"Carrossel",   color:"#E91E8C" },
-  { id:"tiktok",      label:"TikTok",      color:"#06B6D4" },
-  { id:"anuncios",    label:"Anúncios",    color:"#F97316" },
-  { id:"trafego_pago",label:"Tráfego",     color:"#8B5CF6" },
-];
-let TIPOS = INIT_TIPOS;
-
-const INIT_TIPOS_ENTREGA = [
-  { id:"feed_instagram",  label:"Feed Instagram",   color:"#3B82F6" },
-  { id:"stories",         label:"Stories",          color:"#1EC98C" },
-  { id:"reels",           label:"Reels",            color:"#A855F7" },
-  { id:"anuncios",        label:"Anúncios",         color:"#F97316" },
-  { id:"trafego_pago",    label:"Tráfego Pago",     color:"#8B5CF6" },
-  { id:"email_marketing", label:"Email Marketing",  color:"#06B6D4" },
-  { id:"blog",            label:"Blog/Conteúdo",    color:"#22C55E" },
-  { id:"design",          label:"Design/Artes",     color:"#E91E8C" },
-  { id:"consultoria",     label:"Consultoria",      color:"#F59E0B" },
-];
-
-const INIT_MONTH_EMOJIS = ["🌞","💘","🍀","🌸","🌺","☀️","⛱️","🎒","🌾","🎃","🌿","🎄"];
-
-const INIT_NAV_CONFIG = [
-  {id:"checklist",  label:"Checklist",      icon:"✅"},
-  {id:"dashboard",  label:"Dashboard",      icon:"⬛"},
-  {id:"chat",       label:"Chat",           icon:"💬"},
-  {id:"calendar",   label:"Agenda de Posts",icon:"📅"},
-  {id:"cronogramas",label:"Cronogramas",    icon:"📅"},
-  {id:"captacoes",  label:"Captações AV",   icon:"🎬"},
-  {id:"inbound",    label:"Inbound",        icon:"📈"},
-  {id:"demandas",   label:"Demandas",       icon:"📥"},
-  {id:"anuncios",   label:"Anúncios",       icon:"📊"},
-  {id:"reunioes",   label:"Reuniões",       icon:"🗓"},
-  {id:"datas",      label:"Datas",          icon:"🎉"},
-  {id:"planejamento",label:"Planejamento",  icon:"🗺"},
-  {id:"cps",        label:"Client Score",   icon:"📊"},
-  {id:"clientes",   label:"Clientes",       icon:"🏢"},
-  {id:"equipe",     label:"Equipe",         icon:"👥"},
-  {id:"privado",    label:"Privado",        icon:"🔐"},
-  {id:"incidentes", label:"Incidentes",     icon:"⚠️"},
-  {id:"planner",    label:"Meu Planner",    icon:"📋"},
-  {id:"cs",         label:"Customer Success", icon:"💎"},
-  {id:"especiais",   label:"Especiais",        icon:"⭐"},
-];
-
-const INIT_CLIENTES = [
-  {
-    id:"cli1", nome:"HOOH Brasil", setor:"Moda & Lifestyle", cor:"#E91E8C", desde:"Jan 2025",
-    logo:"HH", site:"hoohbrasil.com.br", filialId:"fil_santiago",
-    contato:{nome:"Marina Hooh", email:"marina@hooh.com.br", telefone:"(11) 99999-0001"},
-    escopo:[
-      {id:"e1",tipo:"Feed Instagram",qtd:"20",unidade:"posts/mês",descricao:"Posts estáticos e carrosséis para feed"},
-      {id:"e2",tipo:"Stories",qtd:"30",unidade:"stories/mês",descricao:"Stories diários com enquetes e CTAs"},
-      {id:"e3",tipo:"Reels",qtd:"4",unidade:"reels/mês",descricao:"Vídeos curtos de produto e lifestyle"},
-      {id:"e4",tipo:"Captação AV",qtd:"2",unidade:"sessões/mês",descricao:"Fotos e vídeos de produto no estúdio"},
-      {id:"e4b",tipo:"Anúncios",qtd:"4",unidade:"campanhas/mês",descricao:"Anúncios Instagram e Facebook"},
-    ],
-    observacoes:"Preferência por estética clean e minimalista. Paleta: branco, preto e dourado. Aprovar artes até sexta.",
-    tags:["Ativo","Premium"],
-  },
-  {
-    id:"cli2", nome:"BR Mania", setor:"Gastronomia & Entretenimento", cor:"#22C55E", desde:"Mar 2024",
-    logo:"BM", site:"brmania.com.br", filialId:"fil_poa",
-    contato:{nome:"Roberto Silva", email:"roberto@brmania.com.br", telefone:"(11) 98888-0002"},
-    escopo:[
-      {id:"e5",tipo:"Feed Instagram",qtd:"15",unidade:"posts/mês",descricao:"Posts de produto e promoções"},
-      {id:"e6",tipo:"Stories",qtd:"20",unidade:"stories/mês",descricao:"Stories de engajamento e ofertas"},
-      {id:"e7",tipo:"Tráfego Pago",qtd:"2",unidade:"campanhas/mês",descricao:"Meta Ads para conversão e tráfego"},
-      {id:"e8",tipo:"Email Marketing",qtd:"4",unidade:"emails/mês",descricao:"Newsletter com promoções semanais"},
-    ],
-    observacoes:"Tom descontraído e festivo. Cores vibrantes. Foco em conversão e cupons de desconto.",
-    tags:["Ativo"],
-  },
-  {
-    id:"cli3", nome:"Futture System", setor:"Tecnologia B2B", cor:"#3B82F6", desde:"Jun 2024",
-    logo:"FS", site:"futturesystem.com.br", filialId:"fil_santiago",
-    contato:{nome:"Carlos Andrade", email:"carlos@futture.com.br", telefone:"(11) 97777-0003"},
-    escopo:[
-      {id:"e9",tipo:"LinkedIn",qtd:"12",unidade:"posts/mês",descricao:"Conteúdo corporativo e cases"},
-      {id:"e10",tipo:"Feed Instagram",qtd:"8",unidade:"posts/mês",descricao:"Posts institucionais e equipe"},
-      {id:"e11",tipo:"Vídeo Institucional",qtd:"1",unidade:"vídeo/trimestre",descricao:"Vídeo da empresa para site e redes"},
-    ],
-    observacoes:"Linguagem técnica e profissional. Foco em autoridade e credibilidade. Sem memes ou humor.",
-    tags:["Ativo","B2B"],
-  },
-  {
-    id:"cli4", nome:"Casa Velha", setor:"Gastronomia", cor:"#F59E0B", desde:"Ago 2023",
-    logo:"CV", site:"casavelhabar.com.br", filialId:"fil_poa",
-    contato:{nome:"Ana Paula Costa", email:"ana@casavelha.com.br", telefone:"(11) 96666-0004"},
-    escopo:[
-      {id:"e12",tipo:"Feed Instagram",qtd:"16",unidade:"posts/mês",descricao:"Fotos de pratos, ambiente e eventos"},
-      {id:"e13",tipo:"Stories",qtd:"25",unidade:"stories/mês",descricao:"Cardápio do dia, bastidores e promoções"},
-      {id:"e14",tipo:"Captação AV",qtd:"1",unidade:"sessão/mês",descricao:"Fotos de novos pratos do cardápio"},
-      {id:"e15",tipo:"Google Meu Negócio",qtd:"4",unidade:"posts/mês",descricao:"Atualizações e promoções no GMN"},
-    ],
-    observacoes:"Estética rústica e aconchegante. Fotos com luz quente. Sempre mostrar o ambiente.",
-    tags:["Ativo","Antigo"],
-  },
-];
-
-// ─── Planejamento Anual ──────────────────────────────────────────
-// MIGRAÇÃO BD: Tabelas sugeridas: annual_plans, plan_actions
-const PLAN_TIPOS = ["Campanha","Data Comemorativa","Conteúdo","Objetivo","Lançamento","Evento","Promoção","Outro"];
-const PLAN_TIPO_COLOR = {
-  "Campanha":OR,"Data Comemorativa":"#E91E8C","Conteúdo":"#3B82F6",
-  "Objetivo":"#22C55E","Lançamento":"#F59E0B","Evento":"#8B5CF6",
-  "Promoção":"#EF4444","Outro":"#6B7280"
-};
-const INIT_PLANEJAMENTO = [
-  {id:"pl1",clienteId:null,titulo:"Dia das Mães",mes:5,dia:11,tipo:"Data Comemorativa",descricao:"Campanha especial para todas as clientes",objetivo:"Alcance + Engajamento",responsavel:"ana",cor:"#E91E8C"},
-  {id:"pl2",clienteId:null,titulo:"Dia dos Pais",mes:8,dia:11,tipo:"Data Comemorativa",descricao:"Post orgânico + impulsionamento",objetivo:"Engajamento",responsavel:"ana",cor:"#3B82F6"},
-  {id:"pl3",clienteId:null,titulo:"Black Friday",mes:11,dia:28,tipo:"Promoção",descricao:"Planejamento de campanhas e ofertas especiais",objetivo:"Conversão + Vendas",responsavel:"carlos",cor:"#EF4444"},
-  {id:"pl4",clienteId:null,titulo:"Natal & Fim de Ano",mes:12,dia:20,tipo:"Campanha",descricao:"Campanhas de fim de ano para todos os clientes",objetivo:"Alcance + Vendas",responsavel:"carlos",cor:OR},
-  {id:"pl5",clienteId:null,titulo:"Carnaval",mes:2,dia:24,tipo:"Data Comemorativa",descricao:"Conteúdo comemorativo e promoções sazonais",objetivo:"Engajamento",responsavel:"erica",cor:"#F59E0B"},
-];
-
-// ─────── PORTAL DO CLIENTE ───────
-const INIT_CLIENTE_USERS = [
-  {id:"clu1",email:"contato@hooh.com.br",senha:"$2b$10$q.k5e1B2zXLVWYXLqK9XnOJ9w7rK1pVsJQYpCh5xT0E5B9kVJ.v2.",nome:"João Silva HOOH",cpf:"123.456.789-00",contasAtreladas:["cli1"],avatar:null,criadoEm:"2026-01-15"},
-  {id:"clu2",email:"vendas@brmania.com.br",senha:"$2b$10$q.k5e1B2zXLVWYXLqK9XnOJ9w7rK1pVsJQYpCh5xT0E5B9kVJ.v2.",nome:"Maria BR Mania",cpf:"987.654.321-00",contasAtreladas:["cli2"],avatar:null,criadoEm:"2026-01-20"},
-  {id:"clu3",email:"tech@futture.com.br",senha:"$2b$10$q.k5e1B2zXLVWYXLqK9XnOJ9w7rK1pVsJQYpCh5xT0E5B9kVJ.v2.",nome:"Carlos Futture",cpf:"456.789.123-00",contasAtreladas:["cli3","cli4"],avatar:null,criadoEm:"2026-01-25"},
-];
-
-const INIT_CLIENTE_INFOS = {
-  "cli1":{
-    responsaveis:[
-      {id:"cresp1",usuarioId:"carlos",whatsapp:"(51) 99999-1111",email:"carlos@formastudio.com",telefone:"(51) 3333-1111",cargo:"Account Manager"},
-      {id:"cresp2",usuarioId:"gabi",whatsapp:"(51) 99999-2222",email:"gabi@formastudio.com",telefone:"(51) 3333-2222",cargo:"Suporte"}
-    ],
-    filialId:"fil_santiago",
-    contatoAdicional:{email:"suporte@formastudio.com",whatsapp:"(51) 98888-5555",telefone:"(51) 3333-0000"}
-  },
-  "cli2":{
-    responsaveis:[
-      {id:"cresp3",usuarioId:"ana",whatsapp:"(51) 99999-3333",email:"ana@formastudio.com",telefone:"(51) 3333-3333",cargo:"Account Manager"}
-    ],
-    filialId:"fil_poa",
-    contatoAdicional:{email:"suporte@formastudio.com",whatsapp:"(51) 98888-5555",telefone:"(51) 3333-0000"}
-  },
-  "cli3":{
-    responsaveis:[
-      {id:"cresp4",usuarioId:"fabio",whatsapp:"(51) 99999-4444",email:"fabio@formastudio.com",telefone:"(51) 3333-4444",cargo:"Gerente"}
-    ],
-    filialId:"fil_santiago",
-    contatoAdicional:{email:"suporte@formastudio.com",whatsapp:"(51) 98888-5555",telefone:"(51) 3333-0000"}
-  },
-  "cli4":{
-    responsaveis:[
-      {id:"cresp5",usuarioId:"erica",whatsapp:"(51) 99999-5555",email:"erica@formastudio.com",telefone:"(51) 3333-5555",cargo:"Account Manager"}
-    ],
-    filialId:"fil_santiago",
-    contatoAdicional:{email:"suporte@formastudio.com",whatsapp:"(51) 98888-5555",telefone:"(51) 3333-0000"}
-  }
-};
-
-const INIT_CLIENTE_INSIGHTS = [
-  {id:"ins1",clienteId:"cli1",titulo:"Relatório Janeiro 2026",mes:"01",ano:"2026",arquivo:{url:"https://example.com/jan.pdf",nome:"relatorio_janeiro_2026.pdf",size:"2.5MB"},uploadadoEm:"2026-02-01",uploadadoPor:"carlos"},
-  {id:"ins2",clienteId:"cli1",titulo:"Análise Fevereiro 2026",mes:"02",ano:"2026",arquivo:{url:"https://example.com/fev.pdf",nome:"analise_fevereiro_2026.pdf",size:"3.2MB"},uploadadoEm:"2026-03-01",uploadadoPor:"carlos"},
-];
-
-const INIT_CLIENTE_CONFIG = {
-  loginImageUrl:null,
-  loginImageTitulo:"Bem-vindo ao Portal FormaStudio",
-  loginImageDescricao:"Acompanhe seu planejamento, cronograma e solicitações de forma centralizada"
-};
-
-let _id = 3000; const uid = () => String(++_id);
-const mkRow = (cliente, tipo, status, hora, colaboradores=[]) => ({
-  id:uid(), cliente, tipo, status, hora,
-  link:"", motivo:"", colaboradores,
-  copyText:"", obsText:"", files:[], parentCliente:null,
-});
-
-const INIT_CALENDAR = {
-  seg:[
-    mkRow("HOOH BRASIL","post_feed","aguardando","18:00",["ana","bruna"]),
-    mkRow("UFFA","post_feed","naosai","18:00",["carlos"]),
-    mkRow("AZECOM INTERNET","post_feed","postado","18:00",["erica","fabio"]),
-    mkRow("BR MANIA","post_feed","pronto","17:00",["gabi"]),
-    mkRow("POSTO27","reels","postado","17:15",["carlos","diego"]),
-    mkRow("VIDACARD","feed_storie","aguardando","18:00",["ana"]),
-    mkRow("FORMASTUDIO","post_feed","aguardando","12:00",["bruna","erica"]),
-    mkRow("CASA VELHA","post_feed","apv_cliente","17:30",["fabio"]),
-    mkRow("FUTTURE SYSTEM","post_feed","atrasado","18:00",["gabi","ana"]),
-    mkRow("VIDROSUL","post_feed","aguardando","18:00",["carlos"]),
-    mkRow("AS PENSADORAS","storie","postado","20:00",["bruna","fabio"]),
-  ],
-  ter:[
-    mkRow("HOOH BRASIL","post_feed","pronto","18:00",["ana"]),
-    mkRow("BR MANIA","reels","aguardando","17:00",["bruna","carlos"]),
-    mkRow("FORMASTUDIO","storie","pronto","12:00",["erica"]),
-    mkRow("VIDACARD","carrossel","apv_interna","18:00",["fabio","gabi"]),
-    mkRow("POSTO27","post_feed","postado","18:00",["diego"]),
-  ],
-  qua:[
-    mkRow("AZECOM INTERNET","post_feed","postado","18:00",["ana","bruna"]),
-    mkRow("CASA VELHA","reels","producao","17:30",["carlos"]),
-    mkRow("AS PENSADORAS","feed_storie","aguardando","20:00",["diego","erica"]),
-    mkRow("MOLAS DA PIEVE","post_feed","aprovado","18:00",["fabio"]),
-  ],
-  qui:[
-    mkRow("HOOH SANTIAGO","post_feed","pronto","18:00",["gabi","ana"]),
-    mkRow("VIDROSUL","storie","atrasado","18:00",["bruna"]),
-    mkRow("FUTTURE SYSTEM","post_feed","enviado","18:00",["carlos","diego"]),
-  ],
-  sex:[
-    mkRow("DOM CARLOS","post_feed","postado","18:00",["erica"]),
-    mkRow("HORSE PEÇAS","reels","aguardando","17:00",["fabio","gabi"]),
-    mkRow("UFFA","feed_storie","naosai","18:00",["ana"]),
-  ],
-  sab:[
-    mkRow("HOOH BRASIL","storie","aguardando","10:00",["bruna"]),
-    mkRow("POSTO27","post_feed","pronto","12:00",["carlos"]),
-    mkRow("FORMASTUDIO","reels","aguardando","14:00",["diego","erica"]),
-  ],
-  dom:[],
-};
-
-const INIT_NEWS = [
-  { id:"n1", author:"fabio", text:"Reunião de alinhamento toda segunda às 9h! Presença obrigatória de todos os gestores.", date:"Hoje, 08:30", pinned:true },
-  { id:"n2", author:"gabi",  text:"Novos clientes entram esta semana: HORSE PEÇAS e MOLAS DA PIEVE. Equipe de social, fiquem atentos à integração.", date:"Ontem, 14:15", pinned:false },
-  { id:"n3", author:"fabio", text:"Lembrete: prazo de envio de relatórios mensais é sexta-feira. Todos os gestores de conta enviem até as 17h.", date:"Seg, 10:00", pinned:false },
-];
-
-const INIT_MANAGER_POSTS = [
-  { id:"mp1", author:"fabio", title:"Resultados Fevereiro", text:"Fechamos fevereiro com 94% dos posts entregues no prazo. Destaque para as equipes de social e design. Meta de março: 100%.", date:"Hoje, 09:00", important:true },
-  { id:"mp2", author:"gabi", title:"Novos Processos de Aprovação", text:"A partir desta semana, todos os posts precisam de APV interna antes de ir para o cliente. Atualizar o status no sistema antes de enviar.", date:"Ontem, 16:30", important:false },
-];
-
-const INIT_DEMANDS = [
-  { id:"d1", titulo:"Campanha Carnaval 2026", cliente:"BR MANIA", responsavel:"ana", prazo:"28/02", status:"producao", prioridade:"alta" },
-  { id:"d2", titulo:"Identidade Visual Renovação", cliente:"CASA VELHA", responsavel:"diego", prazo:"05/03", status:"aguardando", prioridade:"media" },
-  { id:"d3", titulo:"Vídeo institucional", cliente:"FUTTURE SYSTEM", responsavel:"erica", prazo:"10/03", status:"apv_cliente", prioridade:"alta" },
-  { id:"d4", titulo:"E-mail marketing mensal", cliente:"AZECOM INTERNET", responsavel:"carlos", prazo:"01/03", status:"pronto", prioridade:"baixa" },
-  { id:"d5", titulo:"Anúncio Google Ads", cliente:"VIDACARD", responsavel:"carlos", prazo:"03/03", status:"atrasado", prioridade:"alta" },
-];
-
-// ─── Anúncios: estrutura por cliente com campanhas ───────────────
-// MIGRAÇÃO BD: Tabelas sugeridas: ad_clients, ad_campaigns, ad_files
 const AD_CAMP_STATUS = ["em_producao","ativo","aguardando","onboarding","pendente","aprovado","suspenso","aprovacao","parado","finalizado"];
 const AD_VERBA_STATUS = ["aguardando","solicitado","disponivel","suspenso","pendente"];
 const AD_CANAIS = ["Instagram","Facebook","TikTok","Threads","YouTube","Google","Pinterest","Programática"];
@@ -690,140 +441,7 @@ const AD_STATUS_COLOR = {em_producao:OR,ativo:"#22C55E",aguardando:"#6B7280",onb
 const AD_VERBA_COLOR  = {aguardando:"#6B7280",solicitado:"#F59E0B",disponivel:"#22C55E",suspenso:"#EF4444",pendente:"#F97316"};
 const AD_CANAL_COLOR  = {Instagram:"#E1306C",Facebook:"#1877F2",TikTok:"#00F2EA",Threads:"#000000",YouTube:"#FF0000",Google:"#4285F4",Pinterest:"#E60023","Programática":"#8B5CF6"};
 
-const INIT_ADS = [
-  {
-    id:"ac1", cliente:"HOOH Brasil", cor:"#E91E8C", logo:"HH",
-    orcamento:"R$ 3.200/mês", status_cliente:"ativo",
-    campanhas:[
-      {id:"cp1",nome:"Campanha Verão 2026",tipo:"Tráfego Pago",objetivo:"Conversão",canais:["Instagram","Facebook"],
-       responsavel:"carlos",status:"ativo",dataInicio:"2026-02-01",dataEfetiva:"2026-02-03",
-       verba:"R$ 2.000",statusVerba:"disponivel",observacoes:"Focar em público feminino 18-35",
-       arquivos:[],copies:[],createdAt:Date.now()-8000000},
-      {id:"cp2",nome:"Reels Impulsionados",tipo:"Impulsionamento",objetivo:"Engajamento",canais:["Instagram"],
-       responsavel:"carlos",status:"aprovado",dataInicio:"2026-02-15",dataEfetiva:"",
-       verba:"R$ 1.200",statusVerba:"disponivel",observacoes:"",
-       arquivos:[],copies:[],createdAt:Date.now()-4000000},
-    ]
-  },
-  {
-    id:"ac2", cliente:"BR Mania", cor:"#22C55E", logo:"BM",
-    orcamento:"R$ 1.800/mês", status_cliente:"ativo",
-    campanhas:[
-      {id:"cp3",nome:"Google Search – Carnaval",tipo:"Tráfego Pago",objetivo:"Tráfego",canais:["Google"],
-       responsavel:"carlos",status:"ativo",dataInicio:"2026-02-01",dataEfetiva:"2026-02-01",
-       verba:"R$ 1.800",statusVerba:"disponivel",observacoes:"",
-       arquivos:[],copies:[],createdAt:Date.now()-6000000},
-    ]
-  },
-  {
-    id:"ac3", cliente:"Vidacard", cor:"#F59E0B", logo:"VC",
-    orcamento:"R$ 2.500/mês", status_cliente:"ativo",
-    campanhas:[
-      {id:"cp4",nome:"TikTok Awareness",tipo:"Impulsionamento",objetivo:"Alcance",canais:["TikTok"],
-       responsavel:"carlos",status:"em_producao",dataInicio:"2026-03-01",dataEfetiva:"",
-       verba:"R$ 2.500",statusVerba:"solicitado",observacoes:"Aguardando criativos",
-       arquivos:[],copies:[],createdAt:Date.now()-2000000},
-    ]
-  },
-];
-
-const INIT_MEETINGS = [
-  { id:"m1", title:"Briefing Novos Clientes",     date:"2026-02-24", time:"09:00", local:"Zoom",        attendees:["fabio","gabi","ana"],                              link:"", notes:"" },
-  { id:"m2", title:"Apresentação Relatório Feb",  date:"2026-02-28", time:"14:00", local:"Sala 1",      attendees:["fabio","gabi","carlos","bruna"],                   link:"", notes:"" },
-  { id:"m3", title:"Planejamento Março",          date:"2026-03-03", time:"09:30", local:"Zoom",        attendees:["fabio","gabi","ana","diego","erica","carlos","bruna"], link:"", notes:"" },
-  { id:"m4", title:"Check-in Semanal",            date:"2026-02-25", time:"09:00", local:"Google Meet", attendees:["fabio","gabi"],                                    link:"", notes:"" },
-];
-
-// Captações AV — novo formato: captações audiovisuais do time
-// ─── Chat Initial Data ────────────────────────────────────────────
-const INIT_CHAT_CHANNELS = [
-  {
-    id:"ch_geral", name:"Geral", emoji:"💬",
-    members:["fabio","gabi","ana","bruna","carlos","diego","erica"],
-    createdBy:"fabio", pinnedIds:[],
-    messages:[
-      {id:"m1",authorId:"fabio",text:"Bem-vindos ao chat interno do FormaStudio! 🚀",timestamp:"2026-02-25T09:00:00",reactions:{},files:[],pinned:false},
-      {id:"m2",authorId:"gabi",text:"Que ótimo! Agora fica mais fácil alinhar tudo por aqui 🎉",timestamp:"2026-02-25T09:02:00",reactions:{"❤️":["fabio","ana"],"🔥":["diego"]},files:[],pinned:false},
-    ]
-  },
-  {
-    id:"ch_design", name:"Design & Social", emoji:"🎨",
-    members:["fabio","gabi","ana","bruna","erica"],
-    createdBy:"fabio", pinnedIds:[],
-    messages:[
-      {id:"m3",authorId:"bruna",text:"Vou subir as artes do cliente HOOH hoje até as 17h",timestamp:"2026-02-25T10:00:00",reactions:{"👍":["ana","gabi"]},files:[],pinned:false},
-    ]
-  },
-  {
-    id:"ch_av", name:"Audiovisual", emoji:"🎬",
-    members:["fabio","gabi","diego"],
-    createdBy:"fabio", pinnedIds:[],
-    messages:[
-      {id:"m4",authorId:"diego",text:"Equipamentos confirmados para a captação de amanhã ✅",timestamp:"2026-02-25T11:00:00",reactions:{"✅":["fabio"]},files:[],pinned:false},
-    ]
-  },
-];
-
 const CHAT_EMOJI_REACTIONS = ["❤️","🔥","👍","😂","😮","👏","🎉","✅"];
-
-const INIT_CAPTACOES_AV = [
-  { id:"cav1", cliente:"HOOH BRASIL",    data:"2026-02-24", hora:"09:00", local:"Estúdio Forma",    responsavel:"diego", status:"confirmado", descricao:"Filmagem produto novo linha verão" },
-  { id:"cav2", cliente:"BR MANIA",       data:"2026-02-25", hora:"14:00", local:"Loja Centro",      responsavel:"diego", status:"agendado",   descricao:"Reels para campanha carnaval"     },
-  { id:"cav3", cliente:"FUTTURE SYSTEM", data:"2026-02-27", hora:"10:00", local:"Sede do Cliente",  responsavel:"diego", status:"confirmado", descricao:"Vídeo institucional empresa"      },
-  { id:"cav4", cliente:"CASA VELHA",     data:"2026-03-02", hora:"08:00", local:"Restaurante",      responsavel:"diego", status:"agendado",   descricao:"Captação menu novo"               },
-];
-
-// Inbound — clientes com ações mensais
-const INIT_INBOUND_CLIENTES = [
-  {
-    id:"ic1", nome:"HOOH BRASIL", contato:"João Silva", email:"joao@hooh.com.br",
-    origem:"Indicação", datainicio:"01/02/2026", status:"ativo",
-    acoes:[
-      { id:"ia1", mes:"02/2026", acao:"Criar calendário editorial mensal", status:"concluido",    responsavel:"ana"   },
-      { id:"ia2", mes:"02/2026", acao:"Relatório mensal de performance",   status:"em_andamento", responsavel:"fabio" },
-      { id:"ia3", mes:"03/2026", acao:"Planejar campanha Páscoa",          status:"pendente",     responsavel:"ana"   },
-    ]
-  },
-  {
-    id:"ic2", nome:"AZECOM INTERNET", contato:"Maria Costa", email:"maria@azecom.com",
-    origem:"Google Ads", datainicio:"15/01/2026", status:"ativo",
-    acoes:[
-      { id:"ia4", mes:"02/2026", acao:"Otimizar campanhas Google",   status:"concluido",    responsavel:"carlos" },
-      { id:"ia5", mes:"02/2026", acao:"Criar landing page produto",  status:"em_andamento", responsavel:"bruna"  },
-      { id:"ia6", mes:"03/2026", acao:"Estratégia SEO trimestral",   status:"pendente",     responsavel:"carlos" },
-    ]
-  },
-  {
-    id:"ic3", nome:"VIDACARD", contato:"Pedro Alves", email:"pedro@vidacard.com.br",
-    origem:"Instagram", datainicio:"10/02/2026", status:"ativo",
-    acoes:[
-      { id:"ia7", mes:"02/2026", acao:"Onboarding social media",    status:"concluido", responsavel:"ana"   },
-      { id:"ia8", mes:"02/2026", acao:"Setup TikTok Ads",           status:"concluido", responsavel:"carlos" },
-      { id:"ia9", mes:"03/2026", acao:"Campanha mês da mulher",     status:"pendente",  responsavel:"erica"  },
-    ]
-  },
-];
-
-const INIT_ACTIVITY = [
-  { id:"act1", user:"ana",   action:"Criou post HOOH BRASIL",        target:"post_feed",  type:"create", time:"09:15" },
-  { id:"act2", user:"bruna", action:"Status → Pronto",               target:"BR MANIA",   type:"status", time:"09:40" },
-  { id:"act3", user:"diego", action:"Subiu vídeo captação",          target:"CASA VELHA", type:"upload", time:"10:05" },
-  { id:"act4", user:"carlos",action:"Editou copy do post",           target:"VIDACARD",   type:"edit",   time:"10:30" },
-  { id:"act5", user:"fabio", action:"Status → Postado",              target:"AZECOM",     type:"status", time:"11:00" },
-  { id:"act6", user:"erica", action:"Adicionou observação",          target:"POSTO27",    type:"edit",   time:"11:45" },
-  { id:"act7", user:"gabi",  action:"Criou nova demanda",            target:"demanda",    type:"create", time:"12:00" },
-];
-
-const INIT_CUSTOM_BOARDS = [];
-
-const INIT_CRM_LEADS = [
-  {id:"l1",empresa:"Agência Pixel",contato:"Marcos Lima",email:"marcos@pixel.com.br",telefone:"(11)99999-0001",origem:"Instagram",segmento:"E-commerce",orcamento:"R$ 8.000",stage:"prospeccao",responsavel:"carlos",prioridade:"alta",estado:"SP",obs:"Interessado em gestão completa de redes sociais.",createdAt:"2026-02-01",followUp:"2026-03-01",notas:[{id:"n1",texto:"Reunião inicial feita via meet. Muito interessado.",autor:"carlos",data:"2026-02-01"}],tarefas:[{id:"t1",texto:"Enviar proposta comercial",feita:false,due:"2026-03-05",autor:"carlos"}]},
-  {id:"l2",empresa:"ModaVip Store",contato:"Camila Torres",email:"camila@modavip.com",telefone:"(11)99999-0002",origem:"Indicação",segmento:"Moda",orcamento:"R$ 5.000",stage:"qualificacao",responsavel:"ana",prioridade:"media",estado:"RJ",obs:"Quer tráfego pago + social media completo.",createdAt:"2026-02-05",followUp:"2026-02-28",notas:[],tarefas:[{id:"t2",texto:"Apresentar cases de moda",feita:false,due:"2026-02-28",autor:"ana"}],fromLista:true},
-  {id:"l3",empresa:"Tech Solutions",contato:"Rafael Costa",email:"rafael@techsol.com",telefone:"(11)99999-0003",origem:"Google Ads",segmento:"B2B",orcamento:"R$ 12.000",stage:"proposta",responsavel:"carlos",prioridade:"alta",estado:"MG",obs:"Demanda por branding + gestão completa.",createdAt:"2026-02-08",followUp:"2026-03-05",notas:[{id:"n2",texto:"Proposta enviada em 10/02. Aguardando aprovação do board.",autor:"carlos",data:"2026-02-10"}],tarefas:[{id:"t3",texto:"Follow-up por WhatsApp",feita:true,due:"2026-02-15",autor:"carlos"},{id:"t4",texto:"Ajustar escopo da proposta",feita:false,due:"2026-03-01",autor:"carlos"}]},
-  {id:"l4",empresa:"Sabor & Arte",contato:"Juliana Melo",email:"ju@saborarte.com",telefone:"(11)99999-0004",origem:"Facebook",segmento:"Alimentação",orcamento:"R$ 3.500",stage:"negociacao",responsavel:"ana",prioridade:"media",estado:"BA",obs:"Proposta enviada. Negocia desconto para contrato anual.",createdAt:"2026-02-10",followUp:"2026-02-27",notas:[],tarefas:[],fromLista:true},
-  {id:"l5",empresa:"Construtora Alfa",contato:"Paulo Mendes",email:"paulo@alfa.com",telefone:"(11)99999-0005",origem:"LinkedIn",segmento:"Construção",orcamento:"R$ 15.000",stage:"fechado_ganho",responsavel:"carlos",prioridade:"alta",estado:"RS",obs:"Contrato assinado! Onboarding agendado para 01/03.",createdAt:"2026-01-15",followUp:"",notas:[{id:"n3",texto:"Contrato assinado em 20/01. Cliente VIP.",autor:"carlos",data:"2026-01-20"}],tarefas:[],fromLista:true},
-  {id:"l6",empresa:"Academia Força",contato:"Renata Vilas",email:"renata@forca.com",telefone:"(11)99999-0006",origem:"Indicação",segmento:"Saúde/Fitness",orcamento:"R$ 4.000",stage:"fechado_perdido",responsavel:"ana",prioridade:"baixa",estado:"PR",obs:"Optaram por agência interna. Manter contato para futuro.",createdAt:"2026-01-20",followUp:"",notas:[],tarefas:[],fromLista:true},
-];
 
 const CRM_STAGES = [
   {id:"prospeccao",   label:"Prospecção",    color:"#8B5CF6", icon:"🔍"},
@@ -832,14 +450,6 @@ const CRM_STAGES = [
   {id:"negociacao",   label:"Negociação",    color:"#FF6A00", icon:"🤝"},
   {id:"fechado_ganho",label:"Fechado ✅",   color:"#22C55E", icon:"🏆"},
   {id:"fechado_perdido",label:"Perdido",    color:"#EF4444", icon:"✕"},
-];
-
-const INIT_PRIVATE_BOARDS = [];
-
-const INIT_CLIENTE_DADOS = []; // [{id, cliente, acessos: [{id, login, senha, descricao}]}]
-
-const INIT_PINS = [
-  {id:"pin_admin", nome:"Admin", pin:"0000", descricao:"PIN do Administrador", criado:"2026-03-16"}
 ];
 
 const DATAS_2026 = {
@@ -1115,7 +725,6 @@ const DonutChart = ({ value, total, color, size }) => {
   );
 };
 
-
 // ─── Dropdown Context ─────────────────────────────────────────────
 const DropCtx = React.createContext(null);
 const ConfigCtx = React.createContext(null);
@@ -1157,7 +766,6 @@ function CaptacaoStatusDropdown({ current, onChange }) {
     </div>
   );
 }
-
 
 function StatusDropdown({ statusId, onChange }) {
   const ctx = React.useContext(DropCtx);
@@ -1260,7 +868,6 @@ function TipoDropdown({ tipoId, onChange }) {
   );
 }
 
-
 function CollabPicker({ selected, onChange, onNotify }) {
   const ctx = React.useContext(DropCtx);
   const ref = useRef();
@@ -1317,7 +924,6 @@ function CollabPicker({ selected, onChange, onNotify }) {
     </div>
   );
 }
-
 
 // ─── TeamPicker — pill-style multi-member selector ───────────────
 function TeamPicker({ label, selected, onChange, size }) {
@@ -1390,7 +996,6 @@ function EditCell({ value, onChange, center, placeholder }) {
     >{value||placeholder}</div>
   );
 }
-
 
 // ─── File Upload Panel ────────────────────────────────────────────
 function FileUploadPanel({ row, onClose, onSave }) {
@@ -1748,7 +1353,6 @@ function ClienteSelectorPanel({ clientes, current, onSelect }) {
     </div>
   );
 }
-
 
 function ClientGroup({ group, groupIdx, onUpdateRow, onDeleteRow, onAddSubRow, onOpenPanel, onOpenFiles, day, onNotify, clientes }) {
   const [expanded, setExpanded] = useState(false);
@@ -2196,7 +1800,6 @@ function ProximasSemanasPanel({ futurePosts, setFuturePosts, onClose, clientes }
     </div>
   );
 }
-
 
 function CalendarView({ calendar, setCalendar, activeDay, onNotify, clientes, addLog, dayOverride, demands }) {
   const rows = calendar[activeDay]||[];
@@ -2865,8 +2468,6 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
           </div>
         </div>
       )}
-
-
 
       {/* ── KPIs ── */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
@@ -3541,7 +3142,6 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
   );
 }
 
-
 // ─── CaptacaoAV View ──────────────────────────────────────────────
 function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotification, addLog }) {
   var [feedbackItem, setFeedbackItem] = useState(null);
@@ -3772,7 +3372,6 @@ function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotificatio
     </div>
   );
 }
-
 
 // ─── Inbound Marketing View ───────────────────────────────────────
 function InboundView({ clientes, setClientes, addLog, clientesBase }) {
@@ -4005,8 +3604,6 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
     </div>
   );
 }
-
-
 
 // ─── Custom Board View ────────────────────────────────────────────
 function CustomBoardView({ board, onUpdateBoard, addLog }) {
@@ -5664,7 +5261,6 @@ function DatasView({ customDatas, setCustomDatas, addLog }) {
   );
 }
 
-
 function ReunioesView({ meetings, setMeetings, user, members, addNotification, clientes, addLog }) {
   const [adding, setAdding] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -5712,7 +5308,6 @@ function ReunioesView({ meetings, setMeetings, user, members, addNotification, c
   const upcoming = sorted.filter(m=>m.date>=today);
   const past     = sorted.filter(m=>m.date<today);
   // auto-trigger feedback for most recent past meeting that user attended (if not yet rated)
-
 
   const inp = (label,key,type="text",placeholder="") => (
     <div>
@@ -6104,7 +5699,6 @@ function FieldTypeForm({ newFieldType, setNewFieldType, newFieldLabel, setNewFie
     </div>
   );
 }
-
 
 // ─── Customer Success ─────────────────────────────────────────────
 function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLog }) {
@@ -6690,7 +6284,6 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
     </div>
   );
 }
-
 
 // ─── Área Privada — Banco de Dados Flexível ───────────────────────
 const FIELD_TYPES = [
@@ -7351,7 +6944,6 @@ function PrivateBoardsView({ boards, setBoards, user, addLog }) {
     </div>
   );
 }
-
 
 // ─── Private Entry Row (fix: no hook in map) ─────────────────────
 function PrivateEntryRow({ entry: e, boardId, onRemove }) {
@@ -8529,7 +8121,6 @@ function ChecklistView({ clientes, setClientes, demands, calendar, calendarHisto
   );
 }
 
-
 // ─── CRM View ─────────────────────────────────────────────────────
 function CRMLead({ lead, leads, setLeads, user, addLog, onBack }) {
   var sc = CRM_STAGES.find(function(s){return s.id===lead.stage;})||CRM_STAGES[0];
@@ -9089,7 +8680,6 @@ function PipelineListView({ pipeLeads, kanbanStages, onOpen, setLeads, addLog, f
     </div>
   );
 }
-
 
 // ── KanbanLeadCard — defined OUTSIDE CRMPipeline to keep stable identity ──
 function KanbanLeadCard({ l, stage, dragId, dragIdRef, onDragStart, onDragEnd, onOpen }) {
@@ -10117,8 +9707,6 @@ function SDRView({ user, addLog, leads: _leads, setLeads: _setLeads, crmLeads, a
         </div>
         <div onClick={function(){setShowForm(function(v){return !v;});}} style={{padding:"9px 18px",borderTopLeftRadius:11,borderTopRightRadius:0,borderBottomRightRadius:11,borderBottomLeftRadius:0,cursor:"pointer",background:"linear-gradient(135deg,"+PU+",#7C3AED)",color:"var(--ct)",fontSize:14,fontWeight:700,fontFamily:POP}}>+ Novo Lead</div>
       </div>
-
-
 
       {/* Form */}
       {showForm && (
@@ -11375,7 +10963,6 @@ function CRMShell({ user, onBack, addLog, chatUnread, activityLog, onUpdateUser,
   </div>
   );
 }
-
 
 // ─── Login Screen ─────────────────────────────────────────────────
 // ─── Admin Shell (stub — Bloco 4) ────────────────────────────────
@@ -14465,7 +14052,6 @@ function GestaoRiscoView({ leads, clientes, csData, addLog }) {
   );
 }
 
-
 // ─── Avisos Admin ─────────────────────────────────────────────────
 // Rich text toolbar actions
 function RichBar({ onCmd, onImg }) {
@@ -14789,7 +14375,6 @@ function VendasPendentesPanel({ vendas, setVendas, onGoContratos }) {
   );
 }
 
-
 function SettingsViewAdmin() {
   var ctx = React.useContext(ConfigCtx);
   if(!ctx) return <div style={{padding:24,color:"var(--ct)",fontFamily:POP}}>Configurações indisponíveis</div>;
@@ -14806,7 +14391,6 @@ function SettingsViewAdmin() {
     categoriasDocs={ctx.categoriasDocs} setCategoriasDocs={ctx.setCategoriasDocs}
   />;
 }
-
 
 // ─────── PORTAL DO CLIENTE - DASHBOARD ───────
 
@@ -15912,7 +15496,6 @@ function AdminShell({ user, onBack, addLog, chatUnread, activityLog, onUpdateUse
   );
 }
 
-
 // ─────── PORTAL DO CLIENTE - TELAS ───────
 
 function ClienteLoginScreen({ onSelectType, clienteConfig }) {
@@ -16545,7 +16128,6 @@ function QuickAccessPanel({ items, setItems, onClose, user }) {
     </div>
   );
 }
-
 
 // ─── Main App ─────────────────────────────────────────────────────
 // 🟢 Status Indicator Component
@@ -17370,7 +16952,6 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
     if(activeBoardId===id){setActiveBoardId(null);setView("dashboard");}
   };
 
-
   // CSS custom properties — must be before any early returns
   React.useEffect(function(){
     var r = document.documentElement;
@@ -17426,8 +17007,6 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
 
   const currentBoard=customBoards.find(b=>b.id===activeBoardId);
   const configValue = { statuses, setStatuses, tipos, setTipos, tiposEntrega, setTiposEntrega, monthEmojis, setMonthEmojis, navConfig, setNavConfig, crmStages, setCrmStages, crmOrigens, setCrmOrigens, finCats, setFinCats, demandaFormatos, setDemandaFormatos, clienteTags, setClienteTags, theme, categoriasDocs, setCategoriasDocs };
-
-
 
   return (
     <ConfigCtx.Provider value={configValue}>
@@ -21121,7 +20700,6 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
     </div>
   );
 }
-
 
 // ─── Quadro Especiais ──────────────────────────────────────────────────────
 function EspeciaisView({ clientes, addLog }) {
