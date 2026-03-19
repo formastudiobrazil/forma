@@ -140,8 +140,6 @@ const firebaseAuth = getAuth(firebaseApp);
 // 🎯 FIREBASE HOOK - useFirebaseCollection
 // ═══════════════════════════════════════════════════════════════════════════════
 
-function uid() { return Math.random().toString(36).slice(2,9); }
-
 function useFirebaseCollection(collectionName, initialState = []) {
   const [data, setData] = React.useState(initialState);
   const [loading, setLoading] = React.useState(true);
@@ -378,6 +376,15 @@ const INIT_NAV_CONFIG = [
   {id:"cs",         label:"Customer Success", icon:"💎"},
   {id:"especiais",   label:"Especiais",        icon:"⭐"},
 ];
+// ═══════════════════════════════════════════════════════════════════════════════
+// 👥 TEAM - Membros do sistema (Fallback - dados primários vêm do Firestore)
+// ═══════════════════════════════════════════════════════════════════════════════
+const TEAM = [
+  { id: 'admin_felipe', nome: 'Felipe Buss', email: 'felipe@formastudio.com.br', role: 'admin' },
+  { id: 'team_01', nome: 'Equipe Criação', email: 'criacao@formastudio.com.br', role: 'criacao' },
+  { id: 'team_02', nome: 'Equipe Comercial', email: 'comercial@formastudio.com.br', role: 'comercial' },
+];
+
 const INIT_MEMBERS = [];
 const INIT_CALENDAR = [];
 const INIT_FILIAIS = [];
@@ -713,7 +720,7 @@ const AvatarGroup = ({ ids, size }) => {
   const extra = ids.length - 3;
   return (
     <div style={{display:"flex",alignItems:"center"}}>
-      {members.map((m,i) => <Avatar key={m.id} member={m} size={size} stacked={i>0}/>)}
+      {(members||[]).map((m,i) => <Avatar key={m.id} member={m} size={size} stacked={i>0}/>)}
       {extra > 0 && (
         <div style={{width:size,height:size,borderRadius:"50%",marginLeft:-6,background:"var(--ccardb)",border:"1.5px solid rgba(255,255,255,0.18)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*0.36,color:"var(--ct3)",fontWeight:700,fontFamily:POP}}>+{extra}</div>
       )}
@@ -5979,7 +5986,7 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 {(cs.interacoes||[]).map(function(inter){
                   var tp = TIPO_INTERACAO.find(function(t){return t.id===inter.tipo;})||TIPO_INTERACAO[6];
-                  var autor = members.find(function(m){return m.id===inter.criadoPor;});
+                  var autor = (members||[]).find(function(m){return m.id===inter.criadoPor;});
                   var dt = inter.data ? new Date(inter.data+"T12:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"short"}) : "";
                   return (
                     <div key={inter.id} style={{display:"flex",gap:12,padding:"12px 14px",borderRadius:12,
@@ -6275,7 +6282,7 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
           var fuPendentes = (cs.followUps||[]).filter(function(f){return !f.concluido;});
           var fuAtrasados = fuPendentes.filter(function(f){return f.data&&f.data<today;});
           var ultimaInteracao = (cs.interacoes||[])[0];
-          var csResponsavel = cl.equipe&&cl.equipe.cs ? members.find(function(m){return m.id===cl.equipe.cs;}) : null;
+          var csResponsavel = cl.equipe&&cl.equipe.cs ? (members||[]).find(function(m){return m.id===cl.equipe.cs;}) : null;
 
           return (
             <GlassBox key={cl.id}
@@ -11767,7 +11774,7 @@ function FinImportarView({ dados, setDados, user, TABS, fmtR, GR, BL, OR, RD, se
       var mk=dateISO.slice(0,7); // already padded above
 
       if(!nd[mk]) nd[mk]={recebimentos:[],despesas_fixas:[],despesas_variaveis:[],impostos:[],pessoas:[]};
-      nd[mk][field].push({id:"imp_"+uid(),descricao:desc,valor:valorNum,categoria:cat,data:dateISO,obs:"Importado",pago:pago,tipo:tipo,lancadoPor:user?user.id:"import"});
+      nd[mk][field].push({id:"imp_"+uid2(),descricao:desc,valor:valorNum,categoria:cat,data:dateISO,obs:"Importado",pago:pago,tipo:tipo,lancadoPor:user?user.id:"import"});
       imported++;
     });
 
@@ -15056,7 +15063,7 @@ function AdminClientesGestaoPanel({ clienteUsers, setClienteUsers, clienteInfos,
                   <div style={{fontSize:11,color:CT3,marginBottom:4}}>Responsáveis</div>
                   <div style={{display:"flex",flexDirection:"column",gap:8}}>
                     {(clienteInfos[selectedClienteInfo]?.responsaveis||[]).map(r => {
-                      var member = members.find(m => m.id === r.usuarioId);
+                      var member = (members||[]).find(m => m.id === r.usuarioId);
                       return (
                         <div key={r.id} style={{padding:10,borderRadius:8,background:"rgba(255,255,255,0.04)",border:"1px solid var(--cbord)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                           <div style={{fontSize:11,color:CT3}}>{member?.name || r.usuarioId} ({r.cargo})</div>
@@ -15068,7 +15075,7 @@ function AdminClientesGestaoPanel({ clienteUsers, setClienteUsers, clienteInfos,
                       <div style={{fontSize:11,color:CT3}}>Novo Responsável</div>
                       <select value={respForm.usuarioId} onChange={e=>setRespForm({...respForm,usuarioId:e.target.value})} style={{...IS,background:"rgba(255,255,255,0.04)"}}>
                         <option value="">Selecione um colaborador</option>
-                        {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                        {(members||[]).map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
                       </select>
                       <input value={respForm.cargo} onChange={e=>setRespForm({...respForm,cargo:e.target.value})} placeholder="Cargo (Account Manager, etc)" style={IS}/>
                       <input value={respForm.email} onChange={e=>setRespForm({...respForm,email:e.target.value})} placeholder="Email" style={IS}/>
@@ -16284,6 +16291,39 @@ function NotifBell({ notifications, userId, onMarkAllRead, onClearAll }) {
   );
 }
 
+
+function CreacaoShell({ user, onBack, addLog, chatUnread, activityLog, onUpdateUser, onLogout, chatChannels, setChatChannels, members, onMarkChatRead, theme, setTheme, quickAccess, setQuickAccess, calendar, setCalendar, demands, setDemands, activeDay, ads, setAds, customDatas, setCustomDatas, meetings, setMeetings, avisos, setAvisos, notifications, onMarkAllNotifsRead, onClearAllNotifs, clientes, inboundClientes, setInboundClientes, planejamento }) {
+  const [view, setView] = React.useState("dashboard");
+  const [showHistorico, setShowHistorico] = React.useState(false);
+  
+  return (
+    <div style={{display:"flex",flexDirection:"column",height:"100vh",background:"#0D0A06"}}>
+      {/* Topbar */}
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 20px",background:"#0D0A06",borderBottom:"1px solid rgba(255,255,255,0.08)",gap:20}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <div onClick={onBack} style={{cursor:"pointer",fontSize:24}}>←</div>
+          <div style={{fontSize:16,fontWeight:700,color:"#FF6A00"}}>🎨 Criação</div>
+        </div>
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={()=>setView("calendar")} style={{padding:"8px 16px",borderRadius:8,background:view==="calendar"?"#FF6A00":"#1a1a1a",color:"#fff",border:"none",cursor:"pointer",fontWeight:600}}>📅 Calendário</button>
+          <button onClick={()=>setView("demandas")} style={{padding:"8px 16px",borderRadius:8,background:view==="demandas"?"#FF6A00":"#1a1a1a",color:"#fff",border:"none",cursor:"pointer",fontWeight:600}}>📋 Demandas</button>
+          <button onClick={()=>setView("anuncios")} style={{padding:"8px 16px",borderRadius:8,background:view==="anuncios"?"#FF6A00":"#1a1a1a",color:"#fff",border:"none",cursor:"pointer",fontWeight:600}}>📢 Anúncios</button>
+        </div>
+        <button onClick={onLogout} style={{padding:"8px 16px",borderRadius:8,background:"#FF6A00",color:"#fff",border:"none",cursor:"pointer",fontWeight:600}}>Sair</button>
+      </div>
+
+      {/* Content */}
+      <div style={{flex:1,overflow:"auto",padding:"20px"}}>
+        {view==="calendar" && <div><CalendarView calendar={calendar} setCalendar={setCalendar} activeDay={activeDay} onNotify={()=>{}} clientes={clientes} addLog={addLog} demands={demands}/></div>}
+        {view==="demandas" && <DemandasView demands={demands} setDemands={setDemands} user={user} clientes={clientes} addNotification={()=>{}} members={members} addLog={addLog}/>}
+        {view==="anuncios" && <AnunciosView ads={ads} setAds={setAds} clientes={clientes} addLog={addLog}/>}
+        {!view && <div style={{color:"#ccc"}}>Selecione uma view</div>}
+      </div>
+    </div>
+  );
+}
+
+
 function AppInner() {
   // 🎨 FAVICON - Adicionar no início
   React.useEffect(() => {
@@ -16317,6 +16357,7 @@ function AppInner() {
   const setCalendar = function(fn) {
     if(typeof fn === 'function') {
       var newVal = fn(calendar);
+      console.log('[DEBUG] setCalendar called with', newVal);
       if(Array.isArray(newVal) && calendarCRUD) {
         newVal.forEach(x => {
           if(x && x.id) calendarCRUD.update(x.id, x).catch(e => console.error(e));
@@ -17021,7 +17062,7 @@ function AppInner() {
   
   if(clienteLoginType === "cliente" && clienteAuthUser && clienteSelectedAccount) return <ThemeCtx.Provider value={theme}><ClientePortalView user={user} clienteUser={clienteAuthUser} clienteId={clienteSelectedAccount} clientes={clientes} planejamento={planejamento} onBack={function(){setClienteSelectedAccount(null);setClienteAuthUser(null);setClienteLoginType(null);}} filiais={filiais} clienteInfos={clienteInfos} clienteInsights={clienteInsights} demands={demands} setDemands={setDemands} addLog={addLog} members={members} addNotification={addNotification} clienteConfig={clienteConfig} ads={ads}/></ThemeCtx.Provider>;
 
-  if(!user) return <ThemeCtx.Provider value={theme}><Login members={members} onLogin={function(u){var full=members.find(function(m){return m.id===u.id;})||u; setUser({...u,...full}); setArea(null); addLog("sistema","Login realizado",u.name); recordAccess("login",u.name);}} onBack={function(){setClienteLoginType(null);}}/></ThemeCtx.Provider>;
+  if(!user) return <ThemeCtx.Provider value={theme}><Login members={members} onLogin={function(u){var full=(members||[]).find(function(m){return m.id===u.id;})||u; setUser({...u,...full}); setArea(null); addLog("sistema","Login realizado",u.name); recordAccess("login",u.name);}} onBack={function(){setClienteLoginType(null);}}/></ThemeCtx.Provider>;
   if(!area) return <ThemeCtx.Provider value={theme}><AreaSelector user={user} onSelect={setArea} adminVendas={adminVendas} onLogout={function(){setUser(null);setArea(null);}}/></ThemeCtx.Provider>;
   // CRMShell and AdminShell are rendered inside ConfigCtx.Provider below
 
@@ -17040,6 +17081,7 @@ function AppInner() {
     <ThemeCtx.Provider value={theme}>
     {/* Theme-aware CSS variables */}
 
+    {area==="criacao" ? <CreacaoShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){recordAccess("logout",user.name);setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} calendar={calendar} setCalendar={setCalendar} demands={demands} setDemands={setDemands} activeDay={activeDay} ads={ads} setAds={setAds} customDatas={customDatas} setCustomDatas={setCustomDatas} meetings={meetings} setMeetings={setMeetings} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} clientes={clientes} inboundClientes={inboundClientes} setInboundClientes={setInboundClientes} planejamento={planejamento}/> :
     {area==="comercial" ? <CRMShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){recordAccess("logout",user.name);setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} sdrLeads={sdrLeads} setSdrLeads={setSdrLeads} agendaReunioes={agendaReunioes} setAgendaReunioes={setAgendaReunioes} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} setCrmLeads={setCrmLeads} crmMetas={crmMetas} setCrmMetas={setCrmMetas} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} documentacoes={documentacoes} setDocumentacoes={setDocumentacoes} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs}/> :
     area==="administrativo" ? <AdminShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} setMembers={setMembers} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} contratos={contratos} setContratos={setContratos} colaboradores={colaboradores} setColaboradores={setColaboradores} financeiroDados={financeiroDados} setFinanceiroDados={setFinanceiroDados} okrs={okrs} setOkrs={setOkrs} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} contratoIniciadoNotif={contratoIniciadoNotif} setContratoIniciadoNotif={setContratoIniciadoNotif} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs} filiais={filiais} setFiliais={setFiliais} clienteUsers={clienteUsers} setClienteUsers={setClienteUsers} clienteInfos={clienteInfos} setClienteInfos={setClienteInfos} clienteInsights={clienteInsights} setClienteInsights={setClienteInsights} clienteConfig={clienteConfig} setClienteConfig={setClienteConfig} demands={demands} setDemands={setDemands} pins={pins} setPins={setPins}/> :
     <div className={"forma-app "+(theme==="light"?"t-light":theme==="night"?"t-night":"t-dark")} style={{display:"flex",minHeight:"100vh",background:theme==="light"?"#EBEBEB":theme==="night"?"#181818":"#0D0A06",fontFamily:POP,color:theme==="light"?"#1a1a1a":"#fff",position:"relative"}}>
@@ -17592,9 +17634,9 @@ function MembersView({ members, currentUser, onUpdateMember, onCelebrate, theme,
     return `${months} mês${months!==1?"es":""}`;
   };
 
-  const currentMember = members.find(m => m.id === currentUser.id);
-  const anniversaries = members.filter(m => getAnniversaryYears(m.joinDate) !== null);
-  const birthdaysToday = members.filter(m => m.birthDate && m.birthDate.slice(5)===todayMMDD);
+  const currentMember = (members||[]).find(m => m.id === currentUser.id);
+  const anniversaries = (members||[]).filter(m => getAnniversaryYears(m.joinDate) !== null);
+  const birthdaysToday = (members||[]).filter(m => m.birthDate && m.birthDate.slice(5)===todayMMDD);
 
   return (
     <div style={{animation:"fadeUp 0.3s ease",padding:"24px"}}>
@@ -17701,7 +17743,7 @@ function MembersView({ members, currentUser, onUpdateMember, onCelebrate, theme,
 
       {/* Team grid */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
-        {members.filter(m => !selectedFilial || m.filialId === selectedFilial).map(m => {
+        {(members||[]).filter(m => !selectedFilial || m.filialId === selectedFilial).map(m => {
           const annYears = getAnniversaryYears(m.joinDate);
           const isMe = m.id === currentUser.id;
           return (
@@ -18560,7 +18602,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
 
   // DM key = sorted user ids joined
   const dmKey = (a, b) => [a, b].sort().join("_");
-  const memberObj = id => members.find(m=>m.id===id) || { name:"Desconhecido", initials:"?", color:"#888" };
+  const memberObj = id => (members||[]).find(m=>m.id===id) || { name:"Desconhecido", initials:"?", color:"#888" };
 
   // Channels this user can see
   const myChannels = channels.filter(ch => ch.members.includes(user.id));
@@ -18588,7 +18630,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
     } else if(activeChannel) {
       setChannels(prev => prev.map(ch => ch.id===activeChannel.id ? {...ch, messages:[...ch.messages, newMsg]} : ch));
     }
-    var mm=msgText.match(/@([a-zA-Z0-9_]+)/g)||[];mm.forEach(function(m){var h=m.slice(1).toLowerCase();var mb2=members.find(function(mb){return mb.id===h||mb.name.toLowerCase().startsWith(h);});if(mb2&&mb2.id!==user.id&&addNotification){var chN=activeChannel?"#"+activeChannel.name:"DM";addNotification(mb2.id,user.id,user.name,"mention","@mencao em "+chN+": \""+msgText.slice(0,80)+"\"");}});
+    var mm=msgText.match(/@([a-zA-Z0-9_]+)/g)||[];mm.forEach(function(m){var h=m.slice(1).toLowerCase();var mb2=(members||[]).find(function(mb){return mb.id===h||mb.name.toLowerCase().startsWith(h);});if(mb2&&mb2.id!==user.id&&addNotification){var chN=activeChannel?"#"+activeChannel.name:"DM";addNotification(mb2.id,user.id,user.name,"mention","@mencao em "+chN+": \""+msgText.slice(0,80)+"\"");}});
     setMsgText("");
     setShowMentions(false);
   };
@@ -18690,7 +18732,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
     const parts = text.split(/(@\w[\w\s]*?\b)/g);
     return parts.map((part, i) => {
       if(part.startsWith("@")) {
-        const mentioned = members.find(m => m.name.toLowerCase().startsWith(part.slice(1).toLowerCase()));
+        const mentioned = (members||[]).find(m => m.name.toLowerCase().startsWith(part.slice(1).toLowerCase()));
         return <span key={i} style={{color: (mentioned&&mentioned.color)||OR, fontWeight:700, background:(mentioned&&mentioned.color)+"22"||"rgba(255,106,0,0.15)", borderRadius:4, padding:"1px 4px"}}>{part}</span>;
       }
       return <span key={i}>{part}</span>;
@@ -18781,7 +18823,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
           {/* ── DM Section ── */}
           <div style={{marginTop:16}}>
             <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.10em",padding:"4px 8px 8px"}}>MENSAGENS DIRETAS</div>
-            {members.filter(m=>m.id!==user.id).map(m=>{
+            {(members||[]).filter(m=>m.id!==user.id).map(m=>{
               const k = dmKey(user.id, m.id);
               const msgs = dms[k] || [];
               const lastDm = (msgs&&msgs.length>0) ? msgs[msgs.length-1] : null;
@@ -18988,7 +19030,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
             {/* @mention autocomplete */}
             {showMentions&&(
               <div style={{position:"absolute",bottom:"100%",left:20,right:20,background:"rgba(18,12,6,0.98)",border:"1px solid var(--cbord2)",borderRadius:14,padding:"6px",zIndex:10,marginBottom:4}}>
-                {(activeDmId ? members : members.filter(m=>(activeChannel&&activeChannel.members).includes(m.id)))
+                {(activeDmId ? members : (members||[]).filter(m=>(activeChannel&&activeChannel.members).includes(m.id)))
                   .filter(m=>m.name.toLowerCase().includes(mentionFilter.toLowerCase())).map(m=>{
                   return (
                     <div key={m.id} onClick={()=>insertMention(m.name.split(" ")[0])}
@@ -19126,7 +19168,7 @@ function CreateChannelModal({ members, user, onClose, onCreate }) {
         {/* Member selection */}
         <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>Membros com acesso</div>
         <div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:220,overflowY:"auto",marginBottom:20}}>
-          {members.map(m=>{
+          {(members||[]).map(m=>{
             const selected = selectedMembers.includes(m.id);
             const isMe = m.id===user.id;
             return (
@@ -20211,7 +20253,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
             ))}
           </tr></thead>
           <tbody>
-            {members.map((m,i)=>(
+            {(members||[]).map((m,i)=>(
               <tr key={m.id} style={{borderBottom:i<members.length-1?"2px solid var(--cbord)":"none",background:i%2===0?"rgba(255,255,255,0.01)":"transparent",transition:"background 0.15s"}}
                 onMouseEnter={e=>e.currentTarget.style.background="rgba(255,106,0,0.04)"}
                 onMouseLeave={e=>e.currentTarget.style.background=i%2===0?"rgba(255,255,255,0.01)":"transparent"}
@@ -20331,7 +20373,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               <div style={{marginBottom:18}}>
                 <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Membros do Grupo</div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-                  {members.map(m=>{
+                  {(members||[]).map(m=>{
                     const sel = groupForm.membros.includes(m.id);
                     return (
                       <div key={m.id} onClick={()=>toggleGroupMember(m.id)} style={{display:"flex",alignItems:"center",gap:7,padding:"6px 12px",borderRadius:20,cursor:"pointer",
@@ -20365,7 +20407,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               </div>
             )}
             {groups.map(g=>{
-              const groupMembers = members.filter(m=>g.membros.includes(m.id));
+              const groupMembers = (members||[]).filter(m=>g.membros.includes(m.id));
               return (
                 <GlassBox key={g.id} style={{borderRadius:20,padding:"20px",border:`1px solid ${g.cor}25`}} glow={g.cor+"18"}>
                   <div style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:14}}>
@@ -20531,7 +20573,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
                   <select value={filialForm.gerente} onChange={e=>setFilialForm(p=>({...p,gerente:e.target.value}))}
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}>
                     <option value="" style={{background:"#1a1a1a"}}>— Selecionar —</option>
-                    {members.map(m=>(<option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>))}
+                    {(members||[]).map(m=>(<option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>))}
                   </select>
                 </div>
                 <div>
@@ -20622,7 +20664,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
                 {/* Informações Adicionais */}
                 <div style={{display:"flex",flexDirection:"column",gap:3,marginBottom:12,fontSize:11,color:"var(--ct3)",fontFamily:POP,borderTop:"1px solid var(--cbord)",paddingTop:8}}>
                   {f.cnpj&&<div>CNPJ: {f.cnpj}</div>}
-                  {f.gerente&&(function(){var gerente=members.find(m=>m.id===f.gerente); return gerente?<div>👤 Gerente: {gerente.name}</div>:null;})()}
+                  {f.gerente&&(function(){var gerente=(members||[]).find(m=>m.id===f.gerente); return gerente?<div>👤 Gerente: {gerente.name}</div>:null;})()}
                   {f.dataAbertura&&<div>📅 Desde: {new Date(f.dataAbertura).toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"})}</div>}
                   {f.obs&&<div>💬 {f.obs}</div>}
                 </div>
@@ -20649,7 +20691,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
           <div style={{fontSize:14, color:"var(--ct3)", fontFamily:POP, marginBottom:16}}>Gerencie os PINs de acesso de todos os usuários</div>
           
           <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))", gap:14}}>
-            {members.map(m => (
+            {(members||[]).map(m => (
               <GlassBox key={m.id} style={{borderRadius:12, padding:"14px", border:"1px solid rgba(233,30,140,0.25)"}}>
                 <div style={{display:"flex", alignItems:"start", gap:12, marginBottom:12}}>
                   <div style={{width:40, height:40, borderRadius:10, background:(m.color||OR)+"22", border:"1px solid "+(m.color||OR)+"55", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:700, color:m.color||OR, fontFamily:POP, flexShrink:0}}>
