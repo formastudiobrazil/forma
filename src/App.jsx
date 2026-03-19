@@ -1290,7 +1290,12 @@ function EditCell({ value, onChange, center, placeholder }) {
 
 // ─── File Upload Panel ────────────────────────────────────────────
 function FileUploadPanel({ row, onClose, onSave }) {
-  const [files, setFiles] = useState(row.files||[]);
+  const [files, _setFiles] = useState(row.files||[]);
+  const setFiles = function(fn) {
+    if(typeof fn === 'function') {
+      _setFiles(function(prev) { var newVal = fn(prev); return Array.isArray(newVal) ? newVal : prev; });
+    } else { _setFiles(fn); }
+  };
   const [dragging, setDragging] = useState(false);
   const [carouselIdx, setCarouselIdx] = useState(null);
   const inputRef = useRef();
@@ -3437,7 +3442,12 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
 function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotification, addLog }) {
   var [feedbackItem, setFeedbackItem] = useState(null);
   const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState({cliente:"",data:"",hora:"",local:"",responsavel:"diego",participantes:[],status:"agendado",descricao:""});
+  const [form, _setForm] = useState({cliente:"",data:"",hora:"",local:"",responsavel:"diego",participantes:[],status:"agendado",descricao:""});
+  const setForm = function(fn) {
+    if(typeof fn === 'function') {
+      _setForm(function(prev) { var newVal = fn(prev); return typeof newVal === 'object' ? newVal : prev; });
+    } else { _setForm(fn); }
+  };
   const [editId, setEditId] = useState(null);
   const [statusDrop, setStatusDrop] = useState(null);
   const statusColor=s=>s==="confirmado"?"#1EC98C":s==="finalizado"?"#3B82F6":s==="cancelado"?"#E74C3C":"#F59E0B";
@@ -3664,7 +3674,12 @@ function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotificatio
 function InboundView({ clientes, setClientes, addLog, clientesBase }) {
   const [adding, setAdding] = useState(false);
   const [expanded, setExpanded] = useState({});
-  const [form, setForm] = useState({nome:"",contato:"",email:"",origem:"",datainicio:"",status:"ativo",responsaveis:[]});
+  const [form, _setForm] = useState({nome:"",contato:"",email:"",origem:"",datainicio:"",status:"ativo",responsaveis:[]});
+  const setForm = function(fn) {
+    if(typeof fn === 'function') {
+      _setForm(function(prev) { var newVal = fn(prev); return typeof newVal === 'object' ? newVal : prev; });
+    } else { _setForm(fn); }
+  };
   const [acaoForm, setAcaoForm] = useState({});
   const [showAcaoForm, setShowAcaoForm] = useState({});
   const [clienteSearch, setClienteSearch] = useState("");
@@ -4358,7 +4373,12 @@ function DemandasView({ demands, setDemands, user, clientes, addNotification, me
   }
 
   const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState({titulo:"",cliente:"",clienteId:"",prioridade:"media",formato:"",observacoes:"",briefing:"",status:"aguardando",assignee:user.id,prazoData:"",diasUteis:3});
+  const [form, _setForm] = useState({titulo:"",cliente:"",clienteId:"",prioridade:"media",formato:"",observacoes:"",briefing:"",status:"aguardando",assignee:user.id,prazoData:"",diasUteis:3});
+  const setForm = function(fn) {
+    if(typeof fn === 'function') {
+      _setForm(function(prev) { var newVal = fn(prev); return typeof newVal === 'object' ? newVal : prev; });
+    } else { _setForm(fn); }
+  };
   const prioColor=p=>p==="urgente"?"#FF3D00":p==="alta"?"#E74C3C":p==="media"?OR:"#8D8D8D";
 
   const inp = (key,placeholder,multiline) => (
@@ -5544,7 +5564,12 @@ function DatasView({ customDatas, setCustomDatas, addLog }) {
 function ReunioesView({ meetings, setMeetings, user, members, addNotification, clientes, addLog }) {
   const [adding, setAdding] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [form, setForm] = useState({title:"",date:"",time:"",local:"",attendees:[],responsavel:"",link:"",notes:""});
+  const [form, _setForm] = useState({title:"",date:"",time:"",local:"",attendees:[],responsavel:"",link:"",notes:""});
+  const setForm = function(fn) {
+    if(typeof fn === 'function') {
+      _setForm(function(prev) { var newVal = fn(prev); return typeof newVal === 'object' ? newVal : prev; });
+    } else { _setForm(fn); }
+  };
   const [feedbackItem, setFeedbackItem] = useState(null);
 
   const openAdd = () => { setEditId(null); setForm({title:"",date:"",time:"",local:"",attendees:[],responsavel:"",clienteId:"",link:"",notes:"",status:"agendada"}); setAdding(true); };
@@ -16548,7 +16573,17 @@ function AppInner() {
       };
     }
   };
-  const [calendarHistory, setCalendarHistory] = useState([]); // [{weekStart, data (no files)}]
+  const [calendarHistory, _setCalendarHistory] = useState([]);
+  const setCalendarHistory = function(fn) {
+    if(typeof fn === 'function') {
+      _setCalendarHistory(function(prev) {
+        var newVal = fn(prev);
+        return Array.isArray(newVal) ? newVal : prev;
+      });
+    } else {
+      _setCalendarHistory(fn);
+    }
+  }; // [{weekStart, data (no files)}]
   const [futurePosts, setFuturePosts] = useState({}); // {weekKey: {seg:[],ter:[],...}}
   const [showHistorico, setShowHistorico] = useState(false);
   const [showProxSemanas, setShowProxSemanas] = useState(false);
@@ -16640,7 +16675,17 @@ function AppInner() {
       _setAdminVendas(fn);
     }
   };
-  const [avisos, setAvisos]                 = useState([]); // announcements created by admin
+  const [avisos, _setAvisos] = useState([]);
+  const setAvisos = function(fn) {
+    if(typeof fn === 'function') {
+      _setAvisos(function(prev) {
+        var newVal = fn(prev);
+        return Array.isArray(newVal) ? newVal : prev;
+      });
+    } else {
+      _setAvisos(fn);
+    }
+  }; // announcements created by admin
   const [documentacoes, documentacoesCRUD, documentacoesLoading] = useFirebaseCollection("documentacoes", INIT_DOCUMENTACOES);
   const setDocumentacoes = function(fn) {
     if(typeof fn === 'function') {
@@ -16984,7 +17029,17 @@ function AppInner() {
       };
     }
   };
-  const [incidentes, setIncidentes]       = useState([]);
+  const [incidentes, _setIncidentes] = useState([]);
+  const setIncidentes = function(fn) {
+    if(typeof fn === 'function') {
+      _setIncidentes(function(prev) {
+        var newVal = fn(prev);
+        return Array.isArray(newVal) ? newVal : prev;
+      });
+    } else {
+      _setIncidentes(fn);
+    }
+  };
   const [cronData, setCronData]           = useState({});
   const [theme, setTheme]               = useState("dark"); // dark | night | light
   // ITEM 22: Log de acesso (login/logout com timestamp e usuário)
@@ -17628,7 +17683,12 @@ function PhotoUpload({ photo, color, initials, size, onChange }) {
 
 // ─── My Profile Panel ─────────────────────────────────────────────
 function MyProfilePanel({ member, onSave, onClose }) {
-  const [form, setForm] = useState({...member});
+  const [form, _setForm] = useState({...member});
+  const setForm = function(fn) {
+    if(typeof fn === 'function') {
+      _setForm(function(prev) { var newVal = fn(prev); return typeof newVal === 'object' ? newVal : prev; });
+    } else { _setForm(fn); }
+  };
   const [changePw, setChangePw] = useState(false);
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
@@ -19241,7 +19301,12 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
 function CreateChannelModal({ members, user, onClose, onCreate }) {
   const [name,  setName]  = useState("");
   const [emoji, setEmoji] = useState("💬");
-  const [selectedMembers, setSelectedMembers] = useState([user.id]);
+  const [selectedMembers, _setSelectedMembers] = useState([user.id]);
+  const setSelectedMembers = function(fn) {
+    if(typeof fn === 'function') {
+      _setSelectedMembers(function(prev) { var newVal = fn(prev); return Array.isArray(newVal) ? newVal : prev; });
+    } else { _setSelectedMembers(fn); }
+  };
   const [emojiOpen, setEmojiOpen] = useState(false);
   const EMOJI_OPTS = ["💬","🎨","🎬","📋","🔔","💡","🚀","📌","🎯","🏆","📦","🌐","🔗","💎","⭐","🎪","🛠","📡","👥","🔐","🎭","📊","🎵","🏠","🔥","💫","🌙","⚡","🦋","🎲","❤️","🧡","💛","💚","💙","💜","🖤","🤍","🎀","🏅","🥇","🎖","🏵","🎗","🎟","🎠","🎡","🎢","🎪","🎭","🎨","🖼","🎰","🎳","🎯","🎱","🎮","🕹","🧩","♟","🎴","🀄","🃏","🎲","🧸","🪆","🪅","🎊","🎉","🎈","🎁","🎋","🎍","🎎","🎏","🎐","🧨","✨","🎆","🎇","🪄","🎩","🎫","🎟","🏷","📌","📍","🗺","🧭","🌍","🌎","🌏","🌐","🗾","🧱","🏔","🌋","🏕","🏖","🏗","🏘","🏙","🏚","🏛","🏟","🏠","🏡","🏢","🏣","🏤","🏥","🏦","🏧","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩","🕋","⛲","⛺","🌁","🌃","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🎡","🎢","💈","🎪"];
 
@@ -20010,7 +20075,12 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
 function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFiliais: _setFiliais, pins: _pins, setPins: _setPins, user, onUpdateUser }) {
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState({name:"",role:"",email:"",joinDate:"",birthDate:"",isManager:false,pass:"",bio:"",color:OR,initials:"",photo:null});
+  const [form, _setForm] = useState({name:"",role:"",email:"",joinDate:"",birthDate:"",isManager:false,pass:"",bio:"",color:OR,initials:"",photo:null});
+  const setForm = function(fn) {
+    if(typeof fn === 'function') {
+      _setForm(function(prev) { var newVal = fn(prev); return typeof newVal === 'object' ? newVal : prev; });
+    } else { _setForm(fn); }
+  };
   const COLORS = ["#FF6A00","#A855F7","#3B82F6","#1EC98C","#F59E0B","#EF4444","#E91E8C","#06B6D4","#8B5CF6","#10B981"];
   const [resetPwId, setResetPwId] = useState(null);
   const [newPw, setNewPw] = useState("");
