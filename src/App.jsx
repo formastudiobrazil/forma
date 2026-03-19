@@ -16629,7 +16629,17 @@ function AppInner() {
       };
     }
   };
-  const [adminVendas, setAdminVendas]       = useState([]);
+  const [adminVendas, _setAdminVendas]       = useState([]);
+  const setAdminVendas = function(fn) {
+    if(typeof fn === 'function') {
+      _setAdminVendas(function(prev) {
+        var newVal = fn(prev);
+        return Array.isArray(newVal) ? newVal : prev;
+      });
+    } else {
+      _setAdminVendas(fn);
+    }
+  };
   const [avisos, setAvisos]                 = useState([]); // announcements created by admin
   const [documentacoes, documentacoesCRUD, documentacoesLoading] = useFirebaseCollection("documentacoes", INIT_DOCUMENTACOES);
   const setDocumentacoes = function(fn) {
