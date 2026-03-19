@@ -117,15 +117,14 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from
 // 🔥 FIREBASE CONFIG - PREENCHA COM SEUS DADOS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// ⚠️ IMPORTANTE: Substitua esses valores pelas credenciais do seu projeto Firebase
-// Acesse: https://console.firebase.google.com → Configurações do Projeto → Chave da Web
+// ✅ CREDENCIAIS REAIS DO FIREBASE
 const FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY", // ὄ8 Substitua aqui
-  authDomain: "your-project.firebaseapp.com", // ὄ8 Substitua aqui
-  projectId: "your-project-id", // ὄ8 Substitua aqui
-  storageBucket: "your-project.appspot.com", // ὄ8 Substitua aqui
-  messagingSenderId: "YOUR_SENDER_ID", // ὄ8 Substitua aqui
-  appId: "YOUR_APP_ID" // ὄ8 Substitua aqui
+  apiKey: "AIzaSyCxRjTUm8npYXjrVOaVGuzUo_PzSpXQEPw",
+  authDomain: "formaos-bafad.firebaseapp.com",
+  projectId: "formaos-bafad",
+  storageBucket: "formaos-bafad.firebasestorage.app",
+  messagingSenderId: "219418656334",
+  appId: "1:219418656334:web:432ac272547d9e85950d1f"
 };
 
 let firebaseApp;
