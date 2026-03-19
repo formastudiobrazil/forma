@@ -377,6 +377,7 @@ const INIT_NAV_CONFIG = [
   {id:"cs",         label:"Customer Success", icon:"💎"},
   {id:"especiais",   label:"Especiais",        icon:"⭐"},
 ];
+const INIT_MEMBERS = [];
 const PLAN_TIPOS = ["Campanha","Data Comemorativa","Conteúdo","Objetivo","Lançamento","Evento","Promoção","Outro"];
 const PLAN_TIPO_COLOR = {
   "Campanha":OR,"Data Comemorativa":"#E91E8C","Conteúdo":"#3B82F6",
@@ -16530,6 +16531,8 @@ function AppInner() {
     }
   };
   const [members, membersCRUD, membersLoading] = useFirebaseCollection("members", INIT_MEMBERS);
+  const TEAM = members; // ✅ Usar members do Firebase em vez de TEAM
+  const teamObj = id => TEAM.find(m=>m.id===id); // ✅ Função auxiliar
   const setMembers = function(fn) {
     if(typeof fn === 'function') {
       var newVal = fn(members);
