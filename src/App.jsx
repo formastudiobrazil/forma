@@ -16286,7 +16286,7 @@ function AppInner() {
     link.rel = 'shortcut icon';
     link.href = svg;
     if (!document.querySelector("link[rel*='icon']")) document.head.appendChild(link);
-    document.title = 'FormaOS - CRM & Business OS';
+    document.title = 'FormaOS - FormaStudio Business OS';
   }, []);
 
   const [user,setUser]             = useState(null);
