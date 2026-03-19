@@ -1,14 +1,12 @@
-import React from 'react';
-import { AppProvider, useApp } from './contexts/AppContext';
-import { Login } from './components/Login';
-import { AreaSelector } from './components/AreaSelector';
-import { Dashboard } from './components/Dashboard';
+import React from 'react'
+import { AppProvider, useApp } from '../contexts/AppContext'
+import { Login } from './Login'
+import { AreaSelector } from './AreaSelector'
+import { Dashboard } from './Dashboard'
 
-// Main App Router
 function AppRouter() {
-  const { user, area, loading } = useApp();
+  const { user, area, loading } = useApp()
 
-  // Loading state
   if (loading.members) {
     return (
       <div style={{
@@ -26,24 +24,20 @@ function AppRouter() {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  // Not logged in
   if (!user) {
-    return <Login />;
+    return <Login />
   }
 
-  // Logged in but no area selected
   if (!area) {
-    return <AreaSelector />;
+    return <AreaSelector />
   }
 
-  // All areas go to same Dashboard for now
-  return <Dashboard />;
+  return <Dashboard />
 }
 
-// Main App with Provider
 export default function App() {
   return (
     <div style={{
@@ -56,5 +50,5 @@ export default function App() {
         <AppRouter />
       </AppProvider>
     </div>
-  );
+  )
 }
