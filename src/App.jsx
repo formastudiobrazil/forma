@@ -706,6 +706,7 @@ const Avatar = ({ member, size, stacked }) => (
 );
 
 const AvatarGroup = ({ ids, size }) => {
+  ids = ids||[];
   size = size||24;
   const members = ids.slice(0,3).map(id=>TEAM.find(m=>m.id===id)).filter(Boolean);
   const extra = ids.length - 3;
@@ -1699,7 +1700,7 @@ function ProximasSemanasPanel({ futurePosts, setFuturePosts, onClose, clientes }
 
   var mon = weekMonday(weekOffset);
   var wKey = weekKeyFromMonday(mon);
-  var weekData = futurePosts[wKey]||{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]};
+  var weekData = (futurePosts||{})[wKey]||{seg:[],ter:[],qua:[],qui:[],sex:[],sab:[],dom:[]};
 
   function addPost(dayId) {
     var n = newCliente.trim().toUpperCase();
@@ -2154,7 +2155,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
   const [dismissBirthday, setDismissBirthday] = React.useState(false);
   const [dismissAnniversary, setDismissAnniversary] = React.useState(false);
   const now = useClock();
-  const allRows = Object.values(calendar).flat();
+  const allRows = Object.values(calendar||{}).flat();
   const total   = allRows.length;
   const byStatus= {}; STATUSES.forEach(s=>{ byStatus[s.id]=allRows.filter(r=>r.status===s.id).length; });
   const postados= byStatus.postado||0;
