@@ -2715,8 +2715,8 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
 
         // ── Posts aguardando aprovação há mais de X min ───────────
         var MIN_WAIT = 20; // minutos
-        var allRows = Object.entries(calendar).flatMap(function(e){
-          return (e[1]||[]).map(function(r){ return Object.assign({},r,{_day:e[0]}); });
+        var allRows = Object.entries(calendar||{}).flatMap(function(e){
+          return ((e[1]||[])).map(function(r){ return Object.assign({},r,{_day:e[0]}); });
         });
         var apvRows = allRows.filter(function(r){
           if(r.status!=="aprovado") return false;
@@ -2792,8 +2792,8 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
                 : <div style={{display:"flex",flexDirection:"column",gap:7}}>
                     {apvEntries.slice(0,5).map(function(entry){
                       var nome=entry[0], rows=entry[1];
-                      var oldest = rows.reduce(function(a,b){return (!a.aprovadoAt||(b.aprovadoAt&&b.aprovadoAt<a.aprovadoAt))?b:a;},rows[0]);
-                      var mins = oldest.aprovadoAt ? Math.round((Date.now()-oldest.aprovadoAt)/60000) : null;
+                      var oldest = (rows&&rows.length>0) ? rows.reduce(function(a,b){return (!a.aprovadoAt||(b.aprovadoAt&&b.aprovadoAt<a.aprovadoAt))?b:a;},rows[0]) : null;
+                      var mins = (oldest&&oldest.aprovadoAt) ? Math.round((Date.now()-oldest.aprovadoAt)/60000) : null;
                       return (
                         <div key={nome} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 12px",borderRadius:10,background:"rgba(255,106,0,0.06)",border:"1px solid rgba(255,106,0,0.20)",borderLeft:"3px solid "+OR}}>
                           <div style={{flex:1,minWidth:0}}>
@@ -2903,8 +2903,8 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
           return (r.responsavel===user.id || r.responsavel===user.name || !r.responsavel);
         });
         // All calendar posts assigned to user
-        var allMyRows = Object.entries(calendar).flatMap(function(e){
-          return (e[1]||[]).filter(function(r){return r.responsavel===user.id||r.responsavel===user.name;}).map(function(r){return Object.assign({},r,{_day:e[0]});});
+        var allMyRows = Object.entries(calendar||{}).flatMap(function(e){
+          return ((e[1]||[])).filter(function(r){return r.responsavel===user.id||r.responsavel===user.name;}).map(function(r){return Object.assign({},r,{_day:e[0]});});
         });
 
         // ── Demandas atribuídas ao user ───────────────────────────
@@ -3443,8 +3443,8 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
     setClientes(prev=>prev.map(c=>c.id===clienteId?{...c,acoes:[...c.acoes,{id:uid(),mes:af.mes||"",acao:af.acao,tipo:af.tipo||"email",status:"pendente",responsavel:af.responsavel||TEAM[0].id}]}:c));
     setAcaoForm(p=>({...p,[clienteId]:{}}));setShowAcaoForm(p=>({...p,[clienteId]:false}));
   };
-  const removeAcao=(clienteId,acaoId)=>setClientes(prev=>prev.map(c=>c.id===clienteId?{...c,acoes:c.acoes.filter(a=>a.id!==acaoId)}:c));
-  const updateAcaoStatus=(clienteId,acaoId,status)=>setClientes(prev=>prev.map(c=>c.id===clienteId?{...c,acoes:c.acoes.map(a=>a.id===acaoId?{...a,status}:a)}:c));
+  const removeAcao=(clienteId,acaoId)=>setClientes(prev=>prev.map(c=>c.id===clienteId?{...c,acoes:(c.acoes||[]).filter(a=>a.id!==acaoId)}:c));
+  const updateAcaoStatus=(clienteId,acaoId,status)=>setClientes(prev=>prev.map(c=>c.id===clienteId?{...c,acoes:(c.acoes||[]).map(a=>a.id===acaoId?{...a,status}:a)}:c));
   const acaoStatusColor=s=>s==="concluido"?"#1EC98C":s==="em_andamento"?OR:"rgba(141,141,141,0.60)";
 
   return (
@@ -3519,7 +3519,7 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
       <div style={{display:"flex",flexDirection:"column",gap:14}}>
         {clientes.map(cliente=>{
           const isExp=expanded[cliente.id];
-          const acoesPend=cliente.acoes.filter(a=>a.status==="pendente").length;
+          const acoesPend=(cliente.acoes||[]).filter(a=>a.status==="pendente").length;
           return (
             <GlassBox key={cliente.id} style={{borderRadius:18,overflow:"hidden"}}>
               {/* Header */}
@@ -3586,7 +3586,7 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
                   <div style={{fontSize:13,fontWeight:700,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>Ações Mensais</div>
                   {cliente.acoes.length===0&&<div style={{fontSize:14,color:"var(--ct3)",fontFamily:POP,marginBottom:12}}>Nenhuma ação cadastrada ainda.</div>}
                   <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:12}}>
-                    {cliente.acoes.map((acao,i)=>{
+                    {(cliente.acoes||[]).map((acao,i)=>{
                       const resp=teamObj(acao.responsavel);
                       const sc=acaoStatusColor(acao.status);
                       return (
@@ -4603,13 +4603,13 @@ function AnunciosView({ ads, setAds, clientes, addLog }) {
     setAds(function(p){
       return p.map(function(cl){
         if(cl.id!==activeClientId) return cl;
-        return Object.assign({},cl,{campanhas:cl.campanhas.map(function(c){return c.id===campId?Object.assign({},c,{[field]:typeof value==="function"?value(c[field]):value}):c;})});
+        return Object.assign({},cl,{campanhas:(cl.campanhas||[]).map(function(c){return c.id===campId?Object.assign({},c,{[field]:typeof value==="function"?value(c[field]):value}):c;})});
       });
     });
   }
 
   var activeClient = ads.find(function(c){return c.id===activeClientId;});
-  var activeCamp = activeClient && activeClient.campanhas.find(function(c){return c.id===activeCampId;});
+  var activeCamp = activeClient && (activeClient.campanhas||[]).find(function(c){return c.id===activeCampId;});
 
   function removeCamp(cid) {
     if(!confirm("Remover campanha?")) return;
@@ -5841,7 +5841,7 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
         var m = ultimosOito.find(function(x){return x.mes===mData;});
         if(m) m.followUps++;
       });
-      var m = ultimosOito[ultimosOito.length-1];
+      var m = (ultimosOito&&ultimosOito.length>0) ? ultimosOito[ultimosOito.length-1] : null;
       if(m) m.saudeCounts[cs.saude||"bom"]++;
     });
     return ultimosOito;
@@ -6200,7 +6200,7 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
               
               {/* Barras de interações */}
               {historicoMensal.map(function(m,idx){
-                var maxVal = Math.max.apply(null, historicoMensal.map(function(x){return x.interacoes;})) || 1;
+                var maxVal = (historicoMensal&&historicoMensal.length>0) ? Math.max.apply(null, historicoMensal.map(function(x){return x.interacoes;})) : 1;
                 var barHeight = (m.interacoes / maxVal) * 180;
                 var x = 60 + (idx * ((720) / historicoMensal.length));
                 var width = (720 / historicoMensal.length) - 8;
@@ -7119,7 +7119,7 @@ function calcCPS({ cliente, calendar, calendarHistory, demands, planejamento, qu
 
   // all calendar rows for current month
   var allRows = [];
-  Object.values(calendar).forEach(function(day){ day.forEach(function(r){ allRows.push(r); }); });
+  Object.values(calendar||{}).forEach(function(day){ (day||[]).forEach(function(r){ allRows.push(r); }); });
   (calendarHistory||[]).forEach(function(week){
     var wDate = new Date(week.weekStart);
     if(wDate.getMonth()+1===curMonth && wDate.getFullYear()===curYear){
@@ -7407,7 +7407,7 @@ function CPSView({ clientes, calendar, calendarHistory, demands, planejamento, q
             {showHist&&(function(){
               var hist=getHistory(sel.id);
               if(hist.length===0) return <div style={{fontSize:13,color:"var(--ct3)",fontFamily:POP,textAlign:'center',padding:'12px 0'}}>Nenhum histórico salvo ainda.</div>;
-              var maxS=Math.max.apply(null,hist.map(function(h){return h.score;}));
+              var maxS=(hist&&hist.length>0) ? Math.max.apply(null,hist.map(function(h){return h.score;})) : 10;
               return (
                 <div>
                   <div style={{display:'flex',gap:5,alignItems:'flex-end',height:60,marginBottom:10}}>
@@ -9302,7 +9302,7 @@ function CRMDash({ leads, metas, avisos, user }) {
               {Object.entries(BR_ESTADOS).map(function(entry){
                 var uf=entry[0]; var nome=entry[1];
                 var cnt=porEstado[uf]||0;
-                var maxE=Math.max(...Object.values(porEstado),1);
+                var maxE=Math.max(...Object.values(porEstado||{}),1);
                 var pct=cnt>0?Math.round(cnt/maxE*100):0;
                 var col=cnt>0?OR:CDT3;
                 return(
@@ -9630,7 +9630,7 @@ function SDRView({ user, addLog, leads: _leads, setLeads: _setLeads, crmLeads, a
       var cnt = validLeads.filter(function(l){return (l.createdAt===dk||(l.criadoEm||"").slice(0,10)===dk);}).length;
       dias7.push({dk:dk,cnt:cnt,label:i===0?"Hoje":["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][d.getDay()]});
     }
-    var maxBar = Math.max(META_DIA, Math.max.apply(null,dias7.map(function(d){return d.cnt;})));
+    var maxBar = Math.max(META_DIA, (dias7&&dias7.length>0) ? Math.max.apply(null,dias7.map(function(d){return d.cnt;})) : 0);
 
     return (
       <div>
@@ -16633,7 +16633,7 @@ function AppInner() {
     }
   };
   const [lastSeenMsgCount, setLastSeenMsgCount] = useState(0);
-  const totalChatMsgs = chatChannels.reduce((s,ch)=>s+ch.messages.length,0);
+  const totalChatMsgs = (chatChannels||[]).reduce((s,ch)=>s+((ch.messages||[]).length),0);
   const chatUnread = Math.max(0, totalChatMsgs - lastSeenMsgCount);
   // ── PORTAL DO CLIENTE ───────
   const [clienteUsers, clienteUsersCRUD, clienteUsersLoading] = useFirebaseCollection("clienteusers", INIT_CLIENTE_USERS);
@@ -17822,7 +17822,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
     setClientes(p=>p.map(c=>c.id===activeId?{...c,escopo:[...c.escopo,{...escopoForm,id:"e_"+uid()}]}:c));
     setEscopoForm({tipo:"",qtd:"",unidade:"posts/mês",descricao:""}); setEditEscopoId(null);
   };
-  const removeEscopo = eid => setClientes(p=>p.map(c=>c.id===activeId?{...c,escopo:c.escopo.filter(e=>e.id!==eid)}:c));
+  const removeEscopo = eid => setClientes(p=>p.map(c=>c.id===activeId?{...c,escopo:(c.escopo||[]).filter(e=>e.id!==eid)}:c));
   const saveObs = () => { setClientes(p=>p.map(c=>c.id===activeId?{...c,observacoes:obsText}:c)); setEditingObs(false); };
 
   const LogoCircle = ({c,size,radius,onClick,editable}) => { size=size||56; radius=radius||18; return (
@@ -18630,9 +18630,9 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
     } else if(activeChannel) {
       setChannels(prev => prev.map(ch => {
         if(ch.id !== activeChannel.id) return ch;
-        var _foundMsg = ch.messages.find(function(m){return m.id===msgId;}); const isPinned = _foundMsg && _foundMsg.pinned;
-        const newPinnedIds = isPinned ? ch.pinnedIds.filter(id=>id!==msgId) : [...ch.pinnedIds, msgId];
-        return { ...ch, pinnedIds:newPinnedIds, messages: ch.messages.map(m => m.id===msgId ? {...m, pinned:!m.pinned} : m) };
+        var _foundMsg = (ch.messages||[]).find(function(m){return m.id===msgId;}); const isPinned = _foundMsg && _foundMsg.pinned;
+        const newPinnedIds = isPinned ? (ch.pinnedIds||[]).filter(id=>id!==msgId) : [...(ch.pinnedIds||[]), msgId];
+        return { ...ch, pinnedIds:newPinnedIds, messages: (ch.messages||[]).map(m => m.id===msgId ? {...m, pinned:!m.pinned} : m) };
       }));
     }
   };
@@ -18643,7 +18643,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
       const k = dmKey(user.id, activeDmId);
       setDms(prev => ({ ...prev, [k]: (prev[k]||[]).filter(m=>m.id!==msgId) }));
     } else if(activeChannel) {
-      setChannels(prev => prev.map(ch => ch.id===activeChannel.id ? {...ch, messages:ch.messages.filter(m=>m.id!==msgId), pinnedIds:ch.pinnedIds.filter(id=>id!==msgId)} : ch));
+      setChannels(prev => prev.map(ch => ch.id===activeChannel.id ? {...ch, messages:(ch.messages||[]).filter(m=>m.id!==msgId), pinnedIds:(ch.pinnedIds||[]).filter(id=>id!==msgId)} : ch));
     }
   };
 
@@ -18731,7 +18731,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
           )}
           {myChannels.map(ch=>{
             const isActive = ch.id === (activeChannel&&activeChannel.id);
-            const lastMsg = ch.messages[ch.messages.length-1];
+            const lastMsg = (ch.messages&&ch.messages.length>0) ? ch.messages[ch.messages.length-1] : null;
             const lastAuthor = lastMsg ? memberObj(lastMsg.authorId) : null;
             return (
               <div key={ch.id} onClick={()=>{setActiveChannelId(ch.id);setActiveDmId(null);setPinnedOnly(false);}}
@@ -18749,7 +18749,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
                     display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>{ch.emoji}</div>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontSize:14,fontWeight:isActive?700:600,color:isActive?OR:"rgba(255,255,255,0.80)",fontFamily:POP,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ch.name}</div>
-                    {lastMsg&&<div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{(lastAuthor&&lastAuthor.name).split(" ")[0]}: {lastMsg.files&&lastMsg.files.length?"📎 arquivo":lastMsg.text.slice(0,28)}</div>}
+                    {lastMsg&&<div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{(lastAuthor&&lastAuthor.name&&lastAuthor.name.split(" ")[0]) || "Anônimo"}: {lastMsg.files&&lastMsg.files.length?"📎 arquivo":lastMsg.text.slice(0,28)}</div>}
                   </div>
                   {user.isManager&&(
                     <div onClick={e=>{e.stopPropagation();if(confirm(`Remover canal "${ch.name}"?`))deleteChannel(ch.id);}}
@@ -18761,8 +18761,8 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
                   )}
                 </div>
                 <div style={{display:"flex",gap:4,marginTop:4,flexWrap:"wrap"}}>
-                  {ch.members.slice(0,5).map(mid=>{const m=memberObj(mid);return <div key={mid} style={{width:14,height:14,borderRadius:"50%",background:m.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"var(--ct)",fontWeight:700,fontFamily:POP}}>{m.initials[0]}</div>;})}
-                  {ch.members.length>5&&<div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP}}>+{ch.members.length-5}</div>}
+                  {(ch.members||[]).slice(0,5).map(mid=>{const m=memberObj(mid);return <div key={mid} style={{width:14,height:14,borderRadius:"50%",background:m.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"var(--ct)",fontWeight:700,fontFamily:POP}}>{m.initials[0]}</div>;})}
+                  {(ch.members||[]).length>5&&<div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP}}>+{(ch.members||[]).length-5}</div>}
                 </div>
               </div>
             );
@@ -18774,7 +18774,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
             {members.filter(m=>m.id!==user.id).map(m=>{
               const k = dmKey(user.id, m.id);
               const msgs = dms[k] || [];
-              const lastDm = msgs[msgs.length-1];
+              const lastDm = (msgs&&msgs.length>0) ? msgs[msgs.length-1] : null;
               const isActive = activeDmId===m.id;
               return (
                 <div key={m.id} onClick={()=>{setActiveDmId(m.id);setActiveChannelId(null);setPinnedOnly(false);}}
@@ -18819,15 +18819,15 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
                   <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP}}>{activeDmMember.role} — conversa privada</div>
                 </div>
               </>
-            ) : (
+            ) : activeChannel ? (
               <>
                 <div style={{width:36,height:36,borderRadius:11,background:"rgba(255,106,0,0.15)",border:"1px solid rgba(255,106,0,0.30)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>{activeChannel.emoji}</div>
                 <div>
                   <div style={{fontSize:17,fontWeight:700,color:"var(--ct)",fontFamily:POP}}>{activeChannel.name}</div>
-                  <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP}}>{activeChannel.members.length} membros — {activeChannel.messages.length} mensagens</div>
+                  <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP}}>{(activeChannel.members||[]).length} membros — {(activeChannel.messages||[]).length} mensagens</div>
                 </div>
               </>
-            )}
+            ) : null}
             <div style={{flex:1}}/>
             {pinnedCount>0&&(
               <div onClick={()=>setPinnedOnly(p=>!p)}
@@ -18842,10 +18842,10 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
             {/* Member avatars — channel only */}
             {!activeDmId&&activeChannel&&(
             <div style={{display:"flex",gap:-4}}>
-              {activeChannel.members.slice(0,5).map(mid=>{const m=memberObj(mid);return (
+              {(activeChannel.members||[]).slice(0,5).map(mid=>{const m=memberObj(mid);return (
                 <div key={mid} title={m.name} style={{width:26,height:26,borderRadius:"50%",background:m.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"var(--ct)",fontWeight:700,fontFamily:POP,border:"2px solid #0D0A06",marginLeft:-6}}>{m.initials}</div>
               );})}
-              {activeChannel.members.length>5&&<div style={{width:26,height:26,borderRadius:"50%",background:"var(--ccardb)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"var(--ct2)",fontFamily:POP,border:"2px solid #0D0A06",marginLeft:-6}}>+{activeChannel.members.length-5}</div>}
+              {(activeChannel.members||[]).length>5&&<div style={{width:26,height:26,borderRadius:"50%",background:"var(--ccardb)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"var(--ct2)",fontFamily:POP,border:"2px solid #0D0A06",marginLeft:-6}}>+{(activeChannel.members||[]).length-5}</div>}
             </div>
             )}
           </div>
@@ -18916,7 +18916,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
                     {/* Reactions */}
                     {Object.keys(msg.reactions||{}).length>0&&(
                       <div style={{display:"flex",gap:4,flexWrap:"wrap",marginTop:4}}>
-                        {Object.entries(msg.reactions).map(([emoji,users])=>(
+                        {Object.entries(msg.reactions||{}).map(([emoji,users])=>(
                           <div key={emoji} onClick={()=>toggleReaction(msg.id,emoji)}
                             style={{display:"flex",alignItems:"center",gap:4,padding:"3px 8px",borderRadius:20,cursor:"pointer",
                               background:users.includes(user.id)?"rgba(255,106,0,0.22)":"rgba(255,255,255,0.07)",
@@ -20801,7 +20801,7 @@ function EspeciaisView({ clientes, addLog }) {
           )}
           {boards.map(function(board){
             var active = activeBoardId===board.id;
-            var totalRows = Object.values(board.calendar).flat().length;
+            var totalRows = Object.values(board.calendar||{}).flat().length;
             return (
               <div key={board.id} style={{marginBottom:4}}>
                 {editingBoardId===board.id
