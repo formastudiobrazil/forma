@@ -16308,6 +16308,7 @@ function AppInner() {
   }, []);
 
   const [user,setUser]             = useState(null);
+  const uid = user?.id;  // Extrai ID do usuário logado
   const [area,setArea]             = useState(null); // "criacao" | "comercial"
   const [view,setView]             = useState("dashboard");
   const [privatoSubView, setPrivatoSubView] = useState("dados"); // "dados" | "quadros"
