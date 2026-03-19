@@ -378,6 +378,39 @@ const INIT_NAV_CONFIG = [
   {id:"especiais",   label:"Especiais",        icon:"⭐"},
 ];
 const INIT_MEMBERS = [];
+const INIT_CALENDAR = [];
+const INIT_FILIAIS = [];
+const INIT_DEMANDS = [];
+const INIT_CLIENTES = [];
+const INIT_NEWS = [];
+const INIT_CAPTACOES_AV = [];
+const INIT_PLANEJAMENTO = [];
+const INIT_ADS = [];
+const INIT_MEETINGS = [];
+const INIT_CUSTOM_BOARDS = [];
+const INIT_PRIVATE_BOARDS = [];
+const INIT_CRM_LEADS = [];
+const INIT_CHAT_CHANNELS = [];
+const INIT_ACTIVITY = [];
+const INIT_INCIDENTES = [];
+const INIT_INBOUND_CLIENTES = [];
+const INIT_DOCUMENTACOES = [];
+const INIT_CATEGORIAS_DOCS = [];
+const INIT_CLIENTE_DADOS = [];
+const INIT_CLIENTE_INFOS = [];
+const INIT_CLIENTE_USERS = [];
+const INIT_CLIENTE_CONFIG = [];
+const INIT_CLIENTE_INSIGHTS = [];
+const INIT_COLABORADORES = [];
+const INIT_CONTRATOS = [];
+const INIT_FINANCEIRO = [];
+const INIT_METAS = [];
+const INIT_OKRS = [];
+const INIT_PINS = [];
+const INIT_SDR_LEADS = [];
+const INIT_QUALITY_RATINGS = [];
+const INIT_CLIENT_SCORES_HISTORY = [];
+const INIT_AVISOS = [];
 // ─── Brand ────────────────────────────────────────────────────────
 const OR = "#FF6A00";
 const OR2 = "#FF8C00";
@@ -6974,7 +7007,6 @@ function PrivateEntryRow({ entry: e, boardId, onRemove }) {
 }
 
 // ─── Registro de Incidentes ───────────────────────────────────────
-var INIT_INCIDENTES = [];
 var INCIDENTE_TIPOS = [
   {id:"grave",      label:"Grave",      color:"#EF4444", icon:"🔴"},
   {id:"gravissimo", label:"Gravíssimo", color:"#7F1D1D", icon:"🚨"},
@@ -9300,12 +9332,6 @@ function CRMDash({ leads, metas, avisos, user }) {
 // ─── BLOCO 3 — Comercial Expansion ───────────────────────────────
 
 // ─── Metas ────────────────────────────────────────────────────────
-var INIT_METAS = [
-  {id:"m1",titulo:"Receita Mensal",tipo:"mensal",valor:50000,atual:32000,unidade:"R$",mes:new Date().getMonth(),ano:new Date().getFullYear()},
-  {id:"m2",titulo:"Novos Leads",tipo:"mensal",valor:40,atual:28,unidade:"leads",mes:new Date().getMonth(),ano:new Date().getFullYear()},
-  {id:"m3",titulo:"Receita Anual",tipo:"anual",valor:600000,atual:210000,unidade:"R$",ano:new Date().getFullYear()},
-  {id:"m4",titulo:"Conversão (%)",tipo:"mensal",valor:30,atual:22,unidade:"%",mes:new Date().getMonth(),ano:new Date().getFullYear()},
-];
 function MetasView({ metas, setMetas, user, addLog, crmLeads }) {
   var [showForm, setShowForm] = useState(false);
   // Auto-calculate current value from CRM for auto-type metas
@@ -9448,10 +9474,6 @@ var SDR_STAGES = [
   {id:"reuniao",label:"Reunião Marcada",color:"#A855F7"},
   {id:"passado",label:"Passado p/ Closer",color:"#22C55E"},
   {id:"descartado",label:"Descartado",color:"#EF4444"},
-];
-var INIT_SDR_LEADS = [
-  {id:"sdr1",empresa:"Tech Solutions",contato:"Ana Lima",telefone:"(11) 98765-4321",email:"ana@tech.com",origem:"LinkedIn",status:"qualificado",notas:[{id:"n1",texto:"Ligou com interesse em pacote enterprise",data:"2026-02-28",autor:"fabio"}],finalizado:false,createdAt:"2026-02-25"},
-  {id:"sdr2",empresa:"Startup XYZ",contato:"Pedro Costa",telefone:"(21) 91234-5678",email:"pedro@startup.com",origem:"Indicação",status:"reuniao",notas:[],finalizado:false,createdAt:"2026-03-01"},
 ];
 function SDRView({ user, addLog, leads: _leads, setLeads: _setLeads, crmLeads, addToPipeline }) {
   var [_localLeads, _setLocalLeads] = useState(INIT_SDR_LEADS);
@@ -11616,7 +11638,6 @@ function AdminDash({ clientes, leads, demands, members, qualityRatings, reunioes
 }
 
 // ─── Financeiro ───────────────────────────────────────────────────
-var INIT_FINANCEIRO = {};
 
 // ─── Financeiro Importar View (standalone component to allow hooks) ───
 function FinImportarView({ dados, setDados, user, TABS, fmtR, GR, BL, OR, RD, setFinView }) {
@@ -12664,10 +12685,6 @@ function ClientesAdminView({ clientes, addLog }) {
 }
 
 // ─── Contratos ────────────────────────────────────────────────────
-var INIT_CONTRATOS = [
-  {id:"ct1",cliente:"Empresa Alpha",valor:4500,tipo:"recorrente",inicio:"2025-01-01",fim:"2025-12-31",reajuste:"IGPM",vencimento:"2025-12-31",status:"ativo",clausulas:"Multa de 3 meses por rescisão antecipada.",arquivo:null},
-  {id:"ct2",cliente:"Beta Corp",valor:8000,tipo:"projeto",inicio:"2026-01-15",fim:"2026-06-15",reajuste:"IPCA",vencimento:"2026-06-15",status:"ativo",clausulas:"",arquivo:null},
-];
 function ContratosView({ user, addLog, adminVendas, setAdminVendas, contratos: _ctp, setContratos: _setCtp, setContratoIniciadoNotif }) {
   var BL = "#3B82F6";
   var BLANK = {cliente:"",valor:"",tipo:"recorrente",inicio:"",fim:"",reajuste:"IGPM",clausulas:"",assinatura:"",arquivo:null,arquivoNome:"",status:"ativo",statusFluxo:"producao"};
@@ -12867,21 +12884,8 @@ function ContratosView({ user, addLog, adminVendas, setAdminVendas, contratos: _
 }
 
 // ─── Documentações ────────────────────────────────────────────────
-var INIT_CATEGORIAS_DOCS = [
-  {id:"cat_1",nome:"Educação",cor:"#3B82F6",emoji:"🎓"},
-  {id:"cat_2",nome:"Vendas",cor:"#10B981",emoji:"💼"},
-  {id:"cat_3",nome:"Cultura",cor:"#A855F7",emoji:"🎭"},
-  {id:"cat_4",nome:"Treinamentos",cor:"#F59E0B",emoji:"🎯"},
-];
-
-var INIT_DOCUMENTACOES = [];
 
 // ─── Gestão de Pessoas ────────────────────────────────────────────
-var INIT_COLABORADORES = [
-  {id:101,nome:"Fábio Lima",cargo:"Diretor Criativo",depto:"Criação",email:"fabio@formastudio.com.br",telefone:"(11) 99999-0001",admissao:"2021-03-15",aniversario:"1990-07-22",salario:8000,status:"ativo",ferias:[],ausencias:[],advertencias:[],atestados:[]},
-  {id:102,nome:"Julia Costa",cargo:"Social Media",depto:"Criação",email:"julia@formastudio.com.br",telefone:"(11) 99999-0002",admissao:"2022-06-01",aniversario:"1995-03-10",salario:3500,status:"ativo",ferias:[],ausencias:[],advertencias:[],atestados:[]},
-  {id:103,nome:"Pedro Nunes",cargo:"Trafego Pago",depto:"Marketing",email:"pedro@formastudio.com.br",telefone:"(11) 99999-0003",admissao:"2023-01-10",aniversario:"1993-11-05",salario:4000,status:"ativo",ferias:[],ausencias:[],advertencias:[],atestados:[]},
-];
 // ─── Férias View (standalone to allow hooks) ─────────────────────
 function PessoasFeriasView({ colaboradores, feriasAnoSel, setFeriasAnoSel, addEvent }) {
   var ativos=colaboradores.filter(function(co){return co.status==="ativo";});
@@ -13714,11 +13718,6 @@ function RecrutamentoView({ user, addLog }) {
   );
 }
 // ─── Planejamento Estratégico ─────────────────────────────────────
-var INIT_OKRS = [
-  {id:"o1",objetivo:"Aumentar receita em 30%",trimestre:"Q1 2026",area:"Comercial",resultado:"Fechar 15 novos contratos",progresso:40,status:"em_andamento"},
-  {id:"o2",objetivo:"Lançar 3 novos serviços",trimestre:"Q2 2026",area:"Criação",resultado:"Documentar e vender pacotes",progresso:10,status:"planejado"},
-  {id:"o3",objetivo:"Reduzir churn para <5%",trimestre:"Q1 2026",area:"Criação",resultado:"Pesquisa de satisfação mensal",progresso:60,status:"em_andamento"},
-];
 function PlanejamentoAdminView({ user, addLog, okrs: _okrsProp, setOkrs: _setOkrsProp, crmLeads }) {
   var BL = "#3B82F6";
   var [_okrsLocal, _setOkrsLocal] = useState(INIT_OKRS);
