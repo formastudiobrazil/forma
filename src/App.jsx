@@ -145,6 +145,22 @@ const firebaseAuth = getAuth(firebaseApp);
 function useFirebaseCollection(collectionName, initialState = []) {
   const [data, setData] = React.useState(initialState);
   const [loading, setLoading] = React.useState(true);
+  const [syncStatus, setSyncStatus] = React.useState('idle'); // idle | syncing | error
+  const [online, setOnline] = React.useState(navigator.onLine);
+
+  // 🟢 Detectar online/offline
+  React.useEffect(() => {
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   React.useEffect(() => {
     try {
@@ -164,27 +180,57 @@ function useFirebaseCollection(collectionName, initialState = []) {
           setData(docs);
         }
         setLoading(false);
+        setSyncStatus('idle');
       }, (error) => {
         console.warn(`⚠️ Firebase ${collectionName}:`, error.code);
         setLoading(false);
+        setSyncStatus('error');
       });
 
       return () => unsubscribe();
     } catch (error) {
       console.error(`❌ Firebase ${collectionName}:`, error);
       setLoading(false);
+      setSyncStatus('error');
     }
   }, [collectionName]);
+
+  // 🔄 Retry logic com exponential backoff
+  const retryWithBackoff = async (fn, maxRetries = 3) => {
+    for(let i = 0; i < maxRetries; i++) {
+      try {
+        setSyncStatus('syncing');
+        await fn();
+        setSyncStatus('idle');
+        return;
+      } catch (error) {
+        if(i === maxRetries - 1) {
+          console.error(`❌ Falha final em ${collectionName}:`, error);
+          setSyncStatus('error');
+          throw error;
+        }
+        // Exponential backoff: 1s, 2s, 4s
+        const delay = Math.pow(2, i) * 1000;
+        console.warn(`⏳ Retry ${i + 1}/${maxRetries} em ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  };
 
   const crud = {
     add: async (item) => {
       try {
         const id = item.id || `${collectionName}_${Date.now()}`;
-        await setDoc(doc(firestoreDb, collectionName, id), {
+        const docData = {
           ...item,
           updatedAt: new Date().toISOString(),
-          createdAt: item.createdAt || new Date().toISOString()
-        });
+          createdAt: item.createdAt || new Date().toISOString(),
+          deleted: false // 🟢 Soft delete flag
+        };
+        
+        await retryWithBackoff(() => 
+          setDoc(doc(firestoreDb, collectionName, id), docData)
+        );
       } catch (error) {
         console.error(`Erro ao criar ${collectionName}:`, error);
       }
@@ -192,25 +238,83 @@ function useFirebaseCollection(collectionName, initialState = []) {
 
     update: async (id, changes) => {
       try {
-        await updateDoc(doc(firestoreDb, collectionName, id), {
-          ...changes,
-          updatedAt: new Date().toISOString()
-        });
+        await retryWithBackoff(() =>
+          updateDoc(doc(firestoreDb, collectionName, id), {
+            ...changes,
+            updatedAt: new Date().toISOString()
+          })
+        );
       } catch (error) {
         console.error(`Erro ao atualizar ${collectionName}:`, error);
       }
     },
 
-    delete: async (id) => {
+    // 🟢 Soft delete em vez de deletar
+    softDelete: async (id) => {
       try {
-        await deleteDoc(doc(firestoreDb, collectionName, id));
+        await retryWithBackoff(() =>
+          updateDoc(doc(firestoreDb, collectionName, id), {
+            deleted: true,
+            deletedAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          })
+        );
       } catch (error) {
         console.error(`Erro ao deletar ${collectionName}:`, error);
+      }
+    },
+
+    // Deletar permanentemente (usar com cuidado)
+    delete: async (id) => {
+      try {
+        await retryWithBackoff(() =>
+          deleteDoc(doc(firestoreDb, collectionName, id))
+        );
+      } catch (error) {
+        console.error(`Erro ao deletar permanentemente ${collectionName}:`, error);
+      }
+    },
+    
+    batch: async (items) => {
+      try {
+        for(const item of items) {
+          if(item && item.id) {
+            await crud.update(item.id, item);
+          }
+        }
+      } catch (error) {
+        console.error(`Erro batch ${collectionName}:`, error);
       }
     }
   };
 
-  return [data, crud, loading];
+  // ✅ Setter inteligente que sincroniza automaticamente
+  const autoSync = function(fnOrValue) {
+    if(typeof fnOrValue === 'function') {
+      // Padrão: setState(prev => {...prev, ...changes})
+      const newVal = fnOrValue(data);
+      setData(newVal);
+      
+      // Sync com Firebase se for array e estiver online
+      if(Array.isArray(newVal) && online) {
+        crud.batch(newVal).catch(e => {
+          console.error(`[FB ${collectionName}]`, e);
+          setSyncStatus('error');
+        });
+      }
+    } else {
+      // Padrão: setState(newObject)
+      setData(fnOrValue);
+      if(online) {
+        crud.add(fnOrValue).catch(e => {
+          console.error(`[FB ${collectionName}]`, e);
+          setSyncStatus('error');
+        });
+      }
+    }
+  };
+
+  return [data, autoSync, loading, { syncStatus, online, crud }];
 }
 
 // ─── Brand ────────────────────────────────────────────────────────
@@ -13339,6 +13443,15 @@ function GestaosPessoasView({ user, addLog, colaboradores: _colabProp, setColabo
   var [feriasMesSel, setFeriasMesSel] = useState(new Date().getMonth());
   var [feriasAnoSel, setFeriasAnoSel] = useState(new Date().getFullYear());
   var [form, setForm] = useState({nome:"",cargo:"",depto:"",email:"",telefone:"",admissao:"",aniversario:"",salario:""});
+  
+  // ✅ Fix: useRef para manter focus consistente
+  const inputRef = React.useRef(null);
+  React.useEffect(() => {
+    if(showForm && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [showForm]);
+  
   var IS = {width:"100%",background:GPCARD,border:"1px solid var(--cbord2)",borderRadius:8,color:GPT,fontSize:13,padding:"7px 10px",outline:"none",fontFamily:POP,boxSizing:"border-box",colorScheme:"dark"};
   var LS = {fontSize:11,color:GPT3,fontFamily:POP,marginBottom:3,textTransform:"uppercase",letterSpacing:"0.07em"};
 
@@ -13453,7 +13566,7 @@ function GestaosPessoasView({ user, addLog, colaboradores: _colabProp, setColabo
       {showForm && (
         <div style={{marginBottom:16,padding:"18px",borderRadius:14,background:"rgba(59,130,246,0.06)",border:"1px solid rgba(59,130,246,0.20)"}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
-            <div style={{gridColumn:"1/-1"}}><div style={LS}>Nome *</div><input autoFocus value={form.nome} onChange={function(e){setForm(function(p){return Object.assign({},p,{nome:e.target.value});});}} style={IS}/></div>
+            <div style={{gridColumn:"1/-1"}}><div style={LS}>Nome *</div><input ref={inputRef} value={form.nome} onChange={function(e){setForm(function(p){return Object.assign({},p,{nome:e.target.value});});}} style={IS}/></div>
             <div><div style={LS}>Cargo</div><input value={form.cargo} onChange={function(e){setForm(function(p){return Object.assign({},p,{cargo:e.target.value});});}} style={IS}/></div>
             <div><div style={LS}>Departamento</div><input value={form.depto} onChange={function(e){setForm(function(p){return Object.assign({},p,{depto:e.target.value});});}} style={IS}/></div>
             <div><div style={LS}>Email</div><input value={form.email} onChange={function(e){setForm(function(p){return Object.assign({},p,{email:e.target.value});});}} style={IS}/></div>
@@ -16435,10 +16548,35 @@ function QuickAccessPanel({ items, setItems, onClose, user }) {
 
 
 // ─── Main App ─────────────────────────────────────────────────────
-function FormaFooter() {
+// 🟢 Status Indicator Component
+function SyncStatusIndicator({ online = true, syncStatus = 'idle' }) {
+  const status = !online ? 'offline' : syncStatus;
+  const colors = {
+    'idle': { bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)', text: '#22C55E', icon: '✓' },
+    'syncing': { bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.3)', text: '#3B82F6', icon: '⟳' },
+    'error': { bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.3)', text: '#EF4444', icon: '!' },
+    'offline': { bg: 'rgba(107,114,128,0.12)', border: 'rgba(107,114,128,0.3)', text: '#6B7280', icon: '◯' }
+  };
+  const c = colors[status] || colors.idle;
+  const labels = {
+    'idle': 'Sincronizado',
+    'syncing': 'Sincronizando...',
+    'error': 'Erro de sync',
+    'offline': 'Modo offline'
+  };
   return (
-    <div style={{padding:'8px 24px',borderTop:'1px solid rgba(255,255,255,0.05)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+    <div style={{display:'flex',alignItems:'center',gap:6,padding:'4px 10px',borderRadius:6,background:c.bg,border:`1px solid ${c.border}`,fontSize:10,color:c.text,fontFamily:POP,fontWeight:600,cursor:'pointer',transition:'all 0.2s'}}>
+      <span>{c.icon}</span>
+      <span>{labels[status]}</span>
+    </div>
+  );
+}
+
+function FormaFooter({ online = true, syncStatus = 'idle' }) {
+  return (
+    <div style={{padding:'8px 24px',borderTop:'1px solid rgba(255,255,255,0.05)',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0}}>
       <span style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,letterSpacing:'0.08em',userSelect:'none'}}>FormaOS 1.0 Em testes | Copyright © Forma Serviços Digitais LTDA</span>
+      <SyncStatusIndicator online={online} syncStatus={syncStatus}/>
     </div>
   );
 }
@@ -17077,11 +17215,34 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
     setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),4000);
   };
 
-  function addLog(area2, action, detail) {
+  // 🔥 IMPROVED: Activity Logger com detalhes completos
+  function addLog(area2, action, detail, extraData = {}) {
     var now = new Date();
     var time = now.getHours().toString().padStart(2,"0")+":"+now.getMinutes().toString().padStart(2,"0");
-    var entry = {id:"log_"+uid(), userId:user?user.id:"sistema", area:area2, action:action, detail:detail||"", type:"edit", time:time, ts:now.getTime()};
-    setActivityLog(function(p){ return p.concat([entry]).slice(-200); });
+    var entry = {
+      id: "log_" + uid(),
+      userId: user ? user.id : "sistema",
+      userName: user ? user.name : "Sistema",
+      area: area2,
+      action: action,
+      detail: detail || "",
+      type: "edit",
+      time: time,
+      ts: now.getTime(),
+      timestamp: now.toISOString(), // ✅ ISO timestamp para queries
+      ...extraData // ✅ Dados adicionais (before, after, collection, etc)
+    };
+    setActivityLog(function(p){ return p.concat([entry]).slice(-500); }); // ✅ Mantém mais logs (500 em vez de 200)
+  }
+
+  // 🟢 Helper: Log com before/after (para auditoria)
+  function logChange(area, action, itemId, itemName, collection, beforeData, afterData) {
+    addLog(area, action, itemName || itemId, {
+      collection: collection,
+      itemId: itemId,
+      before: beforeData,
+      after: afterData
+    });
   }
 
   var [atrasadoAlert, setAtrasadoAlert] = useState(false);
