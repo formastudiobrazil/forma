@@ -330,6 +330,8 @@ const INIT_STATUSES = [
   { id:"aprovado",    label:"Aprovado",    color:"#1E3A5F" },
   { id:"suspenso",    label:"Suspenso",    color:"#78583A" },
 ];
+let STATUSES = INIT_STATUSES;
+
 const INIT_TIPOS = [
   { id:"post_feed",   label:"Post Feed",   color:"#3B82F6" },
   { id:"reels",       label:"Reels",       color:"#A855F7" },
@@ -340,6 +342,7 @@ const INIT_TIPOS = [
   { id:"anuncios",    label:"Anúncios",    color:"#F97316" },
   { id:"trafego_pago",label:"Tráfego",     color:"#8B5CF6" },
 ];
+let TIPOS = INIT_TIPOS;
 const INIT_TIPOS_ENTREGA = [
   { id:"feed_instagram",  label:"Feed Instagram",   color:"#3B82F6" },
   { id:"stories",         label:"Stories",          color:"#1EC98C" },
