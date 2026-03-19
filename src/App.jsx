@@ -378,6 +378,13 @@ const INIT_NAV_CONFIG = [
   {id:"especiais",   label:"Especiais",        icon:"⭐"},
 ];
 const INIT_MEMBERS = [];
+// ─── Brand ────────────────────────────────────────────────────────
+const OR = "#FF6A00";
+const OR2 = "#FF8C00";
+const ORGLOW = "rgba(255,106,0,0.40)";
+const gl = { backdropFilter:"blur(28px) saturate(1.8)", WebkitBackdropFilter:"blur(28px) saturate(1.8)" };
+const POP = "'Poppins','Segoe UI',sans-serif";
+
 let TEAM = [];  // ✅ Global - será sincronizado com Firebase
 let teamObj = (id) => TEAM.find(m => m.id === id);  // ✅ Função helper global
 const PLAN_TIPOS = ["Campanha","Data Comemorativa","Conteúdo","Objetivo","Lançamento","Evento","Promoção","Outro"];
@@ -386,13 +393,6 @@ const PLAN_TIPO_COLOR = {
   "Objetivo":"#22C55E","Lançamento":"#F59E0B","Evento":"#8B5CF6",
   "Promoção":"#EF4444","Outro":"#6B7280"
 };
-
-// ─── Brand ────────────────────────────────────────────────────────
-const OR = "#FF6A00";
-const OR2 = "#FF8C00";
-const ORGLOW = "rgba(255,106,0,0.40)";
-const gl = { backdropFilter:"blur(28px) saturate(1.8)", WebkitBackdropFilter:"blur(28px) saturate(1.8)" };
-const POP = "'Poppins','Segoe UI',sans-serif";
 
 // ─── Logo ─────────────────────────────────────────────────────────
 
