@@ -417,8 +417,7 @@ const ORGLOW = "rgba(255,106,0,0.40)";
 const gl = { backdropFilter:"blur(28px) saturate(1.8)", WebkitBackdropFilter:"blur(28px) saturate(1.8)" };
 const POP = "'Poppins','Segoe UI',sans-serif";
 
-let TEAM = [];  // ✅ Global - será sincronizado com Firebase
-let teamObj = (id) => TEAM.find(m => m.id === id);  // ✅ Função helper global
+// TEAM REMOVED - Now use Firestore members collection directly
 const PLAN_TIPOS = ["Campanha","Data Comemorativa","Conteúdo","Objetivo","Lançamento","Evento","Promoção","Outro"];
 const PLAN_TIPO_COLOR = {
   "Campanha":OR,"Data Comemorativa":"#E91E8C","Conteúdo":"#3B82F6",
@@ -705,14 +704,15 @@ const Avatar = ({ member, size, stacked }) => (
   }}>{member.initials}</div>
 );
 
-const AvatarGroup = ({ ids, size }) => {
+const AvatarGroup = ({ ids, members, size }) => {
   ids = ids||[];
+  members = members||[];
   size = size||24;
-  const members = ids.slice(0,3).map(id=>TEAM.find(m=>m.id===id)).filter(Boolean);
+  const membersList = ids.slice(0,3).map(id=>members.find(m=>m.id===id)).filter(Boolean);
   const extra = ids.length - 3;
   return (
     <div style={{display:"flex",alignItems:"center"}}>
-      {members.map((m,i) => <Avatar key={m.id} member={m} size={size} stacked={i>0}/>)}
+      {membersList.map((m,i) => <Avatar key={m.id} member={m} size={size} stacked={i>0}/>)}
       {extra > 0 && (
         <div style={{width:size,height:size,borderRadius:"50%",marginLeft:-6,background:"var(--ccardb)",border:"1.5px solid rgba(255,255,255,0.18)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*0.36,color:"var(--ct3)",fontWeight:700,fontFamily:POP}}>+{extra}</div>
       )}
@@ -905,10 +905,11 @@ function TipoDropdown({ tipoId, onChange }) {
   );
 }
 
-function CollabPicker({ selected, onChange, onNotify }) {
+function CollabPicker({ selected, onChange, onNotify, members }) {
   const ctx = React.useContext(DropCtx);
   const ref = useRef();
   const id  = useRef("cp_" + Math.random()).current;
+  members = members||[];
   const open = (ctx&&ctx.id) === id;
   const toggle = memberId => {
     const was = selected.includes(memberId);
@@ -921,7 +922,7 @@ function CollabPicker({ selected, onChange, onNotify }) {
   const buildMenu = (currentSelected) => (
     <div style={{display:"flex",flexDirection:"column",gap:2}}>
       <div style={{fontSize:11,color:"var(--ct3)",textTransform:"uppercase",letterSpacing:"0.1em",padding:"2px 8px 6px",fontFamily:POP}}>Equipe</div>
-      {TEAM.map(m => {
+      {members.map(m => {
         const active = currentSelected.includes(m.id);
         return (
           <div key={m.id} onClick={()=>toggle(m.id)}
@@ -946,7 +947,7 @@ function CollabPicker({ selected, onChange, onNotify }) {
   };
   return (
     <div ref={ref} style={{display:"flex",alignItems:"center",gap:3}}>
-      <AvatarGroup ids={selected} size={22}/>
+      <AvatarGroup ids={selected} members={members} size={22}/>
       <div onClick={handleOpen} style={{
         width:20,height:20,borderRadius:"50%",
         background:open?"rgba(255,106,0,0.22)":"rgba(255,106,0,0.09)",
@@ -972,7 +973,7 @@ function TeamPicker({ label, selected, onChange, size }) {
           textTransform:"uppercase",letterSpacing:"0.06em"}}>{label}</div>
       )}
       <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-        {TEAM.map(function(m) {
+        {members.map(function(m) {
           var active = (selected||[]).indexOf(m.id) !== -1;
           return (
             <div key={m.id}
@@ -2475,7 +2476,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
                   <div style={{width:6,height:6,borderRadius:"50%",background:OR}}/>
                   <strong style={{color:DT}}>{c.cliente}</strong>
                   <span style={{color:DT3}}>· {c.hora} — {c.local}</span>
-                  {teamObj(c.responsavel)&&<Avatar member={teamObj(c.responsavel)} size={20}/>}
+                  {members.find(m => m.id === c.responsavel)&&<Avatar member={members.find(m => m.id === c.responsavel)} size={20}/>}
                 </div>
               ))}
             </div>
@@ -2611,7 +2612,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
                       </div>
                       <div style={{display:"flex",alignItems:"center",gap:2,flexWrap:"wrap"}}>
                       {(r.colaboradores||[]).map(function(mid){
-                        var m=TEAM.find(function(t){return t.id===mid;});
+                        var m=members.find(function(m){return m.id===mid;});
                         if(!m)return null;
                         return (
                           <div key={mid} style={{position:"relative",display:"inline-flex"}}
@@ -2685,7 +2686,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
             <div style={{fontSize:13,fontWeight:700,color:DT2,fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.07em"}}>Mural da Equipe</div>
           </div>
           <div style={{flex:1,minHeight:0,overflowY:"auto",display:"flex",flexDirection:"column",gap:8,marginBottom:14}}>
-            {news.map(n=>{const author=teamObj(n.author);return(
+            {news.map(n=>{const author=members.find(m => m.id === n.author);return(
               <div key={n.id} style={{flexShrink:0,padding:"10px 12px",borderRadius:12,background:n.pinned?"rgba(255,106,0,0.09)":"rgba(255,255,255,0.04)",border:n.pinned?"1px solid rgba(255,106,0,0.28)":"1px solid var(--cbord)"}}>
                 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
                   {author&&<Avatar member={author} size={22}/>}
@@ -2890,7 +2891,7 @@ function Dashboard({ user, calendar, demands, news, captacoesAV, onAddNews, plan
       {/* ══ DASHBOARD DO COLABORADOR ══ */}
       {(function(){
         // Só exibe "Meu Dia" para quem tem acesso à área de criação
-        var userTeamEntry = TEAM.find(function(t){ return t.id === user.id; });
+        var userTeamEntry = members.find(function(t){ return t.id === user.id; });
         var permAreas = (userTeamEntry && userTeamEntry.areasPermitidas) || (user.areasPermitidas || []);
         if(permAreas.indexOf("criacao") === -1) return null;
 
@@ -3259,7 +3260,7 @@ function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotificatio
               <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>Responsável</div>
               <select value={form.responsavel} onChange={e=>setForm(p=>({...p,responsavel:e.target.value}))}
                 style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:10,color:"var(--ct)",fontSize:15,padding:"10px 14px",outline:"none",fontFamily:POP}}>
-                {TEAM.map(m=><option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>)}
+                {members.map(m=><option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>)}
               </select>
             </div>
             <div>
@@ -3303,7 +3304,7 @@ function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotificatio
             <div style={{fontSize:14,fontWeight:700,color:OR,fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>{monthLabel}</div>
             <div style={{display:"flex",flexDirection:"column",gap:10}}>
               {items.sort((a,b)=>a.data.localeCompare(b.data)).map(c=>{
-                const resp=teamObj(c.responsavel); const capParts=(c.participantes||[]).filter(function(id){return id!==c.responsavel;}).map(function(id){return teamObj(id);}).filter(Boolean);
+                const resp=members.find(m => m.id === c.responsavel); const capParts=(c.participantes||[]).filter(function(id){return id!==c.responsavel;}).map(function(id){return members.find(m => m.id === id);}).filter(Boolean);
                 const sc=statusColor(c.status);
                 const [,cm,cd]=c.data.split("-");
                 return (
@@ -3382,7 +3383,7 @@ function CaptacaoAVView({ captacoes, setCaptacoes, user, members, addNotificatio
           </div>
           <div style={{display:"flex",flexDirection:"column",gap:8,opacity:0.70}}>
             {finalizadas.sort((a,b)=>b.data.localeCompare(a.data)).map(c=>{
-              const resp=TEAM.find(t=>t.id===c.responsavel);
+              const resp=members.find(t=>t.id===c.responsavel);
               const daysAgo=Math.floor((new Date()-new Date(c.data))/(1000*60*60*24));
               return (
                 <GlassBox key={c.id} style={{borderRadius:14,padding:"12px 16px",borderLeft:"3px solid "+(c.status==="cancelado"?"#EF4444":"#3B82F6"),display:"flex",alignItems:"center",gap:14}}>
@@ -3440,7 +3441,7 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
   const addAcao=(clienteId)=>{
     const af=acaoForm[clienteId]||{};
     if(!af.acao)return;
-    setClientes(prev=>prev.map(c=>c.id===clienteId?{...c,acoes:[...c.acoes,{id:uid(),mes:af.mes||"",acao:af.acao,tipo:af.tipo||"email",status:"pendente",responsavel:af.responsavel||TEAM[0].id}]}:c));
+    setClientes(prev=>prev.map(c=>c.id===clienteId?{...c,acoes:[...c.acoes,{id:uid(),mes:af.mes||"",acao:af.acao,tipo:af.tipo||"email",status:"pendente",responsavel:af.responsavel||members[0]?.id || "admin_001"}]}:c));
     setAcaoForm(p=>({...p,[clienteId]:{}}));setShowAcaoForm(p=>({...p,[clienteId]:false}));
   };
   const removeAcao=(clienteId,acaoId)=>setClientes(prev=>prev.map(c=>c.id===clienteId?{...c,acoes:(c.acoes||[]).filter(a=>a.id!==acaoId)}:c));
@@ -3536,7 +3537,7 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
                 <div style={{flex:1}}>
                   <div style={{fontSize:16,fontWeight:700,color:"var(--ct)",fontFamily:POP,marginBottom:2}}>{cliente.nome}</div>
                   <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-                    {cliente.contato&&<span style={{fontSize:13,color:"var(--ct3)",fontFamily:POP}}>👤 {cliente.contato}</span>}{(cliente.responsaveis||[]).length>0&&<AvatarGroup ids={cliente.responsaveis||[]} size={20}/>}
+                    {cliente.contato&&<span style={{fontSize:13,color:"var(--ct3)",fontFamily:POP}}>👤 {cliente.contato}</span>}{(cliente.responsaveis||[]).length>0&&<AvatarGroup ids={cliente.responsaveis||[]} members={members} size={20}/>}
                     {cliente.origem&&<span style={{fontSize:13,color:"var(--ct3)",fontFamily:POP}}>📌 {cliente.origem}</span>}
                     {cliente.datainicio&&<span style={{fontSize:13,color:"var(--ct3)",fontFamily:POP}}>📅 desde {cliente.datainicio}</span>}
                   </div>
@@ -3587,7 +3588,7 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
                   {cliente.acoes.length===0&&<div style={{fontSize:14,color:"var(--ct3)",fontFamily:POP,marginBottom:12}}>Nenhuma ação cadastrada ainda.</div>}
                   <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:12}}>
                     {(cliente.acoes||[]).map((acao,i)=>{
-                      const resp=teamObj(acao.responsavel);
+                      const resp=members.find(m => m.id === acao.responsavel);
                       const sc=acaoStatusColor(acao.status);
                       return (
                         <div key={acao.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderRadius:12,background:"var(--ccard)",border:"1px solid var(--cbord)"}}>
@@ -3619,9 +3620,9 @@ function InboundView({ clientes, setClientes, addLog, clientesBase }) {
                         <option value="blog" style={{background:"#1a1a1a"}}>📝 Blog</option>
                         <option value="seo" style={{background:"#1a1a1a"}}>🔍 SEO</option>
                       </select>
-                      <select value={(acaoForm[cliente.id]||{}).responsavel||TEAM[0].id} onChange={e=>setAcaoForm(p=>({...p,[cliente.id]:{...(p[cliente.id]||{}),responsavel:e.target.value}}))}
+                      <select value={(acaoForm[cliente.id]||{}).responsavel||members[0]?.id || "admin_001"} onChange={e=>setAcaoForm(p=>({...p,[cliente.id]:{...(p[cliente.id]||{}),responsavel:e.target.value}}))}
                         style={{background:"var(--ccard)",border:"1px solid var(--cbord2)",borderRadius:8,color:"var(--ct)",fontSize:14,padding:"6px 10px",outline:"none",fontFamily:POP}}>
-                        {TEAM.map(m=><option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name.split(" ")[0]}</option>)}
+                        {members.map(m=><option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name.split(" ")[0]}</option>)}
                       </select>
                       <div onClick={()=>addAcao(cliente.id)} style={{padding:"6px 14px",borderRadius:8,cursor:"pointer",background:OR,color:"var(--ct)",fontSize:14,fontWeight:700,fontFamily:POP}}>+ Adicionar</div>
                       <div onClick={()=>setShowAcaoForm(p=>({...p,[cliente.id]:false}))} style={{padding:"6px 12px",borderRadius:8,cursor:"pointer",background:"var(--ccard)",color:"var(--ct3)",fontSize:14,fontFamily:POP}}>Cancelar</div>
@@ -4268,7 +4269,7 @@ function DemandasView({ demands, setDemands, user, clientes, addNotification, me
         const statusClr   = s=>({aguardando:"#6B7280",em_producao:OR,alteracao:"#D4A017",pronto:"#1EC98C",aprovacao:"#3B82F6",finalizado:"#A855F7"}[s]||"#888");
 
         const DemandaCard = ({d,idx,dim})=>{
-          const assignee=teamObj(d.assignee);
+          const assignee=members.find(m => m.id === d.assignee);
           const pc=prioColor(d.prioridade||d.priority);
           const isUrgente=(d.prioridade||d.priority)==="urgente";
           const sc=statusClr(d.status);
@@ -4357,7 +4358,7 @@ function DemandasView({ demands, setDemands, user, clientes, addNotification, me
 
 function CampCard({ c, scl, vcl, onSelect }) {
   const sc=scl(c.status); const vc=vcl(c.statusVerba);
-  const resp=TEAM.find(t=>t.id===c.responsavel);
+  const resp=members.find(t=>t.id===c.responsavel);
   return (
     <GlassBox style={{borderRadius:18,padding:"16px 20px",borderLeft:`3px solid ${sc}`,cursor:"pointer",transition:"all 0.2s"}} glow={sc+"18"}
       onClick={()=>onSelect(c.id)}
@@ -4441,7 +4442,7 @@ function CampFormPanel({ initial, editing, onSave, onCancel }) {
         <div>
           <div style={LS}>Responsável</div>
           <select value={form.responsavel} onChange={function(e){setForm(function(p){return Object.assign({},p,{responsavel:e.target.value});});}} style={IS}>
-            {TEAM.filter(function(m){return (m.areasPermitidas||[]).indexOf("comercial")!==-1;}).map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>;})}
+            {members.filter(function(m){return (m.areasPermitidas||[]).indexOf("comercial")!==-1;}).map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>;})}
           </select>
         </div>
         <div style={{gridColumn:"1/-1"}}>
@@ -4557,7 +4558,7 @@ function CampStatusDropdown({ current, options, colorFn, onChange }) {
 function CampCardItem({ c, statusColor, verbaColor, onSelect, onStatusChange, onVerbaChange }) {
   var sc = statusColor(c.status);
   var vc = verbaColor(c.statusVerba);
-  var resp = TEAM.find(function(t){return t.id===c.responsavel;});
+  var resp = members.find(function(m){return m.id===c.responsavel;});
   return (
     <div style={{borderRadius:18,padding:"16px 20px",background:"var(--ccard)",border:"1px solid var(--cbord)",borderLeft:"3px solid "+sc,marginBottom:8,transition:"all 0.2s"}}>
       <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
@@ -4652,7 +4653,7 @@ function AnunciosView({ ads, setAds, clientes, addLog }) {
     var infoItems = [
       {label:"Tipo",val:activeCamp.tipo},
       {label:"Objetivo",val:activeCamp.objetivo},
-      {label:"Responsável",val:(TEAM.find(function(t){return t.id===activeCamp.responsavel;})||{}).name||activeCamp.responsavel},
+      {label:"Responsável",val:(members.find(function(m){return m.id===activeCamp.responsavel;})||{}).name||activeCamp.responsavel},
       {label:"Status",val:activeCamp.status.replace(/_/g," "),color:sc2},
       {label:"Verba",val:activeCamp.verba||"—"},
       {label:"Status Verba",val:activeCamp.statusVerba,color:vc2},
@@ -5387,7 +5388,7 @@ function ReunioesView({ meetings, setMeetings, user, members, addNotification, c
           </div>
           {/* Ações + Avatares — coluna direita sem sobreposição */}
           <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6,flexShrink:0,minWidth:0}}>
-            <div style={{display:"flex",gap:2,alignItems:"center",flexWrap:"wrap"}}>{m.responsavel&&(function(){var rv=TEAM.find(function(t){return t.id===m.responsavel;});return rv?<div key="resp" style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:rv.color+"20",border:"1px solid "+rv.color+"40"}}><Avatar member={rv} size={18}/><span style={{fontSize:10,color:rv.color,fontFamily:POP}}>resp.</span></div>:null;})()}<AvatarGroup ids={(m.attendees||[]).filter(function(id){return id!==m.responsavel;})} size={20}/></div>
+            <div style={{display:"flex",gap:2,alignItems:"center",flexWrap:"wrap"}}>{m.responsavel&&(function(){var rv=members.find(function(m){return m.id===m.responsavel;});return rv?<div key="resp" style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:rv.color+"20",border:"1px solid "+rv.color+"40"}}><Avatar member={rv} size={18}/><span style={{fontSize:10,color:rv.color,fontFamily:POP}}>resp.</span></div>:null;})()}<AvatarGroup ids={(m.attendees||[]).filter(function(id){return id!==m.responsavel;})} size={20}/></div>
             <div style={{display:"flex",gap:4,alignItems:"center"}}>
               {!dim&&canDo(user,"edit")&&<div onClick={()=>openEdit(m)} style={{width:22,height:22,borderRadius:6,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"var(--ct3)",fontSize:12,transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,106,0,0.18)";e.currentTarget.style.color=OR;}} onMouseLeave={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color="rgba(255,255,255,0.28)";}}>✏️</div>}
               {canDo(user,"delete")&&<div onClick={()=>remove(m.id)} style={{width:22,height:22,borderRadius:6,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(231,76,60,0.45)",fontSize:12,transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.background="rgba(231,76,60,0.18)";e.currentTarget.style.color="#E74C3C";}} onMouseLeave={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color="rgba(231,76,60,0.45)";}}>✕</div>}
@@ -5449,7 +5450,7 @@ function ReunioesView({ meetings, setMeetings, user, members, addNotification, c
           <div style={{marginBottom:10}}>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,marginBottom:6,textTransform:"uppercase",letterSpacing:"0.06em"}}>Responsável</div>
             <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:10}}>
-              {TEAM.map(function(m){ var sel=form.responsavel===m.id; return (
+              {members.map(function(m){ var sel=form.responsavel===m.id; return (
                 <div key={m.id} onClick={function(){setForm(p=>({...p,responsavel:sel?"":m.id}));}} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:20,cursor:"pointer",background:sel?m.color+"28":"rgba(255,255,255,0.04)",border:sel?"1px solid "+m.color+"55":"1px solid var(--cbord)",transition:"all 0.15s"}}>
                   <div style={{width:20,height:20,borderRadius:"50%",background:m.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"#fff",fontWeight:700,fontFamily:POP}}>{m.initials}</div>
                   <span style={{fontSize:12,color:sel?"#fff":"rgba(255,255,255,0.50)",fontFamily:POP}}>{m.name.split(" ")[0]}</span>
@@ -5461,7 +5462,7 @@ function ReunioesView({ meetings, setMeetings, user, members, addNotification, c
           <div style={{marginBottom:10}}>
             <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,marginBottom:6,textTransform:"uppercase",letterSpacing:"0.06em"}}>Outros Participantes</div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-              {TEAM.map(m=>{
+              {members.map(m=>{
                 const sel=form.attendees.includes(m.id);
                 return <div key={m.id} onClick={()=>toggleAttendee(m.id)} style={{display:"flex",alignItems:"center",gap:6,padding:"5px 10px",borderRadius:20,cursor:"pointer",background:sel?m.color+"28":"rgba(255,255,255,0.05)",border:sel?`1px solid ${m.color}55`:"1px solid var(--cbord)",transition:"all 0.15s"}}>
                   <div style={{width:18,height:18,borderRadius:"50%",background:m.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"var(--ct)",fontWeight:700,fontFamily:POP}}>{m.initials}</div>
@@ -5654,7 +5655,7 @@ function LogPanel({ logs, area }) {
           <div style={{overflowY:"auto",maxHeight:340}}>
             {filtered.length===0 && <div style={{padding:"24px",textAlign:"center",color:"var(--ct3)",fontFamily:POP,fontSize:14}}>Nenhuma atividade ainda</div>}
             {filtered.map(function(l){
-              var m = TEAM.find(function(t){return t.id===l.userId;});
+              var m = members.find(function(m){return m.id===l.userId;});
               var icon = logIcons[l.type]||logIcons.default;
               return (
                 <div key={l.id} style={{padding:"10px 16px",borderBottom:"1px solid var(--cbord)",display:"flex",alignItems:"flex-start",gap:10}}>
@@ -5786,7 +5787,7 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
     var cs = getCs(clienteId);
     var nova = Object.assign({}, interacaoForm, {id: uid(), criadoEm: Date.now(), criadoPor: user.id, criadoPorNome: user.name});
     updateCs(clienteId, {interacoes: [nova].concat(cs.interacoes)});
-    if(addLog) addLog("cs", "Nova interação — "+TIPO_INTERACAO.find(function(t){return t.id===interacaoForm.tipo;}).label, (clientes.find(function(cl){return cl.id===clienteId;})||{}).nome||"");
+    if(addLog) addLog("cs", "Nova interação — "+TIPO_INTERACAO.find(function(m){return m.id===interacaoForm.tipo;}).label, (clientes.find(function(cl){return cl.id===clienteId;})||{}).nome||"");
     setInteracaoForm({tipo:"ligacao", descricao:"", data:new Date().toISOString().slice(0,10)});
     setAddingInteracao(false);
   }
@@ -5977,7 +5978,7 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
               )}
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 {(cs.interacoes||[]).map(function(inter){
-                  var tp = TIPO_INTERACAO.find(function(t){return t.id===inter.tipo;})||TIPO_INTERACAO[6];
+                  var tp = TIPO_INTERACAO.find(function(m){return m.id===inter.tipo;})||TIPO_INTERACAO[6];
                   var autor = members.find(function(m){return m.id===inter.criadoPor;});
                   var dt = inter.data ? new Date(inter.data+"T12:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"short"}) : "";
                   return (
@@ -6297,7 +6298,7 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
                     {fuAtrasados.length>0&&<span style={{padding:"1px 6px",borderRadius:20,background:"rgba(239,68,68,0.12)",color:"#EF4444",fontSize:10,fontWeight:700,fontFamily:POP}}>{fuAtrasados.length} atrasado{fuAtrasados.length>1?"s":""}</span>}
                   </div>
                   <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP}}>
-                    {ultimaInteracao?(function(){var tp=TIPO_INTERACAO.find(function(t){return t.id===ultimaInteracao.tipo;})||TIPO_INTERACAO[6]; var dt=ultimaInteracao.data?new Date(ultimaInteracao.data+"T12:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"short"}):""; return tp.icon+" Último contato: "+dt;})():"Sem interações registradas"}
+                    {ultimaInteracao?(function(){var tp=TIPO_INTERACAO.find(function(m){return m.id===ultimaInteracao.tipo;})||TIPO_INTERACAO[6]; var dt=ultimaInteracao.data?new Date(ultimaInteracao.data+"T12:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"short"}):""; return tp.icon+" Último contato: "+dt;})():"Sem interações registradas"}
                   </div>
                 </div>
                 {/* Lado direito */}
@@ -6935,7 +6936,7 @@ function PrivateBoardsView({ boards, setBoards, user, addLog }) {
           <div style={{marginBottom:12}}>
             <div style={LS}>Quem pode acessar</div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:5}}>
-              {TEAM.map(function(m){
+              {members.map(function(m){
                 var sel=newForm.users.indexOf(m.id)!==-1;
                 return <div key={m.id} onClick={function(){setNewForm(function(p){var us=p.users.indexOf(m.id)!==-1?p.users.filter(function(u){return u!==m.id;}):p.users.concat([m.id]);return Object.assign({},p,{users:us});});}} style={{padding:"4px 12px",borderRadius:20,cursor:"pointer",background:sel?m.color+"22":"var(--ccard)",border:"1px solid "+(sel?m.color+"55":"var(--cbord)"),color:sel?m.color:"var(--ct3)",fontSize:12,fontFamily:POP,fontWeight:sel?700:400,transition:"all 0.15s"}}>{m.name}</div>;
               })}
@@ -6963,7 +6964,7 @@ function PrivateBoardsView({ boards, setBoards, user, addLog }) {
               <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,marginBottom:8}}>{(b.items||[]).length} itens — {(b.schema||[]).length} campos</div>
               <div style={{display:"flex",gap:3}}>
                 {(b.allowedUsers||[]).slice(0,5).map(function(uid2){
-                  var m=TEAM.find(function(t){return t.id===uid2;});
+                  var m=members.find(function(m){return m.id===uid2;});
                   if(!m) return null;
                   return <div key={uid2} style={{width:18,height:18,borderRadius:"50%",background:m.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:700,color:"#fff",fontFamily:POP}}>{m.initials[0]}</div>;
                 })}
@@ -6985,7 +6986,7 @@ function PrivateBoardsView({ boards, setBoards, user, addLog }) {
 // ─── Private Entry Row (fix: no hook in map) ─────────────────────
 function PrivateEntryRow({ entry: e, boardId, onRemove }) {
   var [show, setShow] = useState(false);
-  var creator = TEAM.find(function(t){return t.id===e.createdBy;});
+  var creator = members.find(function(m){return m.id===e.createdBy;});
   return (
     <div style={{padding:"14px 18px",borderRadius:14,background:"var(--ccard)",border:"1px solid var(--cbord)"}}>
       <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -7028,7 +7029,7 @@ function IncidentesView({ incidentes, setIncidentes, user, addLog }) {
     setShowForm(false);
   }
 
-  function tipoInfo(id){ return INCIDENTE_TIPOS.find(function(t){return t.id===id;})||INCIDENTE_TIPOS[2]; }
+  function tipoInfo(id){ return INCIDENTE_TIPOS.find(function(m){return m.id===id;})||INCIDENTE_TIPOS[2]; }
 
   function timeSince(iso) {
     var diff = Date.now() - new Date(iso).getTime();
@@ -7064,7 +7065,7 @@ function IncidentesView({ incidentes, setIncidentes, user, addLog }) {
             <div>
               <div style={LS}>Responsável</div>
               <select value={form.responsavel} onChange={function(e){setForm(function(p){return Object.assign({},p,{responsavel:e.target.value});});}} style={IS}>
-                {TEAM.map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>;})}
+                {members.map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>;})}
               </select>
             </div>
             <div style={{gridColumn:"1/-1"}}><div style={LS}>Descrição do incidente</div><textarea value={form.descricao} onChange={function(e){setForm(function(p){return Object.assign({},p,{descricao:e.target.value});});}} rows={3} style={Object.assign({},IS,{resize:"vertical"})}/></div>
@@ -7081,8 +7082,8 @@ function IncidentesView({ incidentes, setIncidentes, user, addLog }) {
         {incidentes.length===0 && <div style={{textAlign:"center",padding:"60px",color:"var(--ct3)",fontFamily:POP,fontSize:15}}>Nenhum incidente registrado 🎉</div>}
         {incidentes.map(function(inc){
           var tp = tipoInfo(inc.tipo);
-          var resp = TEAM.find(function(t){return t.id===inc.responsavel;});
-          var creator = TEAM.find(function(t){return t.id===inc.createdBy;});
+          var resp = members.find(function(m){return m.id===inc.responsavel;});
+          var creator = members.find(function(m){return m.id===inc.createdBy;});
           return (
             <div key={inc.id} style={{padding:"18px 20px",borderRadius:16,background:"var(--ccard)",border:"1px solid var(--cbord)",borderLeft:"4px solid "+tp.color}}>
               <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
@@ -8160,7 +8161,7 @@ function ChecklistView({ clientes, setClientes, demands, calendar, calendarHisto
 // ─── CRM View ─────────────────────────────────────────────────────
 function CRMLead({ lead, leads, setLeads, user, addLog, onBack }) {
   var sc = CRM_STAGES.find(function(s){return s.id===lead.stage;})||CRM_STAGES[0];
-  var resp = TEAM.find(function(t){return t.id===lead.responsavel;});
+  var resp = members.find(function(m){return m.id===lead.responsavel;});
   var [tab, setTab] = useState("info");
   var [notaText, setNotaText] = useState("");
   var [tarefaText, setTarefaText] = useState("");
@@ -8304,7 +8305,7 @@ function CRMLead({ lead, leads, setLeads, user, addLog, onBack }) {
           </div>
           {(lead.notas||[]).length===0&&<div style={{textAlign:"center",padding:"40px",color:"var(--ct3)",fontFamily:POP,fontSize:14}}>Nenhuma nota ainda</div>}
           {(lead.notas||[]).slice().reverse().map(function(n){
-            var autor = TEAM.find(function(t){return t.id===n.autor;});
+            var autor = members.find(function(m){return m.id===n.autor;});
             return <div key={n.id} style={{marginBottom:10,padding:"14px 16px",borderRadius:13,background:"var(--ccard)",border:"1px solid var(--cbord)"}}>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
                 {autor&&<div style={{width:24,height:24,borderRadius:"50%",background:autor.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:"var(--ct)",fontFamily:POP,flexShrink:0}}>{autor.initials}</div>}
@@ -8524,7 +8525,7 @@ function CRMLeadForm({ lead, user, onSave, onCancel }) {
         <div>
           <div style={LS}>Responsável</div>
           <select value={form.responsavel} onChange={function(e){setForm(function(p){return Object.assign({},p,{responsavel:e.target.value});});}} style={IS}>
-            {TEAM.map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>;})}
+            {members.map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>;})}
           </select>
         </div>
         {F("Follow-up","followUp","","date")}
@@ -8662,7 +8663,7 @@ function PipelineListView({ pipeLeads, kanbanStages, onOpen, setLeads, addLog, f
                 <div style={{height:48,borderRadius:12,border:"2px dashed "+stage.color+"50",display:"flex",alignItems:"center",justifyContent:"center",color:stage.color,fontSize:12,fontFamily:POP,marginBottom:6}}>Soltar aqui</div>
               )}
               {sl.map(function(l){
-                var resp = TEAM.find(function(t){return t.id===l.responsavel;});
+                var resp = members.find(function(m){return m.id===l.responsavel;});
                 var pc = l.prioridade==="alta"?"#E74C3C":l.prioridade==="media"?OR:"#22C55E";
                 var stageObj = CRM_STAGES.find(function(s){return s.id===l.stage;})||CRM_STAGES[0];
                 // isDraggingThis removed — no state changes during drag
@@ -8719,7 +8720,7 @@ function PipelineListView({ pipeLeads, kanbanStages, onOpen, setLeads, addLog, f
 
 // ── KanbanLeadCard — defined OUTSIDE CRMPipeline to keep stable identity ──
 function KanbanLeadCard({ l, stage, dragId, dragIdRef, onDragStart, onDragEnd, onOpen }) {
-  var resp = TEAM.find(function(t){return t.id===l.responsavel;});
+  var resp = members.find(function(m){return m.id===l.responsavel;});
   var pc = l.prioridade==="alta"?"#E74C3C":l.prioridade==="media"?OR:"#22C55E";
   var tarefasPend = (l.tarefas||[]).filter(function(t){return !t.feita;}).length;
   var fuOverdue = l.followUp && new Date(l.followUp)<new Date();
@@ -8908,7 +8909,7 @@ function CRMList({ leads, setLeads, onOpen, onNew, addLog }) {
         </select>
         <select value={filterResp} onChange={function(e){setFilterResp(e.target.value);}} style={IS}>
           <option value="" style={{background:"#1a1a1a"}}>Todos responsáveis</option>
-          {TEAM.map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>;})}
+          {members.map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>;})}
         </select>
         <select value={sortBy} onChange={function(e){setSortBy(e.target.value);}} style={IS}>
           <option value="createdAt" style={{background:"#1a1a1a"}}>📅 Mais recentes</option>
@@ -8919,7 +8920,7 @@ function CRMList({ leads, setLeads, onOpen, onNew, addLog }) {
       <div style={{display:"flex",flexDirection:"column",gap:6}}>
         {filtered.map(function(l){
           var sc = CRM_STAGES.find(function(s){return s.id===l.stage;})||CRM_STAGES[0];
-          var resp = TEAM.find(function(t){return t.id===l.responsavel;});
+          var resp = members.find(function(m){return m.id===l.responsavel;});
           var pc = l.prioridade==="alta"?"#E74C3C":l.prioridade==="media"?OR:"#22C55E";
           var tarefasPend = (l.tarefas||[]).filter(function(t){return !t.feita;}).length;
           return (
@@ -9004,7 +9005,7 @@ function CRMDash({ leads, metas, avisos, user }) {
 
   // Per-vendedor
   var byResp = {};
-  TEAM.filter(function(m){return (m.areasPermitidas||[]).indexOf("comercial")!==-1;}).forEach(function(m){
+  members.filter(function(m){return (m.areasPermitidas||[]).indexOf("comercial")!==-1;}).forEach(function(m){
     var ml = leads.filter(function(l){return l.responsavel===m.id;});
     var mf = ml.filter(function(l){return l.stage==="fechado_ganho";});
     if(ml.length>0) byResp[m.id]={member:m,count:ml.length,fechados:mf.length,
@@ -9012,7 +9013,7 @@ function CRMDash({ leads, metas, avisos, user }) {
   });
 
   // Distribuição round-robin (simple: next in rotation by creation order)
-  var VENDEDORES = TEAM.filter(function(t){return (t.areasPermitidas||[]).indexOf("comercial")!==-1;});
+  var VENDEDORES = members.filter(function(t){return (t.areasPermitidas||[]).indexOf("comercial")!==-1;});
   var rr = {}; VENDEDORES.forEach(function(v){rr[v.id]=0;});
   leads.forEach(function(l){if(l.responsavel&&rr[l.responsavel]!==undefined)rr[l.responsavel]++;});
   var nextRR = VENDEDORES.slice().sort(function(a,b){return (rr[a.id]||0)-(rr[b.id]||0);})[0];
@@ -9134,7 +9135,7 @@ function CRMDash({ leads, metas, avisos, user }) {
                 {followUps.length>0&&<span style={{padding:"2px 8px",borderRadius:20,background:"rgba(239,68,68,0.15)",color:"#EF4444",fontSize:11,fontWeight:700,fontFamily:POP}}>{followUps.length}</span>}
               </div>
               {followUps.length===0&&<div style={{color:CDT3,fontFamily:POP,fontSize:13,marginBottom:14}}>Tudo em dia! ✅</div>}
-              {followUps.slice(0,4).map(function(l){var resp=TEAM.find(function(t){return t.id===l.responsavel;});return(
+              {followUps.slice(0,4).map(function(l){var resp=members.find(function(m){return m.id===l.responsavel;});return(
                 <div key={l.id} style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"8px 10px",borderRadius:9,background:"rgba(239,68,68,0.07)",border:"1px solid rgba(239,68,68,0.15)"}}>
                   {resp&&<div style={{width:20,height:20,borderRadius:"50%",background:resp.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:700,color:"#fff",flexShrink:0}}>{resp.initials}</div>}
                   <div style={{flex:1,minWidth:0}}>
@@ -10026,7 +10027,7 @@ function AgendaComercialView({ user, addLog, reunioes: _reu, setReunioes: _setRe
   var hoje = new Date().toISOString().slice(0,10);
   var proximas = reunioes.filter(function(r){return r.data>=hoje;});
   var passadas = reunioes.filter(function(r){return r.data<hoje;});
-  var tipoInfo = function(id){return REUNIAO_TIPOS.find(function(t){return t.id===id;})||REUNIAO_TIPOS[0];};
+  var tipoInfo = function(id){return REUNIAO_TIPOS.find(function(m){return m.id===id;})||REUNIAO_TIPOS[0];};
 
   function ReuniaoCard({r}) {
     var ti = tipoInfo(r.tipo);
@@ -10162,7 +10163,7 @@ function GestaoEquipeView({ leads, metas, user, addLog }) {
   const GCARD = _GT==="light"?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.025)";
   const GCBORD = _GT==="light"?"rgba(0,0,0,0.10)":"rgba(255,255,255,0.07)";
 
-  var VENDEDORES = TEAM.filter(function(t){ return (t.areasPermitidas||[]).indexOf("comercial")!==-1; });
+  var VENDEDORES = members.filter(function(t){ return (t.areasPermitidas||[]).indexOf("comercial")!==-1; });
   var curMes = new Date().getMonth();
   var curAno = new Date().getFullYear();
 
@@ -10359,7 +10360,7 @@ function ControleComercialView({ leads, addLog }) {
   // Commission: 5% for closer, 2% for SDR
   var comissoes = fechados.map(function(l){
     var val = parseFloat(l.orcamento)||0;
-    var resp = TEAM.find(function(t){return t.id===l.responsavel;});
+    var resp = members.find(function(m){return m.id===l.responsavel;});
     return {empresa:l.empresa,valor:val,responsavel:resp?resp.name:"—",comissaoCloser:Math.round(val*0.05),comissaoSdr:Math.round(val*0.02),data:l.createdAt};
   });
 
@@ -10509,7 +10510,7 @@ function LeadsPerdidosView({ leads, setLeads, addLog }) {
         <div style={{fontSize:13,fontWeight:700,color:cor,fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>{titulo} ({lista.length})</div>
         {lista.map(function(l){
           var dias = daysSince(l.createdAt);
-          var resp = TEAM.find(function(t){return t.id===l.responsavel;});
+          var resp = members.find(function(m){return m.id===l.responsavel;});
           return (
             <div key={l.id} style={{padding:"14px 16px",borderRadius:12,background:"var(--ccard)",border:"1px solid var(--cbord)",marginBottom:6,borderLeft:"3px solid "+cor}}>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -11138,7 +11139,7 @@ function FeedbackPopup({ item, tipo, user, onClose }) {
     saveFeedbackGlobal(newFb);
     // Notify managers on bad feedback
     if(rating==="ruim"){
-      TEAM.filter(function(t){return t.isManager;}).forEach(function(m){
+      members.filter(function(t){return t.isManager;}).forEach(function(m){
         if(window._addNotification) window._addNotification(m.id, user.id, user.name, "feedback", "⚠️ Feedback ruim registrado: "+newFb.titulo+(comment?" — "+comment:""));
       });
     }
@@ -12008,7 +12009,7 @@ function FinanceiroView({ user, dados: _dadosProp, setDados: _setDadosProp, addL
   var despFalta=totalDesp-despPago;
   var lucro=totalRec-totalDesp;
   var lucroRealizado=recPago-despPago;
-  var activeTabObj=TABS.find(function(t){return t.id===activeTab;})||TABS[0];
+  var activeTabObj=TABS.find(function(m){return m.id===activeTab;})||TABS[0];
   // Clear selection when tab or month changes
   React.useEffect(function(){ setSelected(new Set()); }, [activeTab, mesSel, anoSel]);
   var tabItems=(md[activeTabObj.key]||[]).slice().sort(function(a,b){return a.data.localeCompare(b.data);});
@@ -12773,7 +12774,7 @@ function ContratosView({ user, addLog, adminVendas, setAdminVendas, contratos: _
           </div>
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
             {(adminVendas||[]).filter(function(v){return v.status==="pendente"||v.status==="contrato_iniciado";}).map(function(v){
-              var resp = TEAM.find(function(t){return t.id===v.responsavel;});
+              var resp = members.find(function(m){return m.id===v.responsavel;});
               var iniciado = v.status==="contrato_iniciado";
               return (
                 <div key={v.id} style={{padding:"16px 20px",borderRadius:16,background:iniciado?"rgba(255,255,255,0.02)":"rgba(34,197,94,0.06)",border:"1px solid "+(iniciado?"rgba(255,255,255,0.07)":"rgba(34,197,94,0.30)"),display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
@@ -14346,7 +14347,7 @@ function VendasPendentesPanel({ vendas, setVendas, onGoContratos }) {
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:8,maxHeight:240,overflowY:"auto",marginBottom:14}}>
           {pendentes.map(function(v){
-            var resp=TEAM.find(function(t){return t.id===v.responsavel;});
+            var resp=members.find(function(m){return m.id===v.responsavel;});
             return (
               <div key={v.id} style={{padding:"10px 14px",borderRadius:12,background:"rgba(34,197,94,0.07)",border:"1px solid rgba(34,197,94,0.18)"}}>
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -14815,7 +14816,7 @@ function ClientePortalView({ user, clienteUser, clienteId, clientes, planejament
                 <div style={{fontSize:14,fontWeight:800,color:CT,marginBottom:16}}>👥 Quem Atende Você</div>
                 <div style={{display:"flex",flexDirection:"column",gap:12}}>
                   {(clienteInfo.responsaveis || []).length > 0 ? (clienteInfo.responsaveis || []).map(r => {
-                    var member = TEAM.find(m => m.id === r.usuarioId);
+                    var member = members.find(m => m.id === r.usuarioId);
                     return (
                       <div key={r.id} style={{padding:"12px",borderRadius:10,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)"}}>
                         <div style={{fontSize:13,fontWeight:700,color:CT}}>{member?.name || "Responsável"}</div>
@@ -15745,8 +15746,8 @@ function Login({ onLogin, onBack, members }) {
   var [err, setErr] = useState("");
   var [showForgot, setShowForgot] = useState(false);
   var [showPass, setShowPass] = useState(false);
-  // Use live members list (includes newly created users), fall back to TEAM
-  var allMembers = (members&&members.length>0) ? members : TEAM;
+  // REQUIRE members from Firestore - no fallback
+  var allMembers = (members&&Array.isArray(members)&&members.length>0) ? members : [];
 
   function handleKeyDown(e) {
     if(e.key==="Enter") handleLogin();
@@ -15759,6 +15760,12 @@ function Login({ onLogin, onBack, members }) {
   function handleLogin() {
     var u = username.trim().toLowerCase();
     
+    // Validar se members foram carregados do Firestore
+    if(!allMembers || allMembers.length===0) {
+      setErr("❌ Sistema carregando... Aguarde um momento.");
+      return;
+    }
+    
     // 🔐 SECURITY: Username validation
     if(!u || u.length < 2) {
       setErr("Usuário inválido.");
@@ -15770,7 +15777,7 @@ function Login({ onLogin, onBack, members }) {
     });
     
     if(!member){ 
-      setErr("Usuário não encontrado."); 
+      setErr("Usuário não encontrado no sistema."); 
       return; 
     }
     
@@ -15780,8 +15787,7 @@ function Login({ onLogin, onBack, members }) {
       return;
     }
 
-    // 🔐 SECURITY: Compare password with bcrypt hash
-    // Member.pass should be bcrypt hash starting with $2b$10$
+    // 🔐 SECURITY: Compare password with stored pass
     if(password !== member.pass && !member.pass.startsWith('$2')) {
       setErr("Senha incorreta.");
       return;
@@ -16544,10 +16550,6 @@ function AppInner() {
     }
   };
   const [members, membersCRUD, membersLoading] = useFirebaseCollection("members", INIT_MEMBERS);
-  // ✅ Sincronizar TEAM global com members do Firebase
-  React.useEffect(() => {
-    TEAM = members || [];
-  }, [members]);
   const setMembers = function(fn) {
     if(typeof fn === 'function') {
       var newVal = fn(members);
@@ -16927,7 +16929,7 @@ function AppInner() {
   }, []);
 
   const handleNotify=(memberId,client,dayLabel)=>{
-    const m=teamObj(memberId);
+    const m=members.find(m => m.id === memberId);
     if(m){
       addToast(`${m.name} notificado: ${client} (${dayLabel})`,"📲");
       if(memberId!==user.id) addNotification(memberId, user.id, user.name, 'calendario', 'Você foi adicionado ao post de '+client+' ('+dayLabel+')');
@@ -18106,7 +18108,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
               {key:"cs",            label:"CS",                   icon:"💬"},
             ].map(function(role){
               var assignedId = (active.equipe||{})[role.key];
-              var assignedMember = assignedId ? TEAM.find(function(t){return t.id===assignedId;}) : null;
+              var assignedMember = assignedId ? members.find(function(m){return m.id===assignedId;}) : null;
               return (
                 <div key={role.key} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:10,marginBottom:4,
                   background:assignedMember?"rgba(255,255,255,0.025)":"transparent",
@@ -18138,7 +18140,7 @@ function ClientesView({ clientes, setClientes, user, addLog, tiposEntrega }) {
                         style={{background:"var(--ccard)",border:"1px dashed rgba(255,106,0,0.3)",borderRadius:8,color:"rgba(255,106,0,0.7)",fontSize:11,padding:"3px 8px",outline:"none",fontFamily:POP,cursor:"pointer",maxWidth:120}}
                       >
                         <option value="">+ Atribuir</option>
-                        {TEAM.filter(m => !active.filialId || m.filialId === active.filialId).map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a",color:"#fff"}}>{m.name.split(" ")[0]}</option>;})}
+                        {members.filter(m => !active.filialId || m.filialId === active.filialId).map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a",color:"#fff"}}>{m.name.split(" ")[0]}</option>;})}
                       </select>
                     )
                   )}
@@ -18279,7 +18281,7 @@ function PlanejamentoView({ planejamento, setPlanejamento, clientes, user, addLo
           <div><div style={LS}>Orçamento de Impulsionamento</div><input value={form.orcamento} onChange={function(e){setForm(function(p){return Object.assign({},p,{orcamento:e.target.value});});}} placeholder="R$ 0,00" style={IS}/></div>
           <div><div style={LS}>Responsável</div>
             <select value={form.responsavel} onChange={function(e){setForm(function(p){return Object.assign({},p,{responsavel:e.target.value});});}} style={IS}>
-              {TEAM.map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>;})}
+              {members.map(function(m){return <option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>;})}
             </select>
           </div>
           <div style={{gridColumn:"1/-1"}}>
@@ -18316,7 +18318,7 @@ function PlanejamentoView({ planejamento, setPlanejamento, clientes, user, addLo
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
           {campanhas.map(function(a){
             var tc = TIPO_COLOR[a.tipo]||"#888";
-            var resp = TEAM.find(function(t){return t.id===a.responsavel;}); var planColabs=(a.colaboradores||[]).filter(function(id){return id!==a.responsavel;}).map(function(id){return TEAM.find(function(t){return t.id===id;});}).filter(Boolean);
+            var resp = members.find(function(m){return m.id===a.responsavel;}); var planColabs=(a.colaboradores||[]).filter(function(id){return id!==a.responsavel;}).map(function(id){return members.find(function(m){return m.id===id;});}).filter(Boolean);
             return (
               <div key={a.id} style={{padding:"18px 20px",borderRadius:16,background:"var(--ccard)",border:"1px solid var(--cbord)",borderLeft:"4px solid "+tc}}>
                 <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
