@@ -17069,6 +17069,7 @@ await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
   },[notifications]);
   const addNotification = React.useCallback(function(toId,fromId,fromName,type,text){setNotifications(function(p){return [{id:uid(),toId:toId,fromId:fromId,fromName:fromName,type:type,text:text,ts:Date.now(),read:false},...p].slice(0,60);});},[]);
   const markAllNotifsRead=React.useCallback(function(){setNotifications(function(p){return p.map(function(n){return Object.assign({},n,{read:true});});});},[]);
+  const clearAllNotifs=React.useCallback(function(){setNotifications(function(p){return [];});},[]);
 
   const addToast=(text,icon="🔔")=>{
     const id=uid();
