@@ -376,15 +376,6 @@ const INIT_NAV_CONFIG = [
   {id:"cs",         label:"Customer Success", icon:"💎"},
   {id:"especiais",   label:"Especiais",        icon:"⭐"},
 ];
-// ═══════════════════════════════════════════════════════════════════════════════
-// 👥 TEAM - Membros do sistema (Fallback - dados primários vêm do Firestore)
-// ═══════════════════════════════════════════════════════════════════════════════
-const TEAM = [
-  { id: 'admin_felipe', nome: 'Felipe Buss', email: 'felipe@formastudio.com.br', role: 'admin' },
-  { id: 'team_01', nome: 'Equipe Criação', email: 'criacao@formastudio.com.br', role: 'criacao' },
-  { id: 'team_02', nome: 'Equipe Comercial', email: 'comercial@formastudio.com.br', role: 'comercial' },
-];
-
 const INIT_MEMBERS = [];
 const INIT_CALENDAR = [];
 const INIT_FILIAIS = [];
@@ -16291,38 +16282,11 @@ function NotifBell({ notifications, userId, onMarkAllRead, onClearAll }) {
   );
 }
 
-
-function CreacaoShell({ user, onBack, addLog, chatUnread, activityLog, onUpdateUser, onLogout, chatChannels, setChatChannels, members, onMarkChatRead, theme, setTheme, quickAccess, setQuickAccess, calendar, setCalendar, demands, setDemands, activeDay, ads, setAds, customDatas, setCustomDatas, meetings, setMeetings, avisos, setAvisos, notifications, onMarkAllNotifsRead, onClearAllNotifs, clientes, inboundClientes, setInboundClientes, planejamento }) {
-  const [view, setView] = React.useState("dashboard");
-  const [showHistorico, setShowHistorico] = React.useState(false);
-  
-  return (
-    <div style={{display:"flex",flexDirection:"column",height:"100vh",background:"#0D0A06"}}>
-      {/* Topbar */}
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 20px",background:"#0D0A06",borderBottom:"1px solid rgba(255,255,255,0.08)",gap:20}}>
-        <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <div onClick={onBack} style={{cursor:"pointer",fontSize:24}}>←</div>
-          <div style={{fontSize:16,fontWeight:700,color:"#FF6A00"}}>🎨 Criação</div>
-        </div>
-        <div style={{display:"flex",gap:10}}>
-          <button onClick={()=>setView("calendar")} style={{padding:"8px 16px",borderRadius:8,background:view==="calendar"?"#FF6A00":"#1a1a1a",color:"#fff",border:"none",cursor:"pointer",fontWeight:600}}>📅 Calendário</button>
-          <button onClick={()=>setView("demandas")} style={{padding:"8px 16px",borderRadius:8,background:view==="demandas"?"#FF6A00":"#1a1a1a",color:"#fff",border:"none",cursor:"pointer",fontWeight:600}}>📋 Demandas</button>
-          <button onClick={()=>setView("anuncios")} style={{padding:"8px 16px",borderRadius:8,background:view==="anuncios"?"#FF6A00":"#1a1a1a",color:"#fff",border:"none",cursor:"pointer",fontWeight:600}}>📢 Anúncios</button>
-        </div>
-        <button onClick={onLogout} style={{padding:"8px 16px",borderRadius:8,background:"#FF6A00",color:"#fff",border:"none",cursor:"pointer",fontWeight:600}}>Sair</button>
-      </div>
-
-      {/* Content */}
-      <div style={{flex:1,overflow:"auto",padding:"20px"}}>
-        {view==="calendar" && <div><CalendarView calendar={calendar} setCalendar={setCalendar} activeDay={activeDay} onNotify={()=>{}} clientes={clientes} addLog={addLog} demands={demands}/></div>}
-        {view==="demandas" && <DemandasView demands={demands} setDemands={setDemands} user={user} clientes={clientes} addNotification={()=>{}} members={members} addLog={addLog}/>}
-        {view==="anuncios" && <AnunciosView ads={ads} setAds={setAds} clientes={clientes} addLog={addLog}/>}
-        {!view && <div style={{color:"#ccc"}}>Selecione uma view</div>}
-      </div>
-    </div>
-  );
-}
-
+const TEAM = [
+  { id: 'admin_felipe', nome: 'Felipe Buss', email: 'felipe@formastudio.com.br', role: 'admin' },
+  { id: 'team_01', nome: 'Equipe Criação', email: 'criacao@formastudio.com.br', role: 'criacao' },
+  { id: 'team_02', nome: 'Equipe Comercial', email: 'comercial@formastudio.com.br', role: 'comercial' },
+];
 
 function AppInner() {
   // 🎨 FAVICON - Adicionar no início
@@ -16357,7 +16321,6 @@ function AppInner() {
   const setCalendar = function(fn) {
     if(typeof fn === 'function') {
       var newVal = fn(calendar);
-      console.log('[DEBUG] setCalendar called with', newVal);
       if(Array.isArray(newVal) && calendarCRUD) {
         newVal.forEach(x => {
           if(x && x.id) calendarCRUD.update(x.id, x).catch(e => console.error(e));
@@ -17081,8 +17044,13 @@ function AppInner() {
     <ThemeCtx.Provider value={theme}>
     {/* Theme-aware CSS variables */}
 
-    {area==="criacao" ? <CreacaoShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){recordAccess("logout",user.name);setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} calendar={calendar} setCalendar={setCalendar} demands={demands} setDemands={setDemands} activeDay={activeDay} ads={ads} setAds={setAds} customDatas={customDatas} setCustomDatas={setCustomDatas} meetings={meetings} setMeetings={setMeetings} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} clientes={clientes} inboundClientes={inboundClientes} setInboundClientes={setInboundClientes} planejamento={planejamento}/> :
-    area==="comercial" ? <CRMShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){recordAccess("logout",user.name);setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} sdrLeads={sdrLeads} setSdrLeads={setSdrLeads} agendaReunioes={agendaReunioes} setAgendaReunioes={setAgendaReunioes} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} setCrmLeads={setCrmLeads} crmMetas={crmMetas} setCrmMetas={setCrmMetas} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} documentacoes={documentacoes} setDocumentacoes={setDocumentacoes} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs}/> :
+    {area==="criacao" ? <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",background:"#0D0A06",color:"#fff",flexDirection:"column",gap:20}}>
+      <div style={{fontSize:24}}>🎨</div>
+      <div style={{fontSize:18}}>Área de Criação</div>
+      <div style={{color:"#999",fontSize:14}}>Em breve - utilize Comercial ou Administrativo por enquanto</div>
+      <button onClick={function(){setArea(null);}} style={{padding:"10px 20px",background:"#FF6A00",color:"#fff",border:"none",borderRadius:8,cursor:"pointer"}}>Voltar</button>
+    </div> :
+    {area==="comercial" ? <CRMShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){recordAccess("logout",user.name);setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} sdrLeads={sdrLeads} setSdrLeads={setSdrLeads} agendaReunioes={agendaReunioes} setAgendaReunioes={setAgendaReunioes} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} setCrmLeads={setCrmLeads} crmMetas={crmMetas} setCrmMetas={setCrmMetas} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} documentacoes={documentacoes} setDocumentacoes={setDocumentacoes} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs}/> :
     area==="administrativo" ? <AdminShell user={user} onBack={function(){setArea(null);}} addLog={addLog} chatUnread={chatUnread} activityLog={activityLog} onUpdateUser={function(u){setUser(function(p){return Object.assign({},p,u);});updateMember(Object.assign({},user,u));}} onLogout={function(){setUser(null);}} chatChannels={chatChannels} setChatChannels={setChatChannels} members={members} setMembers={setMembers} onMarkChatRead={function(){setLastSeenMsgCount(totalChatMsgs);}} theme={theme} setTheme={setTheme} quickAccess={quickAccess} setQuickAccess={setQuickAccess} adminVendas={adminVendas} setAdminVendas={setAdminVendas} crmLeads={crmLeads} contratos={contratos} setContratos={setContratos} colaboradores={colaboradores} setColaboradores={setColaboradores} financeiroDados={financeiroDados} setFinanceiroDados={setFinanceiroDados} okrs={okrs} setOkrs={setOkrs} avisos={avisos} setAvisos={setAvisos} notifications={notifications} onMarkAllNotifsRead={markAllNotifsRead} onClearAllNotifs={clearAllNotifs} feedbacks={feedbacks} setFeedbacks={setFeedbacks} csData={csData} clientes={clientes} contratoIniciadoNotif={contratoIniciadoNotif} setContratoIniciadoNotif={setContratoIniciadoNotif} categoriasDocs={categoriasDocs} setCategoriasDocs={setCategoriasDocs} filiais={filiais} setFiliais={setFiliais} clienteUsers={clienteUsers} setClienteUsers={setClienteUsers} clienteInfos={clienteInfos} setClienteInfos={setClienteInfos} clienteInsights={clienteInsights} setClienteInsights={setClienteInsights} clienteConfig={clienteConfig} setClienteConfig={setClienteConfig} demands={demands} setDemands={setDemands} pins={pins} setPins={setPins}/> :
     <div className={"forma-app "+(theme==="light"?"t-light":theme==="night"?"t-night":"t-dark")} style={{display:"flex",minHeight:"100vh",background:theme==="light"?"#EBEBEB":theme==="night"?"#181818":"#0D0A06",fontFamily:POP,color:theme==="light"?"#1a1a1a":"#fff",position:"relative"}}>
       <style>{`
