@@ -11033,7 +11033,7 @@ function PlannerView({ user }) {
   function save(d){ window._plannerStore=window._plannerStore||{}; window._plannerStore[storeKey]=JSON.stringify(d); }
 
   var [weekKey, setWeekKey] = useState(curWeek);
-  var [data, setData] = useState(function(){return {};});
+  var [data, setData] = useState({});
   var [newTask, setNewTask] = useState({});
   var [carryover, setCarryover] = useState(null);
 
@@ -11118,6 +11118,7 @@ function PlannerView({ user }) {
 // ─── Feedback Popup ───────────────────────────────────────────────
 window._feedbacks = window._feedbacks || [];
 function getFeedbacks(){
+  return window._feedbacks || [];
 }
 async function saveFeedbackGlobal(fb){ 
   var arr = getFeedbacks().concat([fb]);
@@ -16508,7 +16509,7 @@ function AppInner() {
       };
     }
   };
-  const [feedbacks, setFeedbacks]           = useState(function(){return getFeedbacks();}); 
+  const [feedbacks, setFeedbacks]           = useState(() => getFeedbacks()); 
   
   const [notifications, setNotifications] = React.useState([]); // CORREÇÃO: Era function(){} que retorna undefined
   // Bridge: sync window._feedbacks → state
