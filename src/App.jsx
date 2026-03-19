@@ -16819,17 +16819,17 @@ function AppInner() {
     };
     return function(){ window._fbOnSave = null; window._addNotification = null; };
   }, [notificationsCRUD]);
-  const [agendaReunioes, agendaReunioesC RUD, agendaReunioesLoading] = useFirebaseCollection("agenda_reunioes", []);
+  const [agendaReunioes, agendaReunioesCRUD, agendaReunioesLoading] = useFirebaseCollection("agenda_reunioes", []);
   const setAgendaReunioes = function(fn) {
     if(typeof fn === 'function') {
       var newVal = fn(agendaReunioes);
-      if(Array.isArray(newVal) && agendaReunioesC RUD) {
+      if(Array.isArray(newVal) && agendaReunioesCRUD) {
         newVal.forEach(x => {
-          if(x && x.id) agendaReunioesC RUD.update(x.id, x).catch(e => console.error('[FB] Erro agendaReunioes:', e));
+          if(x && x.id) agendaReunioesCRUD.update(x.id, x).catch(e => console.error('[FB] Erro agendaReunioes:', e));
         });
       }
-    } else if(agendaReunioesC RUD) {
-      agendaReunioesC RUD.add(fn).catch(e => console.error('[FB] Erro adicionar agendaReunioes:', e));
+    } else if(agendaReunioesCRUD) {
+      agendaReunioesCRUD.add(fn).catch(e => console.error('[FB] Erro adicionar agendaReunioes:', e));
     }
   };
   const [customBoards, customBoardsCRUD, customBoardsLoading] = useFirebaseCollection("customboards", INIT_CUSTOM_BOARDS);
@@ -17106,17 +17106,17 @@ await accessLogCRUD.add(next);}catch(e){}
     {id:"qa2",emoji:"📁",nome:"Google Drive",link:"https://drive.google.com",cor:"#22C55E"},
     {id:"qa3",emoji:"📊",nome:"Analytics",link:"https://analytics.google.com",cor:"#F59E0B"},
   ];
-  const [quickAccess, quickAccessC RUD, quickAccessLoading] = useFirebaseCollection("quickaccess", INIT_QUICK_ACCESS);
+  const [quickAccess, quickAccessCRUD, quickAccessLoading] = useFirebaseCollection("quickaccess", INIT_QUICK_ACCESS);
   const setQuickAccess = function(fn) {
     if(typeof fn === 'function') {
       var newVal = fn(quickAccess);
-      if(Array.isArray(newVal) && quickAccessC RUD) {
+      if(Array.isArray(newVal) && quickAccessCRUD) {
         newVal.forEach(x => {
-          if(x && x.id) quickAccessC RUD.update(x.id, x).catch(e => console.error('[FB] Erro quickAccess:', e));
+          if(x && x.id) quickAccessCRUD.update(x.id, x).catch(e => console.error('[FB] Erro quickAccess:', e));
         });
       }
-    } else if(quickAccessC RUD) {
-      quickAccessC RUD.add(fn).catch(e => console.error('[FB] Erro adicionar quickAccess:', e));
+    } else if(quickAccessCRUD) {
+      quickAccessCRUD.add(fn).catch(e => console.error('[FB] Erro adicionar quickAccess:', e));
     }
   };
   const [showQuickAccess, setShowQuickAccess] = useState(false);
