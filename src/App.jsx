@@ -16293,7 +16293,7 @@ function AppInner() {
   const [view,setView]             = useState("dashboard");
   const [privatoSubView, setPrivatoSubView] = useState("dados"); // "dados" | "quadros"
   const todayDayId = () => { const d=["dom","seg","ter","qua","qui","sex","sab"][new Date().getDay()]; return DAYS.find(x=>x.id===d)?d:"seg"; };
-  const [activeDay,setActiveDay]   = useState(todayDayId);
+  const [activeDay,setActiveDay]   = useState(todayDayId());
   const [calendar, calendarCRUD, calendarLoading] = useFirebaseCollection("calendar", INIT_CALENDAR);
   const setCalendar = function(fn) {
     if(typeof fn === 'function') {
