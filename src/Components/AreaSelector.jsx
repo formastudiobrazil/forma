@@ -5,7 +5,7 @@ export function AreaSelector() {
   const { user, setArea, setUser } = useApp();
 
   if (!user) return null;
-
+  
   const areas = [
     {
       id: 'criacao',
