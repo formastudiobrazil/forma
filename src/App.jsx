@@ -11122,8 +11122,7 @@ function getFeedbacks(){
 }
 async function saveFeedbackGlobal(fb){ 
   var arr = getFeedbacks().concat([fb]);
-  try{ // Firebase: feedbacks
-await feedbacksCRUD.add(arr.slice(-200)); }catch(e){}
+  // Feedbacks stored in memory - no Firebase sync
   window._feedbacks = arr;
   if(window._fbOnSave) window._fbOnSave(fb);
 }
@@ -16290,6 +16289,18 @@ function AppInner() {
     document.title = 'FormaOS - CRM & Business OS';
   }, []);
 
+  // Firebase Auth State Listener
+  React.useEffect(() => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
+      if (firebaseUser) {
+        console.log('✅ Firebase user logged in:', firebaseUser.email);
+      } else {
+        console.log('❌ Firebase user logged out');
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   const [user,setUser]             = useState(null);
   const [area,setArea]             = useState(null); // "criacao" | "comercial"
   const [view,setView]             = useState("dashboard");
@@ -16784,10 +16795,8 @@ function AppInner() {
   const [accessLog, setAccessLog] = React.useState([]);
  async function recordAccess(tipo, userName){ 
     var entry = {id:uid(), tipo:tipo, user:userName, ts:Date.now(), ip:"local"};
-    setAccessLog(async function(p){ 
+    setAccessLog(function(p){ 
       var next=[entry,...p].slice(0,100); 
-      try{// Firebase: accessLog
-await accessLogCRUD.add(next);}catch(e){} 
       return next; 
     }); 
   }
@@ -16800,9 +16809,8 @@ await accessLogCRUD.add(next);}catch(e){}
   ]);
   const [showQuickAccess, setShowQuickAccess] = useState(false);
 
-  React.useEffect(async () => {
-    try{ // Firebase: notifications
-await notificationsCRUD.add(notifications.slice(0,60)); }catch(e){}
+  React.useEffect(() => {
+    // Notifications synced locally - no Firebase sync needed
   },[notifications]);
   const addNotification = React.useCallback(function(toId,fromId,fromName,type,text){setNotifications(function(p){return [{id:uid(),toId:toId,fromId:fromId,fromName:fromName,type:type,text:text,ts:Date.now(),read:false},...p].slice(0,60);});},[]);
   const markAllNotifsRead=React.useCallback(function(){setNotifications(function(p){return p.map(function(n){return Object.assign({},n,{read:true});});});},[]);
