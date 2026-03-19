@@ -16288,12 +16288,53 @@ function AppInner() {
     document.title = 'FormaOS - CRM & Business OS';
   }, []);
 
-  const [user,setUser]             = useState(null);
-  const [area,setArea]             = useState(null); // "criacao" | "comercial"
-  const [view,setView]             = useState("dashboard");
-  const [privatoSubView, setPrivatoSubView] = useState("dados"); // "dados" | "quadros"
-  const todayDayId = () => { const d=["dom","seg","ter","qua","qui","sex","sab"][new Date().getDay()]; return DAYS.find(x=>x.id===d)?d:"seg"; };
-  const [activeDay,setActiveDay]   = useState(todayDayId());
+  // 🔥 User preferences - Firebase
+  const [userPrefs, userPrefsCRUD, userPrefsLoading] = useFirebaseCollection("user_preferences", {id:"prefs", user:null, area:null, view:"dashboard", privatoSubView:"dados", activeDay:"seg"});
+  const setUser = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(userPrefs?.user);
+      if(userPrefsCRUD && newVal !== undefined) {
+        userPrefsCRUD.update("prefs", {user: newVal}).catch(e => console.error(e));
+      }
+    }
+  };
+  const setArea = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(userPrefs?.area);
+      if(userPrefsCRUD && newVal !== undefined) {
+        userPrefsCRUD.update("prefs", {area: newVal}).catch(e => console.error(e));
+      }
+    }
+  };
+  const setView = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(userPrefs?.view);
+      if(userPrefsCRUD && newVal !== undefined) {
+        userPrefsCRUD.update("prefs", {view: newVal}).catch(e => console.error(e));
+      }
+    }
+  };
+  const setPrivatoSubView = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(userPrefs?.privatoSubView);
+      if(userPrefsCRUD && newVal !== undefined) {
+        userPrefsCRUD.update("prefs", {privatoSubView: newVal}).catch(e => console.error(e));
+      }
+    }
+  };
+  const setActiveDay = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(userPrefs?.activeDay);
+      if(userPrefsCRUD && newVal !== undefined) {
+        userPrefsCRUD.update("prefs", {activeDay: newVal}).catch(e => console.error(e));
+      }
+    }
+  };
+  const user = userPrefs?.user;
+  const area = userPrefs?.area;
+  const view = userPrefs?.view;
+  const privatoSubView = userPrefs?.privatoSubView;
+  const activeDay = userPrefs?.activeDay;
   const [calendar, calendarCRUD, calendarLoading] = useFirebaseCollection("calendar", INIT_CALENDAR);
   const setCalendar = function(fn) {
     if(typeof fn === 'function') {
@@ -16305,18 +16346,26 @@ function AppInner() {
       };
     }
   };
-  const [calendarHistory, _setCalendarHistory] = useState([]);
+  const [calendarHistory, calendarHistoryCRUD, calendarHistoryLoading] = useFirebaseCollection("calendar_history", INIT_CALENDAR);
   const setCalendarHistory = function(fn) {
     if(typeof fn === 'function') {
-      _setCalendarHistory(function(prev) {
-        var newVal = fn(prev);
-        return Array.isArray(newVal) ? newVal : prev;
-      });
-    } else {
-      _setCalendarHistory(fn);
+      var newVal = fn(calendarHistory);
+      if(Array.isArray(newVal) && calendarHistoryCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) calendarHistoryCRUD.update(x.id, x).catch(e => console.error(e));
+        });
+      };
     }
   }; // [{weekStart, data (no files)}]
-  const [futurePosts, setFuturePosts] = useState({}); // {weekKey: {seg:[],ter:[],...}}
+  const [futurePosts, futurePostsCRUD, futurePostsLoading] = useFirebaseCollection("future_posts", {});
+  const setFuturePosts = function(fn) {
+    if(typeof fn === 'function') {
+      var newVal = fn(futurePosts);
+      if(newVal && typeof newVal === 'object' && futurePostsCRUD) {
+        futurePostsCRUD.update("posts", newVal).catch(e => console.error(e));
+      }
+    }
+  }; // {weekKey: {seg:[],ter:[],...}}
   const [showHistorico, setShowHistorico] = useState(false);
   const [showProxSemanas, setShowProxSemanas] = useState(false);
   const [news, newsCRUD, newsLoading] = useFirebaseCollection("news", INIT_NEWS);
@@ -16396,26 +16445,26 @@ function AppInner() {
       };
     }
   };
-  const [adminVendas, _setAdminVendas]       = useState([]);
+  const [adminVendas, adminVendasCRUD, adminVendasLoading] = useFirebaseCollection("admin_vendas", []);
   const setAdminVendas = function(fn) {
     if(typeof fn === 'function') {
-      _setAdminVendas(function(prev) {
-        var newVal = fn(prev);
-        return Array.isArray(newVal) ? newVal : prev;
-      });
-    } else {
-      _setAdminVendas(fn);
+      var newVal = fn(adminVendas);
+      if(Array.isArray(newVal) && adminVendasCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) adminVendasCRUD.update(x.id, x).catch(e => console.error(e));
+        });
+      };
     }
   };
-  const [avisos, _setAvisos] = useState([]);
+  const [avisos, avisosCRUD, avisosLoading] = useFirebaseCollection("avisos", []);
   const setAvisos = function(fn) {
     if(typeof fn === 'function') {
-      _setAvisos(function(prev) {
-        var newVal = fn(prev);
-        return Array.isArray(newVal) ? newVal : prev;
-      });
-    } else {
-      _setAvisos(fn);
+      var newVal = fn(avisos);
+      if(Array.isArray(newVal) && avisosCRUD) {
+        newVal.forEach(x => {
+          if(x && x.id) avisosCRUD.update(x.id, x).catch(e => console.error(e));
+        });
+      };
     }
   }; // announcements created by admin
   const [documentacoes, documentacoesCRUD, documentacoesLoading] = useFirebaseCollection("documentacoes", INIT_DOCUMENTACOES);
