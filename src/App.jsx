@@ -15,12 +15,12 @@ import {
 } from "firebase/firestore";
 
 const _firebaseConfig = {
-  apiKey:            "COLE_AQUI_apiKey",
+  apiKey:            "AIzaSyCxRjTUm8npYXjrVOaVGuzUo_PzSpXQEPw",
   authDomain:        "formaos-bafad.firebaseapp.com",
   projectId:         "formaos-bafad",
-  storageBucket:     "formaos-bafad.appspot.com",
-  messagingSenderId: "COLE_AQUI_messagingSenderId",
-  appId:             "COLE_AQUI_appId",
+  storageBucket:     "formaos-bafad.firebasestorage.app",
+  messagingSenderId: "219418656334",
+  appId:             "1:219418656334:web:432ac272547d9e85950d1f",
 };
 const _firebaseApp = initializeApp(_firebaseConfig);
 const db = getFirestore(_firebaseApp);
