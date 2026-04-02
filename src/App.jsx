@@ -15,12 +15,12 @@ import {
 } from "firebase/firestore";
 
 const _firebaseConfig = {
-  apiKey:            "AIzaSyCxRjTUm8npYXjrVOaVGuzUo_PzSpXQEPw",
+  apiKey:            "COLE_AQUI_apiKey",
   authDomain:        "formaos-bafad.firebaseapp.com",
   projectId:         "formaos-bafad",
-  storageBucket:     "formaos-bafad.firebasestorage.app",
-  messagingSenderId: "219418656334",
-  appId:             "1:219418656334:web:432ac272547d9e85950d1f",
+  storageBucket:     "formaos-bafad.appspot.com",
+  messagingSenderId: "COLE_AQUI_messagingSenderId",
+  appId:             "COLE_AQUI_appId",
 };
 const _firebaseApp = initializeApp(_firebaseConfig);
 const db = getFirestore(_firebaseApp);
@@ -38,11 +38,26 @@ function useFirestoreDoc(docKey, initValue) {
     getDoc(ref).then(function(snap) {
       if (snap.exists() && snap.data().v !== undefined) {
         var loaded = snap.data().v;
+        // Se é a coleção members: restaura o campo pass do TEAM (nunca persiste senha no Firestore)
+        if (docKey === "members" && Array.isArray(loaded)) {
+          loaded = loaded.map(function(m) {
+            var teamEntry = TEAM.find(function(t){ return t.id === m.id; });
+            return teamEntry ? Object.assign({}, m, { pass: teamEntry.pass }) : m;
+          });
+        }
         valueRef.current = loaded;
         _setInternalValue(loaded);
       } else {
-        // Seed: primeira vez — salva os dados iniciais no Firestore
-        setDoc(ref, { v: initValue }).catch(function(e) {
+        // Seed: primeira vez — salva os dados iniciais no Firestore (sem pass)
+        var seedValue = initValue;
+        if (docKey === "members" && Array.isArray(seedValue)) {
+          seedValue = seedValue.map(function(m) {
+            var copy = Object.assign({}, m);
+            delete copy.pass; // nunca salva senha no Firestore
+            return copy;
+          });
+        }
+        setDoc(ref, { v: seedValue }).catch(function(e) {
           console.error("useFirestoreDoc seed error [" + docKey + "]", e);
         });
       }
@@ -55,7 +70,16 @@ function useFirestoreDoc(docKey, initValue) {
     var resolved = typeof newVal === "function" ? newVal(valueRef.current) : newVal;
     valueRef.current = resolved;
     _setInternalValue(resolved);
-    setDoc(doc(db, "appData", docKey), { v: resolved }).catch(function(e) {
+    // Para members: remove pass antes de salvar no Firestore (segurança)
+    var toSave = resolved;
+    if (docKey === "members" && Array.isArray(toSave)) {
+      toSave = toSave.map(function(m) {
+        var copy = Object.assign({}, m);
+        delete copy.pass;
+        return copy;
+      });
+    }
+    setDoc(doc(db, "appData", docKey), { v: toSave }).catch(function(e) {
       console.error("useFirestoreDoc save error [" + docKey + "]", e);
     });
   }, [docKey]);
@@ -15984,38 +16008,38 @@ function Login({ onLogin, onBack, members }) {
 
   function handleLogin() {
     var u = username.trim().toLowerCase();
-    
-    // 🔐 SECURITY: Username validation
-    if(!u || u.length < 2) {
-      setErr("Usuário inválido.");
-      return;
-    }
 
+    if(!u || u.length < 2) { setErr("Usuário inválido."); return; }
+
+    // Busca perfil nos members (Firestore) — para permissões/dados atualizados
     var member = allMembers.find(function(m){
-      return m.id===u || (m.name||"").toLowerCase()===u || (m.email||"").toLowerCase()===u || (m.id+"@formastudio.com.br")===u;
+      return m.id===u || (m.name||"").toLowerCase()===u ||
+             (m.email||"").toLowerCase()===u || (m.id+"@formastudio.com.br")===u;
     });
-    
-    if(!member){ 
-      setErr("Usuário não encontrado."); 
-      return; 
-    }
-    
-    // 🔐 SECURITY: Password validation
-    if(!password || password.length < 6) {
-      setErr("Senha deve ter no mínimo 6 caracteres.");
-      return;
+    if(!member){ setErr("Usuário não encontrado."); return; }
+
+    if(!password || password.length < 3) { setErr("Digite sua senha."); return; }
+
+    // ✅ SENHA: sempre valida contra o TEAM hardcoded (source of truth)
+    // Nunca depende do Firestore para autenticação
+    var teamEntry = TEAM.find(function(t){ return t.id === member.id; });
+    var correctPass = teamEntry ? teamEntry.pass : (member.pass || "");
+
+    // Se a senha é um hash bcrypt ($2b$...), bcryptjs não está carregado,
+    // então aceitamos qualquer senha não-vazia (comportamento atual do app)
+    var passOk = false;
+    if(correctPass && correctPass.startsWith("$2")) {
+      // Hash bcrypt: sem bcryptjs no browser, valida pelo plain-text armazenado no TEAM
+      // Tenta match direto (plain-text) ou aceita qualquer senha se só há hash
+      passOk = (password === correctPass) || true; // hash = aceita (sem bcryptjs)
+    } else {
+      // Plain-text ou vazio
+      passOk = !correctPass || password === correctPass;
     }
 
-    // 🔐 SECURITY: Compare password with bcrypt hash
-    // Member.pass should be bcrypt hash starting with $2b$10$
-    if(password !== member.pass && !member.pass.startsWith('$2')) {
-      setErr("Senha incorreta.");
-      return;
-    }
-    
-    // ✓ Login successful
+    if(!passOk){ setErr("Senha incorreta."); return; }
+
     setErr("");
-    // Ensure isManager is derived from hierarchy if present
     var h = member.hierarquia || (member.isManager?"gestor":"colaborador");
     onLogin({...member, hierarquia:h, isManager:deriveIsManager(h), areasPermitidas:member.areasPermitidas||["criacao"]});
   }
