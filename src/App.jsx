@@ -14,6 +14,7 @@ const _firebaseConfig = {
   storageBucket: "formaos-bafad.firebasestorage.app",
   messagingSenderId: "219418656334",
   appId: "1:219418656334:web:432ac272547d9e85950d1f"
+
 };
 const _firebaseApp = initializeApp(_firebaseConfig);
 const db = getFirestore(_firebaseApp);
@@ -26,13 +27,20 @@ function useFirestoreDoc(docKey, initValue) {
     getDoc(doc(db, "appData", docKey)).then(function(snap) {
       if (snap.exists() && snap.data().v !== undefined) {
         var loaded = snap.data().v;
-        // members: garante que pass vem sempre do TEAM (código), não do Firestore
+        // Type-guard: se initValue é array mas Firestore retornou algo diferente, usa initValue
+        if (Array.isArray(initValue) && !Array.isArray(loaded)) {
+          loaded = Array.isArray(initValue) ? [] : initValue;
+        }
+        // Type-guard: se initValue é objeto (não array, não null) mas retornou array ou primitivo
+        if (initValue !== null && typeof initValue === "object" && !Array.isArray(initValue) && (typeof loaded !== "object" || Array.isArray(loaded))) {
+          loaded = initValue;
+        }
+        // members: reinjeta pass do TEAM (senha nunca fica no Firestore)
         if (docKey === "members" && Array.isArray(loaded)) {
           loaded = loaded.map(function(m) {
             var t = TEAM.find(function(x){ return x.id === m.id; });
             var im = INIT_MEMBERS.find(function(x){ return x.id === m.id; });
-            var pass = (t && t.pass && t.pass !== "*") ? t.pass
-                     : (im ? im.pass : m.pass);
+            var pass = (t && t.pass && t.pass !== "*") ? t.pass : (im ? im.pass : m.pass);
             return Object.assign({}, m, { pass: pass });
           });
         }
@@ -567,7 +575,7 @@ const AvatarGroup = ({ ids, size }) => {
   const extra = ids.length - 3;
   return (
     <div style={{display:"flex",alignItems:"center"}}>
-      {members.map((m,i) => <Avatar key={m.id} member={m} size={size} stacked={i>0}/>)}
+      {(Array.isArray(members)?members:INIT_MEMBERS).map((m,i) => <Avatar key={m.id} member={m} size={size} stacked={i>0}/>)}
       {extra > 0 && (
         <div style={{width:size,height:size,borderRadius:"50%",marginLeft:-6,background:"var(--ccardb)",border:"1.5px solid rgba(255,255,255,0.18)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*0.36,color:"var(--ct3)",fontWeight:700,fontFamily:POP}}>+{extra}</div>
       )}
@@ -685,7 +693,7 @@ function StatusDropdown({ statusId, onChange }) {
       : { bottom: Math.min(r.bottom, window.innerHeight - estimatedH - 16), left: safeLeft };
     ctx.open(id, fakeRect, (
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,padding:2}}>
-        {statuses.map(st => (
+        {(Array.isArray(statuses)?statuses:INIT_STATUSES).map(st => (
           <div key={st.id} onClick={()=>{onChange(st.id);ctx.close();}}
             style={{padding:"7px 10px",borderTopLeftRadius:8,borderTopRightRadius:0,borderBottomRightRadius:8,borderBottomLeftRadius:0,cursor:"pointer",
               background:st.color+"CC",color:"var(--ct)",
@@ -729,7 +737,7 @@ function TipoDropdown({ tipoId, onChange }) {
     const r = ref.current&&ref.current.getBoundingClientRect();
     if (r) ctx.open(id, r, (
       <div style={{display:"flex",flexDirection:"column",gap:2}}>
-        {tipos.map(tp => (
+        {(Array.isArray(tipos)?tipos:INIT_TIPOS).map(tp => (
           <div key={tp.id} onClick={()=>{onChange(tp.id);ctx.close();}}
             style={{padding:"8px 12px",borderTopLeftRadius:9,borderTopRightRadius:0,borderBottomRightRadius:9,borderBottomLeftRadius:0,cursor:"pointer",display:"flex",alignItems:"center",gap:10,
               background:tipoId===tp.id?tp.color+"28":"transparent",
@@ -5731,7 +5739,7 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 {(cs.interacoes||[]).map(function(inter){
                   var tp = TIPO_INTERACAO.find(function(t){return t.id===inter.tipo;})||TIPO_INTERACAO[6];
-                  var autor = members.find(function(m){return m.id===inter.criadoPor;});
+                  var autor = (Array.isArray(members)?members:INIT_MEMBERS).find(function(m){return m.id===inter.criadoPor;});
                   var dt = inter.data ? new Date(inter.data+"T12:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"short"}) : "";
                   return (
                     <div key={inter.id} style={{display:"flex",gap:12,padding:"12px 14px",borderRadius:12,
@@ -6027,7 +6035,7 @@ function CustomerSuccessView({ clientes, csData, setCsData, user, members, addLo
           var fuPendentes = (cs.followUps||[]).filter(function(f){return !f.concluido;});
           var fuAtrasados = fuPendentes.filter(function(f){return f.data&&f.data<today;});
           var ultimaInteracao = (cs.interacoes||[])[0];
-          var csResponsavel = cl.equipe&&cl.equipe.cs ? members.find(function(m){return m.id===cl.equipe.cs;}) : null;
+          var csResponsavel = cl.equipe&&cl.equipe.cs ? (Array.isArray(members)?members:INIT_MEMBERS).find(function(m){return m.id===cl.equipe.cs;}) : null;
 
           return (
             <GlassBox key={cl.id}
@@ -14327,7 +14335,7 @@ function AdminClientesGestaoPanel({ clienteUsers, setClienteUsers, clienteInfos,
                   <div style={{fontSize:11,color:CT3,marginBottom:4}}>Responsáveis</div>
                   <div style={{display:"flex",flexDirection:"column",gap:8}}>
                     {(clienteInfos[selectedClienteInfo]?.responsaveis||[]).map(r => {
-                      var member = members.find(m => m.id === r.usuarioId);
+                      var member = (Array.isArray(members)?members:INIT_MEMBERS).find(m => m.id === r.usuarioId);
                       return (
                         <div key={r.id} style={{padding:10,borderRadius:8,background:"rgba(255,255,255,0.04)",border:"1px solid var(--cbord)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                           <div style={{fontSize:11,color:CT3}}>{member?.name || r.usuarioId} ({r.cargo})</div>
@@ -14339,7 +14347,7 @@ function AdminClientesGestaoPanel({ clienteUsers, setClienteUsers, clienteInfos,
                       <div style={{fontSize:11,color:CT3}}>Novo Responsável</div>
                       <select value={respForm.usuarioId} onChange={e=>setRespForm({...respForm,usuarioId:e.target.value})} style={{...IS,background:"rgba(255,255,255,0.04)"}}>
                         <option value="">Selecione um colaborador</option>
-                        {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                        {(Array.isArray(members)?members:INIT_MEMBERS).map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
                       </select>
                       <input value={respForm.cargo} onChange={e=>setRespForm({...respForm,cargo:e.target.value})} placeholder="Cargo (Account Manager, etc)" style={IS}/>
                       <input value={respForm.email} onChange={e=>setRespForm({...respForm,email:e.target.value})} placeholder="Email" style={IS}/>
@@ -15477,7 +15485,7 @@ function AppInner() {
   const [clienteTags,setClienteTags] = useFirestoreDoc("clienteTags", DEFAULT_CLIENTE_TAGS);
   const [chatChannels,setChatChannels] = useFirestoreDoc("chatChannels", INIT_CHAT_CHANNELS);
   const [lastSeenMsgCount, setLastSeenMsgCount] = useState(0);
-  const totalChatMsgs = chatChannels.reduce((s,ch)=>s+ch.messages.length,0);
+  const totalChatMsgs = Array.isArray(chatChannels) ? chatChannels.reduce((s,ch)=>s+((ch.messages||[]).length),0) : 0;
   const chatUnread = Math.max(0, totalChatMsgs - lastSeenMsgCount);
   // ── PORTAL DO CLIENTE ───────
   const [clienteUsers, setClienteUsers] = useFirestoreDoc("clienteUsers", INIT_CLIENTE_USERS);
@@ -15727,7 +15735,7 @@ function AppInner() {
   
   if(clienteLoginType === "cliente" && clienteAuthUser && clienteSelectedAccount) return <ThemeCtx.Provider value={theme}><ClientePortalView user={user} clienteUser={clienteAuthUser} clienteId={clienteSelectedAccount} clientes={clientes} planejamento={planejamento} onBack={function(){setClienteSelectedAccount(null);setClienteAuthUser(null);setClienteLoginType(null);}} filiais={filiais} clienteInfos={clienteInfos} clienteInsights={clienteInsights} addLog={addLog}/></ThemeCtx.Provider>;
 
-  if(!user) return <ThemeCtx.Provider value={theme}><Login members={members} onLogin={function(u){var full=members.find(function(m){return m.id===u.id;})||u; setUser({...u,...full}); setArea(null); addLog("sistema","Login realizado",u.name); recordAccess("login",u.name);}} onBack={function(){setClienteLoginType(null);}}/></ThemeCtx.Provider>;
+  if(!user) return <ThemeCtx.Provider value={theme}><Login members={members} onLogin={function(u){var full=(Array.isArray(members)?members:INIT_MEMBERS).find(function(m){return m.id===u.id;})||u; setUser({...u,...full}); setArea(null); addLog("sistema","Login realizado",u.name); recordAccess("login",u.name);}} onBack={function(){setClienteLoginType(null);}}/></ThemeCtx.Provider>;
   if(!area) return <ThemeCtx.Provider value={theme}><AreaSelector user={user} onSelect={setArea} adminVendas={adminVendas} onLogout={function(){setUser(null);setArea(null);}}/></ThemeCtx.Provider>;
   // CRMShell and AdminShell are rendered inside ConfigCtx.Provider below
 
@@ -16286,9 +16294,9 @@ function MembersView({ members, currentUser, onUpdateMember, onCelebrate, theme,
     return `${months} mês${months!==1?"es":""}`;
   };
 
-  const currentMember = members.find(m => m.id === currentUser.id);
-  const anniversaries = members.filter(m => getAnniversaryYears(m.joinDate) !== null);
-  const birthdaysToday = members.filter(m => m.birthDate && m.birthDate.slice(5)===todayMMDD);
+  const currentMember = (Array.isArray(members)?members:INIT_MEMBERS).find(m => m.id === currentUser.id);
+  const anniversaries = (Array.isArray(members)?members:INIT_MEMBERS).filter(m => getAnniversaryYears(m.joinDate) !== null);
+  const birthdaysToday = (Array.isArray(members)?members:INIT_MEMBERS).filter(m => m.birthDate && m.birthDate.slice(5)===todayMMDD);
 
   return (
     <div style={{animation:"fadeUp 0.3s ease",padding:"24px"}}>
@@ -16395,7 +16403,7 @@ function MembersView({ members, currentUser, onUpdateMember, onCelebrate, theme,
 
       {/* Team grid */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
-        {members.filter(m => !selectedFilial || m.filialId === selectedFilial).map(m => {
+        {(Array.isArray(members)?members:INIT_MEMBERS).filter(m => !selectedFilial || m.filialId === selectedFilial).map(m => {
           const annYears = getAnniversaryYears(m.joinDate);
           const isMe = m.id === currentUser.id;
           return (
@@ -17201,7 +17209,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
 
   // DM key = sorted user ids joined
   const dmKey = (a, b) => [a, b].sort().join("_");
-  const memberObj = id => members.find(m=>m.id===id) || { name:"Desconhecido", initials:"?", color:"#888" };
+  const memberObj = id => (Array.isArray(members)?members:INIT_MEMBERS).find(m=>m.id===id) || { name:"Desconhecido", initials:"?", color:"#888" };
 
   // Channels this user can see
   const myChannels = channels.filter(ch => ch.members.includes(user.id));
@@ -17229,7 +17237,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
     } else if(activeChannel) {
       setChannels(prev => prev.map(ch => ch.id===activeChannel.id ? {...ch, messages:[...ch.messages, newMsg]} : ch));
     }
-    var mm=msgText.match(/@([a-zA-Z0-9_]+)/g)||[];mm.forEach(function(m){var h=m.slice(1).toLowerCase();var mb2=members.find(function(mb){return mb.id===h||mb.name.toLowerCase().startsWith(h);});if(mb2&&mb2.id!==user.id&&addNotification){var chN=activeChannel?"#"+activeChannel.name:"DM";addNotification(mb2.id,user.id,user.name,"mention","@mencao em "+chN+": \""+msgText.slice(0,80)+"\"");}});
+    var mm=msgText.match(/@([a-zA-Z0-9_]+)/g)||[];mm.forEach(function(m){var h=m.slice(1).toLowerCase();var mb2=(Array.isArray(members)?members:INIT_MEMBERS).find(function(mb){return mb.id===h||mb.name.toLowerCase().startsWith(h);});if(mb2&&mb2.id!==user.id&&addNotification){var chN=activeChannel?"#"+activeChannel.name:"DM";addNotification(mb2.id,user.id,user.name,"mention","@mencao em "+chN+": \""+msgText.slice(0,80)+"\"");}});
     setMsgText("");
     setShowMentions(false);
   };
@@ -17331,7 +17339,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
     const parts = text.split(/(@\w[\w\s]*?\b)/g);
     return parts.map((part, i) => {
       if(part.startsWith("@")) {
-        const mentioned = members.find(m => m.name.toLowerCase().startsWith(part.slice(1).toLowerCase()));
+        const mentioned = (Array.isArray(members)?members:INIT_MEMBERS).find(m => m.name.toLowerCase().startsWith(part.slice(1).toLowerCase()));
         return <span key={i} style={{color: (mentioned&&mentioned.color)||OR, fontWeight:700, background:(mentioned&&mentioned.color)+"22"||"rgba(255,106,0,0.15)", borderRadius:4, padding:"1px 4px"}}>{part}</span>;
       }
       return <span key={i}>{part}</span>;
@@ -17422,7 +17430,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
           {/* ── DM Section ── */}
           <div style={{marginTop:16}}>
             <div style={{fontSize:11,color:"var(--ct3)",fontFamily:POP,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.10em",padding:"4px 8px 8px"}}>MENSAGENS DIRETAS</div>
-            {members.filter(m=>m.id!==user.id).map(m=>{
+            {(Array.isArray(members)?members:INIT_MEMBERS).filter(m=>m.id!==user.id).map(m=>{
               const k = dmKey(user.id, m.id);
               const msgs = dms[k] || [];
               const lastDm = msgs[msgs.length-1];
@@ -17629,7 +17637,7 @@ function ChatView({ channels, setChannels, user, members, addNotification, addLo
             {/* @mention autocomplete */}
             {showMentions&&(
               <div style={{position:"absolute",bottom:"100%",left:20,right:20,background:"rgba(18,12,6,0.98)",border:"1px solid var(--cbord2)",borderRadius:14,padding:"6px",zIndex:10,marginBottom:4}}>
-                {(activeDmId ? members : members.filter(m=>(activeChannel&&activeChannel.members).includes(m.id)))
+                {(activeDmId ? members : (Array.isArray(members)?members:INIT_MEMBERS).filter(m=>(activeChannel&&activeChannel.members).includes(m.id)))
                   .filter(m=>m.name.toLowerCase().includes(mentionFilter.toLowerCase())).map(m=>{
                   return (
                     <div key={m.id} onClick={()=>insertMention(m.name.split(" ")[0])}
@@ -17762,7 +17770,7 @@ function CreateChannelModal({ members, user, onClose, onCreate }) {
         {/* Member selection */}
         <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>Membros com acesso</div>
         <div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:220,overflowY:"auto",marginBottom:20}}>
-          {members.map(m=>{
+          {(Array.isArray(members)?members:INIT_MEMBERS).map(m=>{
             const selected = selectedMembers.includes(m.id);
             const isMe = m.id===user.id;
             return (
@@ -17889,7 +17897,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
     setNewTELabel(""); setNewTEColor("#22C55E");
   };
   const removeTipoEntrega = idx => setTiposEntrega(tiposEntrega.filter((_,i)=>i!==idx));
-  const saveTipoEntrega = () => { if(!editingTE) return; setTiposEntrega(tiposEntrega.map((t,i)=>i===editingTE.idx?{...t,label:editingTE.label,color:editingTE.color}:t)); setEditingTE(null); };
+  const saveTipoEntrega = () => { if(!editingTE) return; setTiposEntrega((Array.isArray(tiposEntrega)?tiposEntrega:INIT_TIPOS_ENTREGA).map((t,i)=>i===editingTE.idx?{...t,label:editingTE.label,color:editingTE.color}:t)); setEditingTE(null); };
 
   const MONTH_NAMES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
@@ -17908,7 +17916,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
     setNewSLabel(""); setNewSColor("#888888");
   };
   const removeStatus = idx => setStatuses(statuses.filter((_,i)=>i!==idx));
-  const saveStatus = () => { if(!editingS) return; setStatuses(statuses.map((s,i)=>i===editingS.idx?{...s,label:editingS.label,color:editingS.color}:s)); setEditingS(null); };
+  const saveStatus = () => { if(!editingS) return; setStatuses((Array.isArray(statuses)?statuses:INIT_STATUSES).map((s,i)=>i===editingS.idx?{...s,label:editingS.label,color:editingS.color}:s)); setEditingS(null); };
 
   // Tipo helpers
   const addTipo = () => {
@@ -17918,7 +17926,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
     setNewTLabel(""); setNewTColor("#3B82F6");
   };
   const removeTipo = idx => setTipos(tipos.filter((_,i)=>i!==idx));
-  const saveTipo = () => { if(!editingT) return; setTipos(tipos.map((t,i)=>i===editingT.idx?{...t,label:editingT.label,color:editingT.color}:t)); setEditingT(null); };
+  const saveTipo = () => { if(!editingT) return; setTipos((Array.isArray(tipos)?tipos:INIT_TIPOS).map((t,i)=>i===editingT.idx?{...t,label:editingT.label,color:editingT.color}:t)); setEditingT(null); };
 
   const ColorGrid = ({value, onChange}) => (
     <div style={{display:"flex",flexWrap:"wrap",gap:5,marginTop:8}}>
@@ -18159,7 +18167,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
         <div style={{fontSize:15,fontWeight:700,color:"var(--ct)",fontFamily:POP,marginBottom:4}}>Itens do menu</div>
         <div style={{fontSize:13,color:"var(--ct3)",fontFamily:POP,marginBottom:16}}>Clique em ✏️ para editar nome e ícone</div>
         <div style={{display:"flex",flexDirection:"column",gap:6}}>
-          {navConfig.map((item,idx)=>(
+          {(Array.isArray(navConfig)?navConfig:[]).map((item,idx)=>(
             <div key={item.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:12,
               background:(editingNav&&editingNav.idx)===idx?"rgba(255,106,0,0.06)":"rgba(255,255,255,0.03)",
               border:(editingNav&&editingNav.idx)===idx?"1px solid rgba(255,106,0,0.30)":"1px solid var(--cbord)",transition:"all 0.2s"}}>
@@ -18206,7 +18214,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
               <div style={{fontSize:15,fontWeight:600,color:"var(--ct)",fontFamily:POP}}>{editingNav.label||"Nome"}</div>
             </div>
             <div style={{display:"flex",gap:8}}>
-              <div onClick={()=>{setNavConfig(navConfig.map((n,i)=>i===editingNav.idx?{...n,label:editingNav.label,icon:editingNav.icon}:n));setEditingNav(null);}}
+              <div onClick={()=>{setNavConfig((Array.isArray(navConfig)?navConfig:[]).map((n,i)=>i===editingNav.idx?{...n,label:editingNav.label,icon:editingNav.icon}:n));setEditingNav(null);}}
                 style={{flex:1,padding:"10px",borderTopLeftRadius:12,borderTopRightRadius:0,borderBottomRightRadius:12,borderBottomLeftRadius:0,cursor:"pointer",background:`linear-gradient(135deg,${OR},#FF3D00)`,color:"var(--ct)",fontSize:15,fontWeight:700,textAlign:"center",fontFamily:POP}}>
                 ✓ Salvar
               </div>
@@ -18252,7 +18260,7 @@ function SettingsView({ statuses, setStatuses, tipos, setTipos, tiposEntrega, se
               <span style={{fontSize:13,fontWeight:400,color:"var(--ct3)",marginLeft:8}}>({tiposEntrega.length})</span>
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:420,overflowY:"auto"}}>
-              {tiposEntrega.map((tipo,idx)=>(
+              {(Array.isArray(tiposEntrega)?tiposEntrega:INIT_TIPOS_ENTREGA).map((tipo,idx)=>(
                 <div key={idx} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:12,background:"var(--ccard)",border:"1px solid var(--cbord)"}}>
                   <div style={{width:28,height:28,borderRadius:8,background:tipo.color+"CC",flexShrink:0,border:"2px solid "+tipo.color+"66"}}/>
                   <div style={{flex:1}}>
@@ -18813,7 +18821,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
             ))}
           </tr></thead>
           <tbody>
-            {members.map((m,i)=>(
+            {(Array.isArray(members)?members:INIT_MEMBERS).map((m,i)=>(
               <tr key={m.id} style={{borderBottom:i<members.length-1?"2px solid var(--cbord)":"none",background:i%2===0?"rgba(255,255,255,0.01)":"transparent",transition:"background 0.15s"}}
                 onMouseEnter={e=>e.currentTarget.style.background="rgba(255,106,0,0.04)"}
                 onMouseLeave={e=>e.currentTarget.style.background=i%2===0?"rgba(255,255,255,0.01)":"transparent"}
@@ -18933,7 +18941,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               <div style={{marginBottom:18}}>
                 <div style={{fontSize:12,color:"var(--ct3)",fontFamily:POP,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Membros do Grupo</div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-                  {members.map(m=>{
+                  {(Array.isArray(members)?members:INIT_MEMBERS).map(m=>{
                     const sel = groupForm.membros.includes(m.id);
                     return (
                       <div key={m.id} onClick={()=>toggleGroupMember(m.id)} style={{display:"flex",alignItems:"center",gap:7,padding:"6px 12px",borderRadius:20,cursor:"pointer",
@@ -18967,7 +18975,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
               </div>
             )}
             {groups.map(g=>{
-              const groupMembers = members.filter(m=>g.membros.includes(m.id));
+              const groupMembers = (Array.isArray(members)?members:INIT_MEMBERS).filter(m=>g.membros.includes(m.id));
               return (
                 <GlassBox key={g.id} style={{borderRadius:20,padding:"20px",border:`1px solid ${g.cor}25`}} glow={g.cor+"18"}>
                   <div style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:14}}>
@@ -19133,7 +19141,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
                   <select value={filialForm.gerente} onChange={e=>setFilialForm(p=>({...p,gerente:e.target.value}))}
                     style={{width:"100%",background:"var(--ccard)",border:"1px solid var(--cbord)",borderRadius:9,color:"var(--ct)",fontSize:14,padding:"8px 11px",outline:"none",fontFamily:POP,boxSizing:"border-box"}}>
                     <option value="" style={{background:"#1a1a1a"}}>— Selecionar —</option>
-                    {members.map(m=>(<option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>))}
+                    {(Array.isArray(members)?members:INIT_MEMBERS).map(m=>(<option key={m.id} value={m.id} style={{background:"#1a1a1a"}}>{m.name}</option>))}
                   </select>
                 </div>
                 <div>
@@ -19224,7 +19232,7 @@ function AdminPanel({ members, setMembers, accessLog, filiais: _filiais, setFili
                 {/* Informações Adicionais */}
                 <div style={{display:"flex",flexDirection:"column",gap:3,marginBottom:12,fontSize:11,color:"var(--ct3)",fontFamily:POP,borderTop:"1px solid var(--cbord)",paddingTop:8}}>
                   {f.cnpj&&<div>CNPJ: {f.cnpj}</div>}
-                  {f.gerente&&(function(){var gerente=members.find(m=>m.id===f.gerente); return gerente?<div>👤 Gerente: {gerente.name}</div>:null;})()}
+                  {f.gerente&&(function(){var gerente=(Array.isArray(members)?members:INIT_MEMBERS).find(m=>m.id===f.gerente); return gerente?<div>👤 Gerente: {gerente.name}</div>:null;})()}
                   {f.dataAbertura&&<div>📅 Desde: {new Date(f.dataAbertura).toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"})}</div>}
                   {f.obs&&<div>💬 {f.obs}</div>}
                 </div>
